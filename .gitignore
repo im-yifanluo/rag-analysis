@@ -1,5 +1,7 @@
 # Local environments
 venv/
+.venv/
+.conda/
 venv_old_cluster/
 nltk_data/
 

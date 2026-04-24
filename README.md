@@ -14,8 +14,20 @@ The workflow is:
 
 ## Setup
 
+Recommended on the research servers: use Miniforge/conda so the Python version
+is explicit and independent of the system `python`.
+
 ```bash
 bash setup.sh
+conda activate hamlet-qa
+```
+
+The repo expects Python `3.12`; `.python-version` pins the local pyenv-style
+version to `3.12.3`, and `environment.yml` creates a `hamlet-qa` conda env with
+Python `3.12`. If conda/mamba is not available, `setup.sh` falls back to a local
+`venv/` only when `python3.12` is installed:
+
+```bash
 source venv/bin/activate
 ```
 
