@@ -1,0 +1,95 @@
+[
+  {
+    "id": "q_local_fact_midnight_guard",
+    "category": "local_fact",
+    "question": "At what time does Barnardo say Francisco should go to bed?",
+    "expected_answer": "Barnardo says it is twelve o'clock, so Francisco should go to bed at midnight.",
+    "gold_chunk_ids": ["act01_scene01_chunk001"],
+    "notes": "Simple local fact from the opening guard exchange."
+  },
+  {
+    "id": "q_speaker_something_rotten",
+    "category": "speaker_attribution",
+    "question": "Who says, \"Something is rotten in the state of Denmark\"?",
+    "expected_answer": "Marcellus says the line.",
+    "gold_chunk_ids": ["act01_scene04_chunk006"],
+    "notes": "Tests attribution of a famous line that models may memorize."
+  },
+  {
+    "id": "q_scene_ophelia_father",
+    "category": "scene_local_context",
+    "question": "When Hamlet asks Ophelia where her father is, what does Ophelia answer?",
+    "expected_answer": "Ophelia answers, \"At home, my lord.\"",
+    "gold_chunk_ids": ["act03_scene01_chunk009"],
+    "notes": "Local dialogue context in the nunnery scene."
+  },
+  {
+    "id": "q_bridge_mousetrap_test",
+    "category": "cross_scene_bridge",
+    "question": "How does Hamlet test whether the Ghost's accusation against Claudius is true?",
+    "expected_answer": "He arranges a play resembling his father's murder, watches Claudius's reaction, and treats Claudius's disturbed response as confirmation.",
+    "gold_chunk_ids": [
+      "act02_scene02_chunk039",
+      "act03_scene02_chunk006",
+      "act03_scene02_chunk018",
+      "act03_scene02_chunk020"
+    ],
+    "notes": "Requires bridging Hamlet's plan, Horatio's observation role, the staged poisoning, and the reaction."
+  },
+  {
+    "id": "q_temporal_england_pirates",
+    "category": "temporal_order",
+    "question": "Which happens first: Claudius sends Hamlet toward England, or Horatio receives Hamlet's letter about the pirate encounter?",
+    "expected_answer": "Claudius sends Hamlet toward England first; Horatio receives the pirate letter later.",
+    "gold_chunk_ids": ["act04_scene03_chunk003", "act04_scene06_chunk001"],
+    "notes": "Checks event ordering across Act IV scenes."
+  },
+  {
+    "id": "q_state_poisoned_cup",
+    "category": "entity_state_tracking",
+    "question": "Who drinks from the poisoned cup intended during the duel, and what happens to that person?",
+    "expected_answer": "Gertrude drinks from the poisoned cup and dies from the poison.",
+    "gold_chunk_ids": ["act05_scene02_chunk018", "act05_scene02_chunk019", "act05_scene02_chunk021"],
+    "notes": "Tracks the cup from Claudius's plan through Gertrude's drink and death."
+  },
+  {
+    "id": "q_mistaken_arras_victim",
+    "category": "deception_or_mistaken_belief",
+    "question": "When Hamlet stabs through the arras, whom does he think he may have killed, and who is actually killed?",
+    "expected_answer": "Hamlet thinks it may be the King, but the person killed is Polonius.",
+    "gold_chunk_ids": ["act03_scene04_chunk002", "act03_scene04_chunk003"],
+    "notes": "Captures mistaken belief and actual outcome in the closet scene."
+  },
+  {
+    "id": "q_causal_spares_praying_claudius",
+    "category": "causal_explanation",
+    "question": "Why does Hamlet decide not to kill Claudius while Claudius is praying?",
+    "expected_answer": "Hamlet thinks killing Claudius at prayer might send him to heaven, which would not be proper revenge.",
+    "gold_chunk_ids": ["act03_scene03_chunk005", "act03_scene03_chunk006"],
+    "notes": "Causal reasoning from Hamlet's own explanation."
+  },
+  {
+    "id": "q_distractor_claudius_not_punish",
+    "category": "distractor_contrast",
+    "question": "What two reasons does Claudius give Laertes for not publicly punishing Hamlet?",
+    "expected_answer": "He says Gertrude is deeply attached to Hamlet, and the public loves Hamlet so much that punishment would turn against Claudius.",
+    "gold_chunk_ids": ["act04_scene07_chunk001", "act04_scene07_chunk002"],
+    "notes": "Contrasts two explicit reasons rather than accepting one nearby distractor."
+  },
+  {
+    "id": "q_unanswerable_yorick_wife",
+    "category": "unanswerable",
+    "question": "What is the name of Yorick's wife?",
+    "expected_answer": "The text does not give Yorick's wife's name.",
+    "gold_chunk_ids": [],
+    "notes": "Unanswerable probe near the famous Yorick passage."
+  },
+  {
+    "id": "q_theme_yorick_skull",
+    "category": "theme_or_symbolism",
+    "question": "What does Yorick's skull lead Hamlet to reflect about status, memory, and mortality?",
+    "expected_answer": "It leads him to reflect that wit, affection, beauty, and even the greatness of figures like Alexander and Caesar end in death, decay, and common dust.",
+    "gold_chunk_ids": ["act05_scene01_chunk013", "act05_scene01_chunk014"],
+    "notes": "Symbolic/theme question grounded in the graveyard scene."
+  }
+]

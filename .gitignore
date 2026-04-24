@@ -1,0 +1,22 @@
+# Local environments
+venv/
+venv_old_cluster/
+nltk_data/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Generated indexes and embeddings
+*.faiss
+*.npy
+*.npz
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
