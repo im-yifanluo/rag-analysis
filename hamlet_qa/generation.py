@@ -26,10 +26,22 @@ class VLLMReader:
             trust_remote_code=True,
         )
         self.tokenizer = self.llm.get_tokenizer()
+        self.model_max_context = self._resolve_model_max_context()
         self.sampling_params = SamplingParams(
             temperature=temperature,
             max_tokens=max_new_tokens,
         )
+
+    def _resolve_model_max_context(self) -> int | None:
+        value = getattr(self.tokenizer, "model_max_length", None)
+        if isinstance(value, int) and 0 < value < 10_000_000:
+            return value
+        llm_engine = getattr(self.llm, "llm_engine", None)
+        model_config = getattr(llm_engine, "model_config", None)
+        max_model_len = getattr(model_config, "max_model_len", None)
+        if isinstance(max_model_len, int) and max_model_len > 0:
+            return max_model_len
+        return None
 
     def format_prompt(self, system_prompt: str, user_prompt: str) -> str:
         messages = [
@@ -37,11 +49,17 @@ class VLLMReader:
             {"role": "user", "content": user_prompt},
         ]
         if hasattr(self.tokenizer, "apply_chat_template"):
-            return self.tokenizer.apply_chat_template(
-                messages,
-                tokenize=False,
-                add_generation_prompt=True,
-            )
+            kwargs = {
+                "tokenize": False,
+                "add_generation_prompt": True,
+            }
+            if "qwen3" in self.model_name.lower():
+                kwargs["enable_thinking"] = False
+            try:
+                return self.tokenizer.apply_chat_template(messages, **kwargs)
+            except TypeError:
+                kwargs.pop("enable_thinking", None)
+                return self.tokenizer.apply_chat_template(messages, **kwargs)
         return fallback_chat_prompt(system_prompt, user_prompt)
 
     def count_tokens(self, text: str) -> int:

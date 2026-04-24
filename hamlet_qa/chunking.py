@@ -1,4 +1,9 @@
-"""Act/scene parsing and token-window chunking for Hamlet."""
+"""Act/scene parsing and token-window chunking for Hamlet.
+
+TODO: Future chunking should use speaker-turn-aware fixed-target chunks with a
+hard max token cutoff. The current strategy is intentionally kept as the simple
+first diagnostic baseline.
+"""
 
 from __future__ import annotations
 

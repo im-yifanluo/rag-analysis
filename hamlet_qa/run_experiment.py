@@ -9,6 +9,7 @@ from hamlet_qa.config import (
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_READER_MODEL,
     DEFAULT_TEMPERATURE,
+    DEFAULT_NEIGHBOR_WINDOW,
     DEFAULT_TOP_K,
     DEFAULT_TREATMENTS,
     RunConfig,
@@ -43,6 +44,7 @@ def parse_args() -> argparse.Namespace:
         choices=DEFAULT_TREATMENTS,
     )
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K)
+    parser.add_argument("--neighbor-window", type=int, default=DEFAULT_NEIGHBOR_WINDOW)
     parser.add_argument("--embedding-batch-size", type=int, default=64)
     parser.add_argument("--embedding-device", default="cuda")
     parser.add_argument("--tensor-parallel-size", type=int, default=1)
@@ -67,6 +69,7 @@ def main() -> None:
         context_budgets=args.context_budgets,
         treatments=args.treatments,
         top_k=args.top_k,
+        neighbor_window=args.neighbor_window,
         embedding_batch_size=args.embedding_batch_size,
         embedding_device=args.embedding_device,
         tensor_parallel_size=args.tensor_parallel_size,
