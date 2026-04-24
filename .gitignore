@@ -22,3 +22,5 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+./Miniforge3-Linux-x86_64.sh

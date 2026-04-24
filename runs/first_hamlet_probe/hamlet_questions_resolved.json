@@ -1,0 +1,370 @@
+[
+  {
+    "id": "q_local_fact_midnight_guard",
+    "question": "At what time does Barnardo say Francisco should go to bed?",
+    "expected_answer": "Barnardo says it is twelve o'clock, so Francisco should go to bed at midnight.",
+    "evidence_scope": "Act 1, Scene 1",
+    "reasoning_skill": "local_fact",
+    "required_evidence_quotes": [
+      {
+        "act": 1,
+        "scene": 1,
+        "speaker": "BARNARDO",
+        "quote": "’Tis now struck twelve. Get thee to bed, Francisco.",
+        "role": "answer",
+        "matched_chunk_ids": [
+          "act01_scene01_chunk001"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act01_scene01_chunk001"
+    ],
+    "notes": "Simple local fact from the opening guard exchange."
+  },
+  {
+    "id": "q_speaker_bitter_cold",
+    "question": "Who says, \"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\"?",
+    "expected_answer": "Francisco says the line.",
+    "evidence_scope": "Act 1, Scene 1",
+    "reasoning_skill": "speaker_attribution",
+    "required_evidence_quotes": [
+      {
+        "act": 1,
+        "scene": 1,
+        "speaker": "FRANCISCO",
+        "quote": "FRANCISCO.\nFor this relief much thanks. ’Tis bitter cold,\nAnd I am sick at heart.",
+        "role": "speaker_attribution",
+        "matched_chunk_ids": [
+          "act01_scene01_chunk001"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act01_scene01_chunk001"
+    ],
+    "notes": "Less-famous speaker-attribution probe to reduce closed-book memorization."
+  },
+  {
+    "id": "q_scene_ophelia_violets",
+    "question": "In Ophelia's flower scene, which flowers does she say she would have given, and why does she say she cannot?",
+    "expected_answer": "Ophelia says she would have given violets, but they all withered when her father died.",
+    "evidence_scope": "Act 4, Scene 5",
+    "reasoning_skill": "scene_local_context",
+    "required_evidence_quotes": [
+      {
+        "act": 4,
+        "scene": 5,
+        "speaker": "OPHELIA",
+        "quote": "OPHELIA.\nThere’s fennel for you, and columbines. There’s rue for you; and here’s\nsome for me. We may call it herb of grace o’ Sundays. O you must wear\nyour rue with a difference. There’s a daisy. I would give you some\nviolets, but they wither’d all when my father died.",
+        "role": "answer",
+        "matched_chunk_ids": [
+          "act04_scene05_chunk012"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act04_scene05_chunk012"
+    ],
+    "notes": "Flower-scene local context using a meaningful but less-memorized Ophelia quote."
+  },
+  {
+    "id": "q_bridge_mousetrap_test",
+    "question": "How does Hamlet test whether the Ghost's accusation against Claudius is true?",
+    "expected_answer": "He arranges a play resembling his father's murder, watches Claudius's reaction, and treats Claudius's disturbed response as confirmation.",
+    "evidence_scope": "Acts 2-3",
+    "reasoning_skill": "cross_scene_bridge",
+    "required_evidence_quotes": [
+      {
+        "act": 2,
+        "scene": 2,
+        "speaker": "HAMLET",
+        "quote": "I’ll have these players\nPlay something like the murder of my father\nBefore mine uncle. I’ll observe his looks;",
+        "role": "plan",
+        "matched_chunk_ids": [
+          "act02_scene02_chunk039"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 2,
+        "speaker": "HAMLET",
+        "quote": "There is a play tonight before the King.\nOne scene of it comes near the circumstance\nWhich I have told thee, of my father’s death.",
+        "role": "bridge_to_execution",
+        "matched_chunk_ids": [
+          "act03_scene02_chunk006"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 2,
+        "speaker": "HAMLET",
+        "quote": "He poisons him i’ th’garden for’s estate.",
+        "role": "staged_evidence",
+        "matched_chunk_ids": [
+          "act03_scene02_chunk018"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 2,
+        "speaker": "HORATIO",
+        "quote": "I did very well note him.",
+        "role": "reaction_confirmation",
+        "matched_chunk_ids": [
+          "act03_scene02_chunk020"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act02_scene02_chunk039",
+      "act03_scene02_chunk006",
+      "act03_scene02_chunk018",
+      "act03_scene02_chunk020"
+    ],
+    "notes": "Requires bridging Hamlet's plan, Horatio's observation role, the staged poisoning, and the reaction."
+  },
+  {
+    "id": "q_temporal_england_pirates",
+    "question": "Which happens first: Claudius sends Hamlet toward England, or Horatio receives Hamlet's letter about the pirate encounter?",
+    "expected_answer": "Claudius sends Hamlet toward England first; Horatio receives the pirate letter later.",
+    "evidence_scope": "Act 4, Scenes 3 and 6",
+    "reasoning_skill": "temporal_order",
+    "required_evidence_quotes": [
+      {
+        "act": 4,
+        "scene": 3,
+        "speaker": "KING",
+        "quote": "Hamlet, this deed, for thine especial safety,—\nWhich we do tender, as we dearly grieve\nFor that which thou hast done,—must send thee hence\nWith fiery quickness.",
+        "role": "earlier_event",
+        "matched_chunk_ids": [
+          "act04_scene03_chunk003"
+        ]
+      },
+      {
+        "act": 4,
+        "scene": 6,
+        "speaker": "HAMLET",
+        "quote": "Ere we were\ntwo days old at sea, a pirate of very warlike appointment gave us\nchase.",
+        "role": "later_event",
+        "matched_chunk_ids": [
+          "act04_scene06_chunk001",
+          "act04_scene06_chunk002"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act04_scene03_chunk003",
+      "act04_scene06_chunk001",
+      "act04_scene06_chunk002"
+    ],
+    "notes": "Checks event ordering across Act IV scenes."
+  },
+  {
+    "id": "q_state_poisoned_cup",
+    "question": "Who drinks from the poisoned cup intended during the duel, and what happens to that person?",
+    "expected_answer": "Gertrude drinks from the poisoned cup and dies from the poison.",
+    "evidence_scope": "Act 5, Scene 2",
+    "reasoning_skill": "entity_state_tracking",
+    "required_evidence_quotes": [
+      {
+        "act": 5,
+        "scene": 2,
+        "speaker": "KING",
+        "quote": "The King shall drink to Hamlet’s better breath,\nAnd in the cup an union shall he throw",
+        "role": "cup_setup",
+        "matched_chunk_ids": [
+          "act05_scene02_chunk017",
+          "act05_scene02_chunk018"
+        ]
+      },
+      {
+        "act": 5,
+        "scene": 2,
+        "speaker": "KING",
+        "quote": "KING.\n[_Aside._] It is the poison’d cup; it is too late.",
+        "role": "cup_state",
+        "matched_chunk_ids": [
+          "act05_scene02_chunk019"
+        ]
+      },
+      {
+        "act": 5,
+        "scene": 2,
+        "speaker": "QUEEN",
+        "quote": "QUEEN.\nNo, no, the drink, the drink! O my dear Hamlet!\nThe drink, the drink! I am poison’d.",
+        "role": "outcome",
+        "matched_chunk_ids": [
+          "act05_scene02_chunk021"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act05_scene02_chunk017",
+      "act05_scene02_chunk018",
+      "act05_scene02_chunk019",
+      "act05_scene02_chunk021"
+    ],
+    "notes": "Tracks the cup from Claudius's plan through Gertrude's drink and death."
+  },
+  {
+    "id": "q_mistaken_arras_victim",
+    "question": "When Hamlet stabs through the arras, whom does he think he may have killed, and who is actually killed?",
+    "expected_answer": "Hamlet thinks it may be the King, but the person killed is Polonius.",
+    "evidence_scope": "Act 3, Scene 4",
+    "reasoning_skill": "deception_or_mistaken_belief",
+    "required_evidence_quotes": [
+      {
+        "act": 3,
+        "scene": 4,
+        "speaker": "HAMLET",
+        "quote": "HAMLET.\nHow now? A rat? [_Draws._]\nDead for a ducat, dead!",
+        "role": "mistaken_action",
+        "matched_chunk_ids": [
+          "act03_scene04_chunk002"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 4,
+        "speaker": "HAMLET",
+        "quote": "HAMLET.\nNay, I know not. Is it the King?",
+        "role": "mistaken_belief",
+        "matched_chunk_ids": [
+          "act03_scene04_chunk002",
+          "act03_scene04_chunk003"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 4,
+        "speaker": "HAMLET",
+        "quote": "[_To Polonius._] Thou wretched, rash, intruding fool, farewell!\nI took thee for thy better.",
+        "role": "actual_victim",
+        "matched_chunk_ids": [
+          "act03_scene04_chunk003"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act03_scene04_chunk002",
+      "act03_scene04_chunk003"
+    ],
+    "notes": "Captures mistaken belief and actual outcome in the closet scene."
+  },
+  {
+    "id": "q_causal_spares_praying_claudius",
+    "question": "Why does Hamlet decide not to kill Claudius while Claudius is praying?",
+    "expected_answer": "Hamlet thinks killing Claudius at prayer might send him to heaven, which would not be proper revenge.",
+    "evidence_scope": "Act 3, Scene 3",
+    "reasoning_skill": "causal_explanation",
+    "required_evidence_quotes": [
+      {
+        "act": 3,
+        "scene": 3,
+        "speaker": "HAMLET",
+        "quote": "Now might I do it pat, now he is praying.\nAnd now I’ll do’t. And so he goes to heaven;",
+        "role": "situation",
+        "matched_chunk_ids": [
+          "act03_scene03_chunk005"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 3,
+        "speaker": "HAMLET",
+        "quote": "To take him in the purging of his soul,\nWhen he is fit and season’d for his passage? No.",
+        "role": "reason",
+        "matched_chunk_ids": [
+          "act03_scene03_chunk006"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act03_scene03_chunk005",
+      "act03_scene03_chunk006"
+    ],
+    "notes": "Causal reasoning from Hamlet's own explanation."
+  },
+  {
+    "id": "q_distractor_claudius_not_punish",
+    "question": "What two reasons does Claudius give Laertes for not publicly punishing Hamlet?",
+    "expected_answer": "He says Gertrude is deeply attached to Hamlet, and the public loves Hamlet so much that punishment would turn against Claudius.",
+    "evidence_scope": "Act 4, Scene 7",
+    "reasoning_skill": "distractor_contrast",
+    "required_evidence_quotes": [
+      {
+        "act": 4,
+        "scene": 7,
+        "speaker": "KING",
+        "quote": "The Queen his mother\nLives almost by his looks;",
+        "role": "reason_one",
+        "matched_chunk_ids": [
+          "act04_scene07_chunk001"
+        ]
+      },
+      {
+        "act": 4,
+        "scene": 7,
+        "speaker": "KING",
+        "quote": "The other motive,\nWhy to a public count I might not go,\nIs the great love the general gender bear him",
+        "role": "reason_two",
+        "matched_chunk_ids": [
+          "act04_scene07_chunk001",
+          "act04_scene07_chunk002"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act04_scene07_chunk001",
+      "act04_scene07_chunk002"
+    ],
+    "notes": "Contrasts two explicit reasons rather than accepting one nearby distractor."
+  },
+  {
+    "id": "q_unanswerable_yorick_wife",
+    "question": "What is the name of Yorick's wife?",
+    "expected_answer": "The text does not give Yorick's wife's name.",
+    "evidence_scope": "Act 5, Scene 1",
+    "reasoning_skill": "unanswerable",
+    "required_evidence_quotes": [],
+    "derived_gold_chunk_ids": [],
+    "notes": "Unanswerable probe near the famous Yorick passage."
+  },
+  {
+    "id": "q_theme_yorick_skull",
+    "question": "What does Yorick's skull lead Hamlet to reflect about status, memory, and mortality?",
+    "expected_answer": "It leads him to reflect that wit, affection, beauty, and even the greatness of figures like Alexander and Caesar end in death, decay, and common dust.",
+    "evidence_scope": "Act 5, Scene 1",
+    "reasoning_skill": "theme_or_symbolism",
+    "required_evidence_quotes": [
+      {
+        "act": 5,
+        "scene": 1,
+        "speaker": "HAMLET",
+        "quote": "Alas, poor Yorick. I knew him,\nHoratio, a fellow of infinite jest, of most excellent fancy.",
+        "role": "symbol_source",
+        "matched_chunk_ids": [
+          "act05_scene01_chunk012",
+          "act05_scene01_chunk013"
+        ]
+      },
+      {
+        "act": 5,
+        "scene": 1,
+        "speaker": "HAMLET",
+        "quote": "Alexander died, Alexander was\nburied, Alexander returneth into dust; the dust is earth;",
+        "role": "theme_extension",
+        "matched_chunk_ids": [
+          "act05_scene01_chunk014"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act05_scene01_chunk012",
+      "act05_scene01_chunk013",
+      "act05_scene01_chunk014"
+    ],
+    "notes": "Symbolic/theme question grounded in the graveyard scene."
+  }
+]
