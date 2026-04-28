@@ -339,6 +339,8 @@ class SelectionAndPromptTests(unittest.TestCase):
         self.assertIn("SYSTEM:", row["full_prompt"])
         self.assertIsNone(row["model_output"])
         self.assertEqual(row["model_name"], config.reader_model)
+        self.assertEqual(row["embedding_model"], config.embedding_model)
+        self.assertEqual(row["reranker_model"], config.reranker_model)
         self.assertEqual(row["model_max_context"], 4096)
         self.assertEqual(row["max_new_tokens"], config.max_new_tokens)
         self.assertGreater(row["prompt_tokens"], row["context_tokens"])

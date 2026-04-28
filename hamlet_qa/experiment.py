@@ -17,7 +17,11 @@ from hamlet_qa.prompts import (
     build_user_prompt,
 )
 from hamlet_qa.questions import Question, load_questions, validate_questions
-from hamlet_qa.retrieval import DenseRetriever, SnowflakeEmbedder
+from hamlet_qa.retrieval import (
+    CrossEncoderReranker,
+    DenseRetriever,
+    SentenceTransformerEmbedder,
+)
 
 
 class ReaderLike(Protocol):
@@ -187,11 +191,18 @@ def retrieval_scores_for(
     if dense_trace is None:
         return []
     score_by_id = {
-        str(row["chunk_id"]): {
-            "chunk_id": str(row["chunk_id"]),
-            "rank": int(row["rank"]),
-            "score": row.get("score"),
-        }
+        str(row["chunk_id"]): dict(
+            {
+                "chunk_id": str(row["chunk_id"]),
+                "rank": int(row["rank"]),
+                "score": row.get("score"),
+            },
+            **{
+                key: row[key]
+                for key in ("dense_rank", "dense_score", "rerank_score")
+                if key in row
+            },
+        )
         for row in dense_trace
     }
     return [
@@ -406,6 +417,7 @@ def build_result_row(
         "model_output": model_output,
         "failure_label": None,
         "embedding_model": config.embedding_model,
+        "reranker_model": config.reranker_model,
         "temperature": config.temperature,
         "run_config": config.to_dict(),
     }
@@ -424,12 +436,19 @@ def make_reader(config: RunConfig) -> Any:
 
 
 def make_dense_retriever(config: RunConfig, chunks: list[dict[str, Any]]) -> DenseRetriever:
-    embedder = SnowflakeEmbedder(
+    embedder = SentenceTransformerEmbedder(
         config.embedding_model,
         device=config.embedding_device,
         batch_size=config.embedding_batch_size,
     )
-    return DenseRetriever(embedder, chunks)
+    reranker = None
+    if config.reranker_model:
+        reranker = CrossEncoderReranker(
+            config.reranker_model,
+            device=config.reranker_device,
+            batch_size=config.reranker_batch_size,
+        )
+    return DenseRetriever(embedder, chunks, reranker=reranker)
 
 
 def prepare_run_dir(config: RunConfig, questions: list[Question]) -> Path:
