@@ -1,0 +1,321 @@
+[
+  {
+    "id": "q_local_fact_midnight_guard",
+    "question": "At what time does Barnardo say Francisco should go to bed?",
+    "expected_answer": "Barnardo says it is twelve o'clock, so Francisco should go to bed at midnight.",
+    "evidence_scope": "Act 1, Scene 1",
+    "reasoning_skill": "local_fact",
+    "required_evidence_quotes": [
+      {
+        "act": 1,
+        "scene": 1,
+        "speaker": "BARNARDO",
+        "quote": "’Tis now struck twelve. Get thee to bed, Francisco.",
+        "role": "answer",
+        "matched_chunk_ids": [
+          "act01_scene01_chunk001"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act01_scene01_chunk001"
+    ],
+    "notes": "Simple local fact from the opening guard exchange."
+  },
+  {
+    "id": "q_speaker_bitter_cold",
+    "question": "Who says, \"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\"?",
+    "expected_answer": "Francisco says the line.",
+    "evidence_scope": "Act 1, Scene 1",
+    "reasoning_skill": "speaker_attribution",
+    "required_evidence_quotes": [
+      {
+        "act": 1,
+        "scene": 1,
+        "speaker": "FRANCISCO",
+        "quote": "FRANCISCO.\nFor this relief much thanks. ’Tis bitter cold,\nAnd I am sick at heart.",
+        "role": "speaker_attribution",
+        "matched_chunk_ids": [
+          "act01_scene01_chunk001"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act01_scene01_chunk001"
+    ],
+    "notes": "Less-famous speaker-attribution probe to reduce closed-book memorization."
+  },
+  {
+    "id": "q_scene_ophelia_violets",
+    "question": "In Ophelia's flower scene, which flowers does she say she would have given, and why does she say she cannot?",
+    "expected_answer": "Ophelia says she would have given violets, but they all withered when her father died.",
+    "evidence_scope": "Act 4, Scene 5",
+    "reasoning_skill": "scene_local_context",
+    "required_evidence_quotes": [
+      {
+        "act": 4,
+        "scene": 5,
+        "speaker": "OPHELIA",
+        "quote": "OPHELIA.\nThere’s fennel for you, and columbines. There’s rue for you; and here’s\nsome for me. We may call it herb of grace o’ Sundays. O you must wear\nyour rue with a difference. There’s a daisy. I would give you some\nviolets, but they wither’d all when my father died.",
+        "role": "answer",
+        "matched_chunk_ids": [
+          "act04_scene05_chunk013"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act04_scene05_chunk013"
+    ],
+    "notes": "Flower-scene local context using a meaningful but less-memorized Ophelia quote."
+  },
+  {
+    "id": "q_bridge_mousetrap_test",
+    "question": "How does Hamlet test whether the Ghost's accusation against Claudius is true?",
+    "expected_answer": "He arranges a play resembling his father's murder, watches Claudius's reaction, and treats Claudius's disturbed response as confirmation.",
+    "evidence_scope": "Acts 2-3",
+    "reasoning_skill": "cross_scene_bridge",
+    "required_evidence_quotes": [
+      {
+        "act": 2,
+        "scene": 2,
+        "speaker": "HAMLET",
+        "quote": "I’ll have these players\nPlay something like the murder of my father\nBefore mine uncle. I’ll observe his looks;",
+        "role": "plan",
+        "matched_chunk_ids": [
+          "act02_scene02_chunk042"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 2,
+        "speaker": "HAMLET",
+        "quote": "There is a play tonight before the King.\nOne scene of it comes near the circumstance\nWhich I have told thee, of my father’s death.",
+        "role": "bridge_to_execution",
+        "matched_chunk_ids": [
+          "act03_scene02_chunk006"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 2,
+        "speaker": "HAMLET",
+        "quote": "He poisons him i’ th’garden for’s estate.",
+        "role": "staged_evidence",
+        "matched_chunk_ids": [
+          "act03_scene02_chunk019"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 2,
+        "speaker": "HORATIO",
+        "quote": "I did very well note him.",
+        "role": "reaction_confirmation",
+        "matched_chunk_ids": [
+          "act03_scene02_chunk021"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act02_scene02_chunk042",
+      "act03_scene02_chunk006",
+      "act03_scene02_chunk019",
+      "act03_scene02_chunk021"
+    ],
+    "notes": "Requires bridging Hamlet's plan, Horatio's observation role, the staged poisoning, and the reaction."
+  },
+  {
+    "id": "q_temporal_reynaldo_ophelia",
+    "question": "Which happens first in Act 2 Scene 1: Polonius explains to Reynaldo how indirect falsehood can uncover Laertes's behavior, or Ophelia reports Hamlet's disheveled visit?",
+    "expected_answer": "Polonius's instruction to Reynaldo comes first; Ophelia's report about Hamlet's disheveled visit comes later after Reynaldo exits.",
+    "evidence_scope": "Act 2, Scene 1",
+    "reasoning_skill": "temporal_order",
+    "required_evidence_quotes": [
+      {
+        "act": 2,
+        "scene": 1,
+        "speaker": "POLONIUS",
+        "quote": "Your bait of falsehood takes this carp of truth;\nAnd thus do we of wisdom and of reach,\nWith windlasses, and with assays of bias,\nBy indirections find directions out.",
+        "role": "earlier_event",
+        "matched_chunk_ids": [
+          "act02_scene01_chunk005"
+        ]
+      },
+      {
+        "act": 2,
+        "scene": 1,
+        "speaker": "OPHELIA",
+        "quote": "OPHELIA.\nMy lord, as I was sewing in my chamber,\nLord Hamlet, with his doublet all unbrac’d,\nNo hat upon his head, his stockings foul’d,",
+        "role": "later_event",
+        "matched_chunk_ids": [
+          "act02_scene01_chunk006"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act02_scene01_chunk005",
+      "act02_scene01_chunk006"
+    ],
+    "notes": "Lesser-known temporal-order probe inside Polonius's house scene."
+  },
+  {
+    "id": "q_state_poisoned_cup",
+    "question": "Who drinks from the poisoned cup intended during the duel, and what happens to that person?",
+    "expected_answer": "Gertrude drinks from the poisoned cup and dies from the poison.",
+    "evidence_scope": "Act 5, Scene 2",
+    "reasoning_skill": "entity_state_tracking",
+    "required_evidence_quotes": [
+      {
+        "act": 5,
+        "scene": 2,
+        "speaker": "KING",
+        "quote": "The King shall drink to Hamlet’s better breath,\nAnd in the cup an union shall he throw",
+        "role": "cup_setup",
+        "matched_chunk_ids": [
+          "act05_scene02_chunk019"
+        ]
+      },
+      {
+        "act": 5,
+        "scene": 2,
+        "speaker": "KING",
+        "quote": "KING.\n[_Aside._] It is the poison’d cup; it is too late.",
+        "role": "cup_state",
+        "matched_chunk_ids": [
+          "act05_scene02_chunk020",
+          "act05_scene02_chunk021"
+        ]
+      },
+      {
+        "act": 5,
+        "scene": 2,
+        "speaker": "QUEEN",
+        "quote": "QUEEN.\nNo, no, the drink, the drink! O my dear Hamlet!\nThe drink, the drink! I am poison’d.",
+        "role": "outcome",
+        "matched_chunk_ids": [
+          "act05_scene02_chunk022"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act05_scene02_chunk019",
+      "act05_scene02_chunk020",
+      "act05_scene02_chunk021",
+      "act05_scene02_chunk022"
+    ],
+    "notes": "Tracks the cup from Claudius's plan through Gertrude's drink and death."
+  },
+  {
+    "id": "q_mistaken_arras_victim",
+    "question": "When Hamlet stabs through the arras, whom does he think he may have killed, and who is actually killed?",
+    "expected_answer": "Hamlet thinks it may be the King, but the person killed is Polonius.",
+    "evidence_scope": "Act 3, Scene 4",
+    "reasoning_skill": "deception_or_mistaken_belief",
+    "required_evidence_quotes": [
+      {
+        "act": 3,
+        "scene": 4,
+        "speaker": "HAMLET",
+        "quote": "HAMLET.\nHow now? A rat? [_Draws._]\nDead for a ducat, dead!",
+        "role": "mistaken_action",
+        "matched_chunk_ids": [
+          "act03_scene04_chunk002",
+          "act03_scene04_chunk003"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 4,
+        "speaker": "HAMLET",
+        "quote": "HAMLET.\nNay, I know not. Is it the King?",
+        "role": "mistaken_belief",
+        "matched_chunk_ids": [
+          "act03_scene04_chunk003"
+        ]
+      },
+      {
+        "act": 3,
+        "scene": 4,
+        "speaker": "HAMLET",
+        "quote": "[_To Polonius._] Thou wretched, rash, intruding fool, farewell!\nI took thee for thy better.",
+        "role": "actual_victim",
+        "matched_chunk_ids": [
+          "act03_scene04_chunk003"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act03_scene04_chunk002",
+      "act03_scene04_chunk003"
+    ],
+    "notes": "Captures mistaken belief and actual outcome in the closet scene."
+  },
+  {
+    "id": "q_distractor_claudius_not_punish",
+    "question": "What two reasons does Claudius give Laertes for not publicly punishing Hamlet?",
+    "expected_answer": "He says Gertrude is deeply attached to Hamlet, and the public loves Hamlet so much that punishment would turn against Claudius.",
+    "evidence_scope": "Act 4, Scene 7",
+    "reasoning_skill": "distractor_contrast",
+    "required_evidence_quotes": [
+      {
+        "act": 4,
+        "scene": 7,
+        "speaker": "KING",
+        "quote": "The Queen his mother\nLives almost by his looks;",
+        "role": "reason_one",
+        "matched_chunk_ids": [
+          "act04_scene07_chunk001"
+        ]
+      },
+      {
+        "act": 4,
+        "scene": 7,
+        "speaker": "KING",
+        "quote": "The other motive,\nWhy to a public count I might not go,\nIs the great love the general gender bear him",
+        "role": "reason_two",
+        "matched_chunk_ids": [
+          "act04_scene07_chunk001",
+          "act04_scene07_chunk002"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act04_scene07_chunk001",
+      "act04_scene07_chunk002"
+    ],
+    "notes": "Contrasts two explicit reasons rather than accepting one nearby distractor."
+  },
+  {
+    "id": "q_unanswerable_yorick_wife",
+    "question": "What is the name of Yorick's wife?",
+    "expected_answer": "The text does not give Yorick's wife's name.",
+    "evidence_scope": "Act 5, Scene 1",
+    "reasoning_skill": "unanswerable",
+    "required_evidence_quotes": [],
+    "derived_gold_chunk_ids": [],
+    "notes": "Unanswerable probe near the famous Yorick passage."
+  },
+  {
+    "id": "q_theme_polonius_vows_brokers",
+    "question": "In Polonius's warning to Ophelia, what view of Hamlet's vows does he express through the image of brokers and implorators?",
+    "expected_answer": "Polonius treats Hamlet's vows as deceptive go-betweens: they look holy or honorable, but he says they serve unholy desire and are meant to beguile Ophelia.",
+    "evidence_scope": "Act 1, Scene 3",
+    "reasoning_skill": "theme_or_symbolism",
+    "required_evidence_quotes": [
+      {
+        "act": 1,
+        "scene": 3,
+        "speaker": "POLONIUS",
+        "quote": "Do not believe his vows; for they are brokers,\nNot of that dye which their investments show,\nBut mere implorators of unholy suits,\nBreathing like sanctified and pious bawds,\nThe better to beguile.",
+        "role": "symbolic_image",
+        "matched_chunk_ids": [
+          "act01_scene03_chunk009"
+        ]
+      }
+    ],
+    "derived_gold_chunk_ids": [
+      "act01_scene03_chunk009"
+    ],
+    "notes": "Less-canonical theme/reasoning probe about Polonius's imagery around vows and deception."
+  }
+]
