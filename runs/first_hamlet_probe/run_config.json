@@ -1,0 +1,32 @@
+{
+  "document_path": "hamlet.txt",
+  "chunks_path": "data/hamlet_chunks.jsonl",
+  "questions_path": "data/hamlet_questions.json",
+  "output_dir": "runs",
+  "run_name": "first_hamlet_probe",
+  "tokenizer_model": "Qwen/Qwen2.5-7B-Instruct",
+  "reader_model": "Qwen/Qwen3.5-9B",
+  "embedding_model": "Snowflake/snowflake-arctic-embed-m-v1.5",
+  "temperature": 0.0,
+  "max_new_tokens": 512,
+  "chunk_size": 256,
+  "chunk_overlap": 64,
+  "context_budgets": [
+    1000
+  ],
+  "treatments": [
+    "closed_book",
+    "gold_evidence",
+    "gold_evidence_neighbors",
+    "dense_relevance",
+    "dense_relevance_neighbors"
+  ],
+  "top_k": 50,
+  "neighbor_window": 1,
+  "embedding_batch_size": 64,
+  "embedding_device": "cuda",
+  "tensor_parallel_size": 1,
+  "gpu_memory_utilization": 0.9,
+  "prepare_only": false,
+  "overwrite": false
+}
