@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import numpy as np
 
-from hamlet_qa.retrieval import DenseRetriever
+from hamlet_qa.retrieval import BM25Retriever, DenseRetriever
 
 
 class FakeFaissIndex:
@@ -96,6 +96,45 @@ class DenseRetrieverTests(unittest.TestCase):
         self.assertEqual([row["rerank_score"] for row in trace], [0.9, 0.2, 0.1])
         self.assertEqual(trace[0]["score"], trace[0]["rerank_score"])
         self.assertAlmostEqual(trace[-1]["dense_score"], 1.0)
+
+
+class BM25RetrieverTests(unittest.TestCase):
+    def test_bm25_ranks_sparse_keyword_matches(self):
+        chunks = [
+            {
+                "chunk_id": "c_alpha",
+                "global_index": 0,
+                "act": 1,
+                "scene": 1,
+                "scene_title": "First.",
+                "text": "alpha alpha beta",
+            },
+            {
+                "chunk_id": "c_beta",
+                "global_index": 1,
+                "act": 1,
+                "scene": 1,
+                "scene_title": "First.",
+                "text": "beta gamma",
+            },
+            {
+                "chunk_id": "c_gamma",
+                "global_index": 2,
+                "act": 1,
+                "scene": 2,
+                "scene_title": "Second.",
+                "text": "delta epsilon",
+            },
+        ]
+
+        retriever = BM25Retriever(chunks)
+        trace = retriever.retrieve("alpha", top_k=3)
+
+        self.assertEqual(trace[0]["chunk_id"], "c_alpha")
+        self.assertEqual(trace[0]["rank"], 1)
+        self.assertEqual(trace[0]["sparse_rank"], 1)
+        self.assertEqual(trace[0]["score"], trace[0]["sparse_score"])
+        self.assertEqual(trace[0]["retrieval_method"], "bm25")
 
 
 if __name__ == "__main__":

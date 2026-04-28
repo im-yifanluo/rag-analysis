@@ -6,6 +6,7 @@ from hamlet_qa.config import (
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_READER_MODEL,
     DEFAULT_RERANKER_MODEL,
+    DEFAULT_TREATMENTS,
     DEFAULT_TOKENIZER_MODEL,
     RunConfig,
 )
@@ -23,6 +24,17 @@ class ConfigDefaultsTests(unittest.TestCase):
         self.assertEqual(config.tokenizer_model, config.reader_model)
         self.assertEqual(config.embedding_model, DEFAULT_EMBEDDING_MODEL)
         self.assertEqual(config.reranker_model, DEFAULT_RERANKER_MODEL)
+        self.assertEqual(
+            DEFAULT_TREATMENTS,
+            [
+                "closed_book",
+                "gold_evidence",
+                "dense_reranked",
+                "dense_document_order",
+                "dense_random_order",
+                "sparse_bm25",
+            ],
+        )
 
 
 if __name__ == "__main__":

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import shutil
+import hashlib
+import random
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
@@ -18,10 +20,19 @@ from hamlet_qa.prompts import (
 )
 from hamlet_qa.questions import Question, load_questions, validate_questions
 from hamlet_qa.retrieval import (
+    BM25Retriever,
     CrossEncoderReranker,
     DenseRetriever,
     SentenceTransformerEmbedder,
 )
+
+
+DENSE_TREATMENTS = {
+    "dense_reranked",
+    "dense_document_order",
+    "dense_random_order",
+}
+SPARSE_TREATMENTS = {"sparse_bm25"}
 
 
 class ReaderLike(Protocol):
@@ -64,28 +75,22 @@ def dedupe_preserve_order(chunk_ids: list[str]) -> list[str]:
     return deduped
 
 
-def relevance_rank_map(dense_trace: list[dict[str, Any]] | None) -> dict[str, int]:
-    if dense_trace is None:
-        return {}
-    return {
-        str(row["chunk_id"]): int(row.get("rank", index + 1))
-        for index, row in enumerate(dense_trace)
-    }
-
-
-def sort_by_relevance(
+def sort_by_document_order(
     chunk_ids: list[str],
     chunk_lookup: dict[str, dict[str, Any]],
-    dense_trace: list[dict[str, Any]] | None,
 ) -> list[str]:
-    ranks = relevance_rank_map(dense_trace)
     return sorted(
         dedupe_preserve_order(chunk_ids),
-        key=lambda chunk_id: (
-            ranks.get(chunk_id, 1_000_000),
-            int(chunk_lookup[chunk_id]["global_index"]),
-        ),
+        key=lambda chunk_id: int(chunk_lookup[chunk_id]["global_index"]),
     )
+
+
+def stable_random_order(chunk_ids: list[str], random_seed: int, salt: str) -> list[str]:
+    ordered = list(chunk_ids)
+    seed_material = f"{random_seed}:{salt}".encode("utf-8")
+    seed = int.from_bytes(hashlib.sha256(seed_material).digest()[:8], "big")
+    random.Random(seed).shuffle(ordered)
+    return ordered
 
 
 def select_chunk_ids_for_budget(
@@ -103,42 +108,6 @@ def select_chunk_ids_for_budget(
         selected.append(chunk_id)
         total_tokens += token_count
     return selected
-
-
-def chunk_id_by_global_index(chunks: list[dict[str, Any]]) -> dict[int, str]:
-    return {int(chunk["global_index"]): str(chunk["chunk_id"]) for chunk in chunks}
-
-
-def neighbor_chunk_ids(
-    chunk_id: str,
-    chunk_lookup: dict[str, dict[str, Any]],
-    global_index_lookup: dict[int, str],
-    neighbor_window: int,
-) -> list[str]:
-    center = int(chunk_lookup[chunk_id]["global_index"])
-    ids: list[str] = []
-    for offset in range(-neighbor_window, neighbor_window + 1):
-        if offset == 0:
-            continue
-        neighbor = global_index_lookup.get(center + offset)
-        if neighbor is not None:
-            ids.append(neighbor)
-    return ids
-
-
-def local_block_with_neighbors(
-    chunk_id: str,
-    chunk_lookup: dict[str, dict[str, Any]],
-    global_index_lookup: dict[int, str],
-    neighbor_window: int,
-) -> list[str]:
-    center = int(chunk_lookup[chunk_id]["global_index"])
-    ids: list[str] = []
-    for offset in range(-neighbor_window, neighbor_window + 1):
-        neighbor = global_index_lookup.get(center + offset)
-        if neighbor is not None:
-            ids.append(neighbor)
-    return ids
 
 
 def selected_chunks(
@@ -186,9 +155,9 @@ def evidence_quote_recall(quote_presence: list[dict[str, Any]]) -> float | None:
 
 def retrieval_scores_for(
     selected_chunk_ids: list[str],
-    dense_trace: list[dict[str, Any]] | None,
+    retrieval_trace: list[dict[str, Any]] | None,
 ) -> list[dict[str, Any]]:
-    if dense_trace is None:
+    if retrieval_trace is None:
         return []
     score_by_id = {
         str(row["chunk_id"]): dict(
@@ -199,11 +168,18 @@ def retrieval_scores_for(
             },
             **{
                 key: row[key]
-                for key in ("dense_rank", "dense_score", "rerank_score")
+                for key in (
+                    "dense_rank",
+                    "dense_score",
+                    "rerank_score",
+                    "sparse_rank",
+                    "sparse_score",
+                    "retrieval_method",
+                )
                 if key in row
             },
         )
-        for row in dense_trace
+        for row in retrieval_trace
     }
     return [
         score_by_id[chunk_id]
@@ -218,105 +194,72 @@ def prepare_treatment(
     context_budget: int,
     chunk_lookup: dict[str, dict[str, Any]],
     doc_order_ids: list[str],
-    global_index_lookup: dict[int, str] | None = None,
-    dense_trace: list[dict[str, Any]] | None = None,
-    neighbor_window: int = 1,
+    retrieval_trace: list[dict[str, Any]] | None = None,
+    random_seed: int = 13,
 ) -> dict[str, Any]:
     del doc_order_ids
-    global_index_lookup = global_index_lookup or {
-        int(chunk["global_index"]): chunk_id
-        for chunk_id, chunk in chunk_lookup.items()
-    }
-    retrieval_trace = [dict(row) for row in dense_trace] if dense_trace else []
+    trace = [dict(row) for row in retrieval_trace] if retrieval_trace else []
     original_hit_chunk_ids: list[str] = []
-    neighbor_chunk_ids_added: list[str] = []
+    retrieval_method = "none"
 
     if treatment == "closed_book":
-        candidate_ids: list[str] = []
+        selected_ids: list[str] = []
         prompt_order = "none"
     elif treatment == "gold_evidence":
-        original_hit_chunk_ids = list(question.derived_gold_chunk_ids)
-        candidate_ids = sort_by_relevance(
-            original_hit_chunk_ids,
-            chunk_lookup,
-            dense_trace,
-        )
-        prompt_order = "gold_chunks_by_relevance"
-    elif treatment == "gold_evidence_neighbors":
-        original_hit_chunk_ids = sort_by_relevance(
+        original_hit_chunk_ids = sort_by_document_order(
             list(question.derived_gold_chunk_ids),
             chunk_lookup,
-            dense_trace,
         )
-        selected_gold = select_chunk_ids_for_budget(
+        selected_ids = select_chunk_ids_for_budget(
             original_hit_chunk_ids,
             chunk_lookup,
             context_budget,
         )
-        neighbor_candidates: list[str] = []
-        for chunk_id in original_hit_chunk_ids:
-            neighbor_candidates.extend(
-                neighbor_chunk_ids(
-                    chunk_id,
-                    chunk_lookup,
-                    global_index_lookup,
-                    neighbor_window,
-                )
-            )
-        neighbor_candidates = [
-            chunk_id
-            for chunk_id in sort_by_relevance(neighbor_candidates, chunk_lookup, dense_trace)
-            if chunk_id not in selected_gold
-        ]
-        remaining_budget = context_budget - context_token_count(
-            selected_chunks(selected_gold, chunk_lookup)
-        )
-        selected_neighbors = select_chunk_ids_for_budget(
-            neighbor_candidates,
+        prompt_order = "gold_chunks_document_order"
+        retrieval_method = "gold"
+    elif treatment in DENSE_TREATMENTS:
+        if retrieval_trace is None:
+            raise ValueError(f"{treatment} requires a dense retrieval trace")
+        original_hit_chunk_ids = [str(row["chunk_id"]) for row in trace]
+        reranked_selection = select_chunk_ids_for_budget(
+            original_hit_chunk_ids,
             chunk_lookup,
-            remaining_budget,
+            context_budget,
         )
-        neighbor_chunk_ids_added = selected_neighbors
-        candidate_ids = sort_by_relevance(
-            selected_gold + selected_neighbors,
-            chunk_lookup,
-            dense_trace,
+        retrieval_method = (
+            str(trace[0].get("retrieval_method", "dense_faiss_reranked"))
+            if trace
+            else "dense_faiss_reranked"
         )
-        prompt_order = "gold_then_neighbors_by_relevance"
-    elif treatment == "dense_relevance":
-        if dense_trace is None:
-            raise ValueError("dense_relevance requires a dense retrieval trace")
-        original_hit_chunk_ids = [str(row["chunk_id"]) for row in dense_trace]
-        candidate_ids = original_hit_chunk_ids
-        prompt_order = "retrieval_score"
-    elif treatment == "dense_relevance_neighbors":
-        if dense_trace is None:
-            raise ValueError("dense_relevance_neighbors requires a dense retrieval trace")
-        original_hit_chunk_ids = [str(row["chunk_id"]) for row in dense_trace]
-        blocks: list[str] = []
-        neighbors_seen: list[str] = []
-        for hit_id in original_hit_chunk_ids:
-            block = local_block_with_neighbors(
-                hit_id,
-                chunk_lookup,
-                global_index_lookup,
-                neighbor_window,
+        if treatment == "dense_reranked":
+            selected_ids = reranked_selection
+            prompt_order = "dense_reranker_rank"
+        elif treatment == "dense_document_order":
+            selected_ids = sort_by_document_order(reranked_selection, chunk_lookup)
+            prompt_order = "dense_hits_document_order"
+        else:
+            selected_ids = stable_random_order(
+                reranked_selection,
+                random_seed,
+                f"{question.id}:{context_budget}:{treatment}",
             )
-            for block_id in block:
-                blocks.append(block_id)
-                if block_id != hit_id:
-                    neighbors_seen.append(block_id)
-        candidate_ids = dedupe_preserve_order(blocks)
-        prompt_order = "retrieval_rank_local_neighbor_blocks"
-        neighbor_chunk_ids_added = [
-            chunk_id
-            for chunk_id in dedupe_preserve_order(neighbors_seen)
-            if chunk_id not in original_hit_chunk_ids
-        ]
+            prompt_order = "dense_hits_random_order"
+    elif treatment in SPARSE_TREATMENTS:
+        if retrieval_trace is None:
+            raise ValueError(f"{treatment} requires a sparse retrieval trace")
+        original_hit_chunk_ids = [str(row["chunk_id"]) for row in trace]
+        selected_ids = select_chunk_ids_for_budget(
+            original_hit_chunk_ids,
+            chunk_lookup,
+            context_budget,
+        )
+        prompt_order = "bm25_score"
+        retrieval_method = (
+            str(trace[0].get("retrieval_method", "bm25")) if trace else "bm25"
+        )
     else:
         raise ValueError(f"Unknown treatment: {treatment}")
 
-    selected_ids = select_chunk_ids_for_budget(candidate_ids, chunk_lookup, context_budget)
     final_chunks = selected_chunks(selected_ids, chunk_lookup)
     quote_presence = required_quotes_present_in_context(question, selected_ids)
     quote_recall = evidence_quote_recall(quote_presence)
@@ -325,13 +268,11 @@ def prepare_treatment(
         "final_selected_chunk_ids": selected_ids,
         "selected_chunks": final_chunks,
         "context_tokens": context_token_count(final_chunks),
-        "retrieval_trace": retrieval_trace,
-        "retrieval_scores": retrieval_scores_for(selected_ids, dense_trace),
+        "retrieval_trace": trace,
+        "retrieval_scores": retrieval_scores_for(selected_ids, trace),
+        "retrieval_method": retrieval_method,
         "prompt_order": prompt_order,
         "original_hit_chunk_ids": original_hit_chunk_ids,
-        "neighbor_chunk_ids_added": [
-            chunk_id for chunk_id in neighbor_chunk_ids_added if chunk_id in selected_ids
-        ],
         "evidence_chunk_recall": evidence_chunk_recall(
             selected_ids,
             question.derived_gold_chunk_ids,
@@ -394,7 +335,6 @@ def build_result_row(
         "selected_chunk_ids": prepared["selected_chunk_ids"],
         "final_selected_chunk_ids": prepared["final_selected_chunk_ids"],
         "original_hit_chunk_ids": prepared["original_hit_chunk_ids"],
-        "neighbor_chunk_ids_added": prepared["neighbor_chunk_ids_added"],
         "raw_chunks": prepared["selected_chunks"],
         "evidence_chunk_recall": prepared["evidence_chunk_recall"],
         "evidence_quote_recall": prepared["evidence_quote_recall"],
@@ -408,6 +348,7 @@ def build_result_row(
         "model_name": config.reader_model,
         "model_max_context": getattr(reader, "model_max_context", None),
         "coverage_ratio": prepared["coverage_ratio"],
+        "retrieval_method": prepared["retrieval_method"],
         "retrieval_scores": prepared["retrieval_scores"],
         "retrieval_trace": prepared["retrieval_trace"],
         "prompt_order": prepared["prompt_order"],
@@ -418,6 +359,9 @@ def build_result_row(
         "failure_label": None,
         "embedding_model": config.embedding_model,
         "reranker_model": config.reranker_model,
+        "bm25_k1": config.bm25_k1,
+        "bm25_b": config.bm25_b,
+        "random_seed": config.random_seed,
         "temperature": config.temperature,
         "run_config": config.to_dict(),
     }
@@ -451,6 +395,10 @@ def make_dense_retriever(config: RunConfig, chunks: list[dict[str, Any]]) -> Den
     return DenseRetriever(embedder, chunks, reranker=reranker)
 
 
+def make_sparse_retriever(config: RunConfig, chunks: list[dict[str, Any]]) -> BM25Retriever:
+    return BM25Retriever(chunks, k1=config.bm25_k1, b=config.bm25_b)
+
+
 def prepare_run_dir(config: RunConfig, questions: list[Question]) -> Path:
     run_dir = config.run_dir
     if run_dir.exists():
@@ -474,6 +422,7 @@ def run_experiment(
     config: RunConfig,
     reader: ReaderLike | None = None,
     dense_retriever: RetrieverLike | None = None,
+    sparse_retriever: RetrieverLike | None = None,
 ) -> Path:
     unknown_treatments = sorted(set(config.treatments) - set(DEFAULT_TREATMENTS))
     if unknown_treatments:
@@ -482,34 +431,44 @@ def run_experiment(
     chunks = load_jsonl(config.chunks_path)
     lookup = chunks_by_id(chunks)
     doc_order_ids = document_order_chunk_ids(chunks)
-    global_index_lookup = chunk_id_by_global_index(chunks)
     questions = load_questions(config.questions_path)
     validate_questions(questions, chunks)
 
     run_dir = prepare_run_dir(config, questions)
     results_path = run_dir / "results.jsonl"
     active_reader = reader or make_reader(config)
-    active_retriever = dense_retriever
+    active_dense_retriever = dense_retriever
+    active_sparse_retriever = sparse_retriever
 
-    needs_dense_trace = any(treatment != "closed_book" for treatment in config.treatments)
+    needs_dense_trace = any(treatment in DENSE_TREATMENTS for treatment in config.treatments)
+    needs_sparse_trace = any(treatment in SPARSE_TREATMENTS for treatment in config.treatments)
     for question in questions:
         dense_trace: list[dict[str, Any]] | None = None
+        sparse_trace: list[dict[str, Any]] | None = None
         if needs_dense_trace:
-            if active_retriever is None:
-                active_retriever = make_dense_retriever(config, chunks)
-            dense_trace = active_retriever.retrieve(question.question, config.top_k)
+            if active_dense_retriever is None:
+                active_dense_retriever = make_dense_retriever(config, chunks)
+            dense_trace = active_dense_retriever.retrieve(question.question, config.top_k)
+        if needs_sparse_trace:
+            if active_sparse_retriever is None:
+                active_sparse_retriever = make_sparse_retriever(config, chunks)
+            sparse_trace = active_sparse_retriever.retrieve(question.question, config.top_k)
 
         for context_budget in config.context_budgets:
             for treatment in config.treatments:
+                retrieval_trace = None
+                if treatment in DENSE_TREATMENTS:
+                    retrieval_trace = dense_trace
+                elif treatment in SPARSE_TREATMENTS:
+                    retrieval_trace = sparse_trace
                 prepared = prepare_treatment(
                     question,
                     treatment,
                     context_budget,
                     lookup,
                     doc_order_ids,
-                    global_index_lookup=global_index_lookup,
-                    dense_trace=dense_trace,
-                    neighbor_window=config.neighbor_window,
+                    retrieval_trace=retrieval_trace,
+                    random_seed=config.random_seed,
                 )
                 system_prompt = system_prompt_for_treatment(treatment)
                 user_prompt = build_user_prompt(

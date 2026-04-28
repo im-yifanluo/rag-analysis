@@ -677,6 +677,21 @@ HTML_TEMPLATE = """<!doctype html>
       return parsed === null ? "n/a" : parsed.toFixed(6);
     }
 
+    function scoreDetails(hit) {
+      const parts = [`score ${score(hit.score)}`];
+      [
+        ["dense_rank", "dense_rank"],
+        ["dense_score", "dense_score"],
+        ["rerank_score", "rerank_score"],
+        ["sparse_rank", "sparse_rank"],
+        ["sparse_score", "sparse_score"],
+        ["method", "retrieval_method"],
+      ].forEach(([label, key]) => {
+        if (hit[key] !== undefined) parts.push(`${label} ${fmt(hit[key])}`);
+      });
+      return parts.join("; ");
+    }
+
     function mean(values) {
       const numeric = values.map(numberValue).filter((value) => value !== null);
       if (!numeric.length) return null;
@@ -954,11 +969,11 @@ HTML_TEMPLATE = """<!doctype html>
       const body = el("div", "details-body");
       body.append(renderSimpleList(
         "Scores For Selected Chunks",
-        selectedScores.map((hit) => `rank ${hit.rank}: ${hit.chunk_id} (score ${score(hit.score)})`)
+        selectedScores.map((hit) => `rank ${hit.rank}: ${hit.chunk_id} (${scoreDetails(hit)})`)
       ));
       const traceRows = trace.map((hit) => {
         const location = `Act ${hit.act} Scene ${hit.scene}`;
-        return `rank ${hit.rank}: ${hit.chunk_id} (score ${score(hit.score)}; ${location}; global_index ${hit.global_index})`;
+        return `rank ${hit.rank}: ${hit.chunk_id} (${scoreDetails(hit)}; ${location}; global_index ${hit.global_index})`;
       });
       body.append(renderSimpleList("Full Retrieval Trace", traceRows));
       details.append(body);

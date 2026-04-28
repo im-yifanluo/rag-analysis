@@ -19,12 +19,15 @@ DEFAULT_CONTEXT_BUDGETS = [1000]
 DEFAULT_TREATMENTS = [
     "closed_book",
     "gold_evidence",
-    "gold_evidence_neighbors",
-    "dense_relevance",
-    "dense_relevance_neighbors",
+    "dense_reranked",
+    "dense_document_order",
+    "dense_random_order",
+    "sparse_bm25",
 ]
 DEFAULT_TOP_K = 50
-DEFAULT_NEIGHBOR_WINDOW = 1
+DEFAULT_RANDOM_SEED = 13
+DEFAULT_BM25_K1 = 1.5
+DEFAULT_BM25_B = 0.75
 
 REASONING_SKILLS = [
     "local_fact",
@@ -34,7 +37,6 @@ REASONING_SKILLS = [
     "temporal_order",
     "entity_state_tracking",
     "deception_or_mistaken_belief",
-    "causal_explanation",
     "distractor_contrast",
     "unanswerable",
     "theme_or_symbolism",
@@ -66,12 +68,14 @@ class RunConfig:
     )
     treatments: list[str] = field(default_factory=lambda: DEFAULT_TREATMENTS.copy())
     top_k: int = DEFAULT_TOP_K
-    neighbor_window: int = DEFAULT_NEIGHBOR_WINDOW
+    random_seed: int = DEFAULT_RANDOM_SEED
 
     embedding_batch_size: int = 64
     embedding_device: str = "cuda"
     reranker_batch_size: int = 8
     reranker_device: str = "cuda"
+    bm25_k1: float = DEFAULT_BM25_K1
+    bm25_b: float = DEFAULT_BM25_B
     tensor_parallel_size: int = 1
     gpu_memory_utilization: float = 0.90
     prepare_only: bool = False

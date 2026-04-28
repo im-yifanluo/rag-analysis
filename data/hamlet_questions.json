@@ -93,29 +93,29 @@
     "notes": "Requires bridging Hamlet's plan, Horatio's observation role, the staged poisoning, and the reaction."
   },
   {
-    "id": "q_temporal_england_pirates",
-    "question": "Which happens first: Claudius sends Hamlet toward England, or Horatio receives Hamlet's letter about the pirate encounter?",
-    "expected_answer": "Claudius sends Hamlet toward England first; Horatio receives the pirate letter later.",
-    "evidence_scope": "Act 4, Scenes 3 and 6",
+    "id": "q_temporal_reynaldo_ophelia",
+    "question": "Which happens first in Act 2 Scene 1: Polonius explains to Reynaldo how indirect falsehood can uncover Laertes's behavior, or Ophelia reports Hamlet's disheveled visit?",
+    "expected_answer": "Polonius's instruction to Reynaldo comes first; Ophelia's report about Hamlet's disheveled visit comes later after Reynaldo exits.",
+    "evidence_scope": "Act 2, Scene 1",
     "reasoning_skill": "temporal_order",
     "required_evidence_quotes": [
       {
-        "act": 4,
-        "scene": 3,
-        "speaker": "KING",
-        "quote": "Hamlet, this deed, for thine especial safety,—\nWhich we do tender, as we dearly grieve\nFor that which thou hast done,—must send thee hence\nWith fiery quickness.",
+        "act": 2,
+        "scene": 1,
+        "speaker": "POLONIUS",
+        "quote": "Your bait of falsehood takes this carp of truth;\nAnd thus do we of wisdom and of reach,\nWith windlasses, and with assays of bias,\nBy indirections find directions out.",
         "role": "earlier_event"
       },
       {
-        "act": 4,
-        "scene": 6,
-        "speaker": "HAMLET",
-        "quote": "Ere we were\ntwo days old at sea, a pirate of very warlike appointment gave us\nchase.",
+        "act": 2,
+        "scene": 1,
+        "speaker": "OPHELIA",
+        "quote": "OPHELIA.\nMy lord, as I was sewing in my chamber,\nLord Hamlet, with his doublet all unbrac’d,\nNo hat upon his head, his stockings foul’d,",
         "role": "later_event"
       }
     ],
     "derived_gold_chunk_ids": [],
-    "notes": "Checks event ordering across Act IV scenes."
+    "notes": "Lesser-known temporal-order probe inside Polonius's house scene."
   },
   {
     "id": "q_state_poisoned_cup",
@@ -182,31 +182,6 @@
     "notes": "Captures mistaken belief and actual outcome in the closet scene."
   },
   {
-    "id": "q_causal_spares_praying_claudius",
-    "question": "Why does Hamlet decide not to kill Claudius while Claudius is praying?",
-    "expected_answer": "Hamlet thinks killing Claudius at prayer might send him to heaven, which would not be proper revenge.",
-    "evidence_scope": "Act 3, Scene 3",
-    "reasoning_skill": "causal_explanation",
-    "required_evidence_quotes": [
-      {
-        "act": 3,
-        "scene": 3,
-        "speaker": "HAMLET",
-        "quote": "Now might I do it pat, now he is praying.\nAnd now I’ll do’t. And so he goes to heaven;",
-        "role": "situation"
-      },
-      {
-        "act": 3,
-        "scene": 3,
-        "speaker": "HAMLET",
-        "quote": "To take him in the purging of his soul,\nWhen he is fit and season’d for his passage? No.",
-        "role": "reason"
-      }
-    ],
-    "derived_gold_chunk_ids": [],
-    "notes": "Causal reasoning from Hamlet's own explanation."
-  },
-  {
     "id": "q_distractor_claudius_not_punish",
     "question": "What two reasons does Claudius give Laertes for not publicly punishing Hamlet?",
     "expected_answer": "He says Gertrude is deeply attached to Hamlet, and the public loves Hamlet so much that punishment would turn against Claudius.",
@@ -242,28 +217,21 @@
     "notes": "Unanswerable probe near the famous Yorick passage."
   },
   {
-    "id": "q_theme_yorick_skull",
-    "question": "What does Yorick's skull lead Hamlet to reflect about status, memory, and mortality?",
-    "expected_answer": "It leads him to reflect that wit, affection, beauty, and even the greatness of figures like Alexander and Caesar end in death, decay, and common dust.",
-    "evidence_scope": "Act 5, Scene 1",
+    "id": "q_theme_polonius_vows_brokers",
+    "question": "In Polonius's warning to Ophelia, what view of Hamlet's vows does he express through the image of brokers and implorators?",
+    "expected_answer": "Polonius treats Hamlet's vows as deceptive go-betweens: they look holy or honorable, but he says they serve unholy desire and are meant to beguile Ophelia.",
+    "evidence_scope": "Act 1, Scene 3",
     "reasoning_skill": "theme_or_symbolism",
     "required_evidence_quotes": [
       {
-        "act": 5,
-        "scene": 1,
-        "speaker": "HAMLET",
-        "quote": "Alas, poor Yorick. I knew him,\nHoratio, a fellow of infinite jest, of most excellent fancy.",
-        "role": "symbol_source"
-      },
-      {
-        "act": 5,
-        "scene": 1,
-        "speaker": "HAMLET",
-        "quote": "Alexander died, Alexander was\nburied, Alexander returneth into dust; the dust is earth;",
-        "role": "theme_extension"
+        "act": 1,
+        "scene": 3,
+        "speaker": "POLONIUS",
+        "quote": "Do not believe his vows; for they are brokers,\nNot of that dye which their investments show,\nBut mere implorators of unholy suits,\nBreathing like sanctified and pious bawds,\nThe better to beguile.",
+        "role": "symbolic_image"
       }
     ],
     "derived_gold_chunk_ids": [],
-    "notes": "Symbolic/theme question grounded in the graveyard scene."
+    "notes": "Less-canonical theme/reasoning probe about Polonius's imagery around vows and deception."
   }
 ]

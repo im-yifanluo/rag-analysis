@@ -126,10 +126,6 @@ class SelectionAndPromptTests(unittest.TestCase):
         self.chunks = synthetic_chunks()
         self.lookup = chunks_by_id(self.chunks)
         self.doc_order = document_order_chunk_ids(self.chunks)
-        self.global_index_lookup = {
-            int(chunk["global_index"]): str(chunk["chunk_id"])
-            for chunk in self.chunks
-        }
         self.question = synthetic_question()
         self.trace = [
             {"rank": 1, "chunk_id": "act01_scene02_chunk001", "score": 0.9},
@@ -177,73 +173,62 @@ class SelectionAndPromptTests(unittest.TestCase):
         self.assertNotIn("Context chunks:", row["user_prompt"])
         self.assertIn("No document context is provided", row["user_prompt"])
 
-    def test_gold_evidence_includes_derived_gold_chunks_by_relevance(self):
+    def test_gold_evidence_includes_derived_gold_chunks_by_document_order(self):
         prepared = prepare_treatment(
             self.question,
             "gold_evidence",
             5,
             self.lookup,
             self.doc_order,
-            dense_trace=self.trace,
         )
 
         self.assertEqual(
             prepared["selected_chunk_ids"],
-            ["act01_scene02_chunk001", "act01_scene01_chunk002"],
+            ["act01_scene01_chunk002", "act01_scene02_chunk001"],
         )
         self.assertEqual(prepared["context_tokens"], 5)
         self.assertEqual(prepared["evidence_chunk_recall"], 1.0)
         self.assertEqual(prepared["evidence_quote_recall"], 1.0)
-        self.assertEqual(prepared["prompt_order"], "gold_chunks_by_relevance")
+        self.assertEqual(prepared["prompt_order"], "gold_chunks_document_order")
+        self.assertEqual(prepared["retrieval_method"], "gold")
 
-    def test_gold_evidence_neighbors_adds_previous_and_next_chunks(self):
-        question = synthetic_question(
-            derived_gold_chunk_ids=["act01_scene01_chunk002"],
-            quote_matches=[["act01_scene01_chunk002"], ["act01_scene01_chunk002"]],
-        )
-        trace = [{"rank": 1, "chunk_id": "act01_scene01_chunk002", "score": 0.95}]
-
-        prepared = prepare_treatment(
-            question,
-            "gold_evidence_neighbors",
-            8,
-            self.lookup,
-            self.doc_order,
-            global_index_lookup=self.global_index_lookup,
-            dense_trace=trace,
-            neighbor_window=1,
-        )
-
-        self.assertEqual(
-            set(prepared["selected_chunk_ids"]),
-            {
-                "act01_scene01_chunk001",
-                "act01_scene01_chunk002",
-                "act01_scene02_chunk001",
-            },
-        )
-        self.assertEqual(
-            set(prepared["neighbor_chunk_ids_added"]),
-            {"act01_scene01_chunk001", "act01_scene02_chunk001"},
-        )
-        self.assertEqual(
-            prepared["original_hit_chunk_ids"],
-            ["act01_scene01_chunk002"],
-        )
-
-    def test_dense_relevance_uses_score_order_and_logs_scores(self):
+    def test_dense_reranked_uses_reranker_order_and_logs_scores(self):
         trace = [
-            {"rank": 1, "chunk_id": "act01_scene02_chunk001", "score": 0.9},
-            {"rank": 2, "chunk_id": "act01_scene01_chunk001", "score": 0.8},
-            {"rank": 3, "chunk_id": "act01_scene01_chunk002", "score": 0.7},
+            {
+                "rank": 1,
+                "chunk_id": "act01_scene02_chunk001",
+                "score": 0.9,
+                "dense_rank": 2,
+                "dense_score": 0.3,
+                "rerank_score": 0.9,
+                "retrieval_method": "dense_faiss_reranked",
+            },
+            {
+                "rank": 2,
+                "chunk_id": "act01_scene01_chunk001",
+                "score": 0.8,
+                "dense_rank": 1,
+                "dense_score": 0.7,
+                "rerank_score": 0.8,
+                "retrieval_method": "dense_faiss_reranked",
+            },
+            {
+                "rank": 3,
+                "chunk_id": "act01_scene01_chunk002",
+                "score": 0.7,
+                "dense_rank": 3,
+                "dense_score": 0.1,
+                "rerank_score": 0.7,
+                "retrieval_method": "dense_faiss_reranked",
+            },
         ]
         prepared = prepare_treatment(
             self.question,
-            "dense_relevance",
+            "dense_reranked",
             5,
             self.lookup,
             self.doc_order,
-            dense_trace=trace,
+            retrieval_trace=trace,
         )
 
         self.assertEqual(
@@ -255,24 +240,37 @@ class SelectionAndPromptTests(unittest.TestCase):
         self.assertEqual(
             prepared["retrieval_scores"],
             [
-                {"chunk_id": "act01_scene02_chunk001", "rank": 1, "score": 0.9},
-                {"chunk_id": "act01_scene01_chunk001", "rank": 2, "score": 0.8},
+                {
+                    "chunk_id": "act01_scene02_chunk001",
+                    "rank": 1,
+                    "score": 0.9,
+                    "dense_rank": 2,
+                    "dense_score": 0.3,
+                    "rerank_score": 0.9,
+                    "retrieval_method": "dense_faiss_reranked",
+                },
+                {
+                    "chunk_id": "act01_scene01_chunk001",
+                    "rank": 2,
+                    "score": 0.8,
+                    "dense_rank": 1,
+                    "dense_score": 0.7,
+                    "rerank_score": 0.8,
+                    "retrieval_method": "dense_faiss_reranked",
+                },
             ],
         )
-        self.assertEqual(prepared["prompt_order"], "retrieval_score")
+        self.assertEqual(prepared["prompt_order"], "dense_reranker_rank")
+        self.assertEqual(prepared["retrieval_method"], "dense_faiss_reranked")
 
-    def test_dense_relevance_neighbors_adds_previous_and_next_chunks_around_hits(self):
-        trace = [{"rank": 1, "chunk_id": "act01_scene01_chunk002", "score": 0.95}]
-
+    def test_dense_document_order_uses_same_hits_in_document_order(self):
         prepared = prepare_treatment(
             self.question,
-            "dense_relevance_neighbors",
+            "dense_document_order",
             8,
             self.lookup,
             self.doc_order,
-            global_index_lookup=self.global_index_lookup,
-            dense_trace=trace,
-            neighbor_window=1,
+            retrieval_trace=self.trace,
         )
 
         self.assertEqual(
@@ -283,31 +281,62 @@ class SelectionAndPromptTests(unittest.TestCase):
                 "act01_scene02_chunk001",
             ],
         )
-        self.assertEqual(
-            set(prepared["neighbor_chunk_ids_added"]),
-            {"act01_scene01_chunk001", "act01_scene02_chunk001"},
+        self.assertEqual(prepared["original_hit_chunk_ids"], [
+            "act01_scene02_chunk001",
+            "act01_scene01_chunk002",
+            "act01_scene01_chunk001",
+        ])
+        self.assertEqual(prepared["prompt_order"], "dense_hits_document_order")
+
+    def test_dense_random_order_uses_same_hits_with_seeded_shuffle(self):
+        prepared_a = prepare_treatment(
+            self.question,
+            "dense_random_order",
+            8,
+            self.lookup,
+            self.doc_order,
+            retrieval_trace=self.trace,
+            random_seed=99,
         )
-        self.assertEqual(prepared["original_hit_chunk_ids"], ["act01_scene01_chunk002"])
-        self.assertEqual(prepared["prompt_order"], "retrieval_rank_local_neighbor_blocks")
+        prepared_b = prepare_treatment(
+            self.question,
+            "dense_random_order",
+            8,
+            self.lookup,
+            self.doc_order,
+            retrieval_trace=self.trace,
+            random_seed=99,
+        )
+
+        self.assertEqual(prepared_a["selected_chunk_ids"], prepared_b["selected_chunk_ids"])
+        self.assertEqual(
+            set(prepared_a["selected_chunk_ids"]),
+            {"act01_scene01_chunk001", "act01_scene01_chunk002", "act01_scene02_chunk001"},
+        )
+        self.assertEqual(prepared_a["prompt_order"], "dense_hits_random_order")
 
     def test_all_treatments_enforce_context_budget(self):
         for treatment in [
             "closed_book",
             "gold_evidence",
-            "gold_evidence_neighbors",
-            "dense_relevance",
-            "dense_relevance_neighbors",
+            "dense_reranked",
+            "dense_document_order",
+            "dense_random_order",
+            "sparse_bm25",
         ]:
             with self.subTest(treatment=treatment):
+                trace = self.trace if treatment != "sparse_bm25" else [
+                    {"rank": 1, "chunk_id": "act01_scene01_chunk001", "score": 2.0},
+                    {"rank": 2, "chunk_id": "act01_scene02_chunk001", "score": 1.5},
+                    {"rank": 3, "chunk_id": "act01_scene01_chunk002", "score": 1.0},
+                ]
                 prepared = prepare_treatment(
                     self.question,
                     treatment,
                     5,
                     self.lookup,
                     self.doc_order,
-                    global_index_lookup=self.global_index_lookup,
-                    dense_trace=self.trace,
-                    neighbor_window=1,
+                    retrieval_trace=trace,
                 )
 
                 self.assertLessEqual(prepared["context_tokens"], 5)
@@ -319,7 +348,6 @@ class SelectionAndPromptTests(unittest.TestCase):
             10,
             self.lookup,
             self.doc_order,
-            dense_trace=self.trace,
         )
         config = RunConfig(run_name="unit", prepare_only=True)
         row = build_result_row(
@@ -371,7 +399,7 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 for line in Path(results_path).read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-            self.assertEqual(len(rows), 11)
+            self.assertEqual(len(rows), 10)
             self.assertTrue(all(row["model_output"] is None for row in rows))
             self.assertTrue(all(row["selected_chunk_ids"] == [] for row in rows))
 

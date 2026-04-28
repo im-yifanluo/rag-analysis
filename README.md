@@ -8,7 +8,7 @@ The workflow is:
 1. Split Hamlet into stable act/scene chunks.
 2. Keep a small editable question set with required evidence quotes.
 3. Derive gold chunk IDs automatically by quote matching.
-4. Run closed-book, gold-evidence, neighbor, and dense-retrieval treatments.
+4. Run closed-book, gold-evidence, dense, and sparse-retrieval treatments.
 5. Inspect the full prompt, selected chunks, retrieval scores, evidence recall,
    quote recall, and model output for every question.
 
@@ -97,9 +97,14 @@ Defaults:
 - embedding model: `Qwen/Qwen3-Embedding-8B`
 - reranker model: `Qwen/Qwen3-Reranker-8B`
 - temperature: `0.0`
-- treatments: `closed_book gold_evidence gold_evidence_neighbors dense_relevance dense_relevance_neighbors`
+- treatments: `closed_book gold_evidence dense_reranked dense_document_order dense_random_order sparse_bm25`
 - context budgets: `1000`
-- neighbor window: `1`
+- dense retrieval: Qwen embedding vectors in FAISS, then Qwen reranker scores
+  define the final dense ranking
+- dense prompt order variants: reranker rank, document order, deterministic
+  random order
+- sparse retrieval: BM25 over chunk text
+- random seed: `13`
 
 Outputs are written to `runs/<run_name>/results.jsonl`, with copies of the
 config, chunks, input questions, and quote-resolved questions used for the run.
@@ -113,10 +118,11 @@ python -m hamlet_qa.run_experiment --run-name dry_prompts --prepare-only
 ```
 
 This still performs dense retrieval for grounded treatments so relevance
-ordering and reranking are available. To disable reranking, pass
-`--reranker-model none`. For a model-, embedder-, and reranker-free CLI smoke
-test, restrict treatments to `closed_book`; tests can inject a cached/stub
-retriever.
+ordering and reranking are available when a dense treatment is selected, and
+BM25 when `sparse_bm25` is selected. To disable reranking, pass
+`--reranker-model none`. For a model-, embedder-, reranker-, and BM25-free CLI
+smoke test, restrict treatments to `closed_book`; tests can inject cached/stub
+retrievers.
 
 ## Inspect Results
 

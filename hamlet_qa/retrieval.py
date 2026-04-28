@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import math
+import re
+from collections import Counter
 from typing import Any, Protocol
 
 import numpy as np
@@ -11,6 +14,9 @@ from hamlet_qa.config import (
     DEFAULT_RERANKER_MODEL,
     DEFAULT_TOP_K,
 )
+
+
+TOKEN_PATTERN = re.compile(r"[a-z0-9]+(?:'[a-z0-9]+)?")
 
 
 class EmbedderLike(Protocol):
@@ -24,6 +30,10 @@ class EmbedderLike(Protocol):
 class RerankerLike(Protocol):
     def score(self, query: str, documents: list[str]) -> list[float]:
         ...
+
+
+def tokenize_for_bm25(text: str) -> list[str]:
+    return TOKEN_PATTERN.findall(text.lower())
 
 
 class SentenceTransformerEmbedder:
@@ -133,6 +143,7 @@ class DenseRetriever:
                     "act": chunk["act"],
                     "scene": chunk["scene"],
                     "scene_title": chunk["scene_title"],
+                    "retrieval_method": "dense_faiss",
                 }
             )
         if self.reranker is None:
@@ -150,6 +161,7 @@ class DenseRetriever:
         for candidate, rerank_score in zip(candidates, rerank_scores):
             candidate["rerank_score"] = rerank_score
             candidate["score"] = rerank_score
+            candidate["retrieval_method"] = "dense_faiss_reranked"
 
         reranked = sorted(
             candidates,
@@ -161,3 +173,86 @@ class DenseRetriever:
         for rank, candidate in enumerate(reranked, start=1):
             candidate["rank"] = rank
         return reranked
+
+
+class BM25Retriever:
+    """One-document Okapi BM25 retriever over the Hamlet chunks."""
+
+    def __init__(
+        self,
+        chunks: list[dict[str, Any]],
+        k1: float = 1.5,
+        b: float = 0.75,
+    ):
+        if k1 <= 0:
+            raise ValueError("k1 must be positive")
+        if not 0 <= b <= 1:
+            raise ValueError("b must be between 0 and 1")
+        self.chunks = [dict(chunk) for chunk in chunks]
+        self.k1 = k1
+        self.b = b
+        self.term_frequencies = [
+            Counter(tokenize_for_bm25(str(chunk["text"]))) for chunk in self.chunks
+        ]
+        self.doc_lengths = [sum(counter.values()) for counter in self.term_frequencies]
+        self.avg_doc_length = (
+            sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else 0.0
+        )
+        document_frequencies: Counter[str] = Counter()
+        for counter in self.term_frequencies:
+            document_frequencies.update(counter.keys())
+        document_count = len(self.chunks)
+        self.idf = {
+            term: math.log(1 + (document_count - frequency + 0.5) / (frequency + 0.5))
+            for term, frequency in document_frequencies.items()
+        }
+
+    def _score_document(self, query_terms: Counter[str], index: int) -> float:
+        if not self.avg_doc_length:
+            return 0.0
+        frequencies = self.term_frequencies[index]
+        doc_length = self.doc_lengths[index]
+        length_norm = self.k1 * (
+            1 - self.b + self.b * doc_length / self.avg_doc_length
+        )
+        score = 0.0
+        for term, query_frequency in query_terms.items():
+            term_frequency = frequencies.get(term, 0)
+            if term_frequency == 0:
+                continue
+            numerator = term_frequency * (self.k1 + 1)
+            denominator = term_frequency + length_norm
+            score += query_frequency * self.idf.get(term, 0.0) * numerator / denominator
+        return score
+
+    def retrieve(self, query: str, top_k: int = DEFAULT_TOP_K) -> list[dict[str, Any]]:
+        if not self.chunks:
+            return []
+        query_terms = Counter(tokenize_for_bm25(query))
+        scored = [
+            (index, self._score_document(query_terms, index))
+            for index in range(len(self.chunks))
+        ]
+        ranked = sorted(
+            scored,
+            key=lambda item: (-item[1], int(self.chunks[item[0]]["global_index"])),
+        )[: min(top_k, len(self.chunks))]
+
+        results: list[dict[str, Any]] = []
+        for rank, (index, score) in enumerate(ranked, start=1):
+            chunk = self.chunks[index]
+            results.append(
+                {
+                    "chunk_id": chunk["chunk_id"],
+                    "rank": rank,
+                    "score": float(score),
+                    "sparse_rank": rank,
+                    "sparse_score": float(score),
+                    "global_index": chunk["global_index"],
+                    "act": chunk["act"],
+                    "scene": chunk["scene"],
+                    "scene_title": chunk["scene_title"],
+                    "retrieval_method": "bm25",
+                }
+            )
+        return results

@@ -5,12 +5,14 @@ from __future__ import annotations
 import argparse
 
 from hamlet_qa.config import (
+    DEFAULT_BM25_B,
+    DEFAULT_BM25_K1,
     DEFAULT_CONTEXT_BUDGETS,
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_READER_MODEL,
     DEFAULT_RERANKER_MODEL,
+    DEFAULT_RANDOM_SEED,
     DEFAULT_TEMPERATURE,
-    DEFAULT_NEIGHBOR_WINDOW,
     DEFAULT_TOP_K,
     DEFAULT_TREATMENTS,
     RunConfig,
@@ -50,11 +52,13 @@ def parse_args() -> argparse.Namespace:
         choices=DEFAULT_TREATMENTS,
     )
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K)
-    parser.add_argument("--neighbor-window", type=int, default=DEFAULT_NEIGHBOR_WINDOW)
+    parser.add_argument("--random-seed", type=int, default=DEFAULT_RANDOM_SEED)
     parser.add_argument("--embedding-batch-size", type=int, default=64)
     parser.add_argument("--embedding-device", default="cuda")
     parser.add_argument("--reranker-batch-size", type=int, default=8)
     parser.add_argument("--reranker-device", default="cuda")
+    parser.add_argument("--bm25-k1", type=float, default=DEFAULT_BM25_K1)
+    parser.add_argument("--bm25-b", type=float, default=DEFAULT_BM25_B)
     parser.add_argument("--tensor-parallel-size", type=int, default=1)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.90)
     parser.add_argument("--prepare-only", action="store_true")
@@ -80,11 +84,13 @@ def main() -> None:
         context_budgets=args.context_budgets,
         treatments=args.treatments,
         top_k=args.top_k,
-        neighbor_window=args.neighbor_window,
+        random_seed=args.random_seed,
         embedding_batch_size=args.embedding_batch_size,
         embedding_device=args.embedding_device,
         reranker_batch_size=args.reranker_batch_size,
         reranker_device=args.reranker_device,
+        bm25_k1=args.bm25_k1,
+        bm25_b=args.bm25_b,
         tensor_parallel_size=args.tensor_parallel_size,
         gpu_memory_utilization=args.gpu_memory_utilization,
         prepare_only=args.prepare_only,

@@ -64,6 +64,21 @@ def render_score(score: Any) -> str:
     return str(score)
 
 
+def render_score_details(hit: dict[str, Any]) -> str:
+    details = [f"score {render_score(hit.get('score'))}"]
+    for label, key in [
+        ("dense_rank", "dense_rank"),
+        ("dense_score", "dense_score"),
+        ("rerank_score", "rerank_score"),
+        ("sparse_rank", "sparse_rank"),
+        ("sparse_score", "sparse_score"),
+        ("method", "retrieval_method"),
+    ]:
+        if key in hit:
+            details.append(f"{label} {render_score(hit.get(key))}")
+    return "; ".join(details)
+
+
 def render_required_quotes(row: dict[str, Any]) -> list[str]:
     quotes = row.get("required_quotes_present_in_context")
     if not quotes:
@@ -96,7 +111,7 @@ def render_retrieval_scores(row: dict[str, Any]) -> list[str]:
         lines.append(
             "- "
             f"rank {score.get('rank')}: {score.get('chunk_id')} "
-            f"(score {render_score(score.get('score'))})"
+            f"({render_score_details(score)})"
         )
     return lines
 
@@ -113,7 +128,7 @@ def render_retrieval_trace(row: dict[str, Any], limit: int | None) -> list[str]:
         lines.append(
             "- "
             f"rank {hit.get('rank')}: {hit.get('chunk_id')} "
-            f"(score {render_score(hit.get('score'))}; {location}; "
+            f"({render_score_details(hit)}; {location}; "
             f"global_index {hit.get('global_index')})"
         )
     hidden = len(trace) - len(visible)
@@ -183,6 +198,7 @@ def render_row(
         f"- prompt_tokens: {row.get('prompt_tokens', 'n/a')}",
         f"- evidence_chunk_recall: {row.get('evidence_chunk_recall', 'n/a')}",
         f"- evidence_quote_recall: {row.get('evidence_quote_recall', 'n/a')}",
+        f"- retrieval_method: {row.get('retrieval_method', 'n/a')}",
         f"- prompt_order: {row.get('prompt_order', 'n/a')}",
         "",
         "### Question",
