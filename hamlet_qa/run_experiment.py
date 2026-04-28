@@ -9,12 +9,14 @@ from hamlet_qa.config import (
     DEFAULT_BM25_K1,
     DEFAULT_CONTEXT_BUDGETS,
     DEFAULT_EMBEDDING_MODEL,
+    DEFAULT_GPU_LAYOUT,
     DEFAULT_READER_MODEL,
     DEFAULT_RERANKER_MODEL,
     DEFAULT_RANDOM_SEED,
     DEFAULT_TEMPERATURE,
     DEFAULT_TOP_K,
     DEFAULT_TREATMENTS,
+    GPU_LAYOUTS,
     RunConfig,
 )
 from hamlet_qa.experiment import run_experiment
@@ -53,10 +55,33 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K)
     parser.add_argument("--random-seed", type=int, default=DEFAULT_RANDOM_SEED)
+    parser.add_argument(
+        "--gpu-layout",
+        choices=sorted(GPU_LAYOUTS),
+        default=DEFAULT_GPU_LAYOUT,
+        help=(
+            "Device placement preset. 'single' keeps the default staged "
+            "single-GPU run intact; 'a40-3gpu' uses cuda:0 for the embedder, "
+            "cuda:1 for the reranker, and cuda:2 for the vLLM reader."
+        ),
+    )
     parser.add_argument("--embedding-batch-size", type=int, default=64)
-    parser.add_argument("--embedding-device", default="cuda")
+    parser.add_argument(
+        "--embedding-device",
+        default=None,
+        help="Override the embedder device selected by --gpu-layout.",
+    )
     parser.add_argument("--reranker-batch-size", type=int, default=8)
-    parser.add_argument("--reranker-device", default="cuda")
+    parser.add_argument(
+        "--reranker-device",
+        default=None,
+        help="Override the reranker device selected by --gpu-layout.",
+    )
+    parser.add_argument(
+        "--reader-device",
+        default=None,
+        help="Override the vLLM reader device selected by --gpu-layout.",
+    )
     parser.add_argument("--bm25-k1", type=float, default=DEFAULT_BM25_K1)
     parser.add_argument("--bm25-b", type=float, default=DEFAULT_BM25_B)
     parser.add_argument("--tensor-parallel-size", type=int, default=1)
@@ -66,9 +91,12 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
-    args = parse_args()
-    config = RunConfig(
+def config_from_args(args: argparse.Namespace) -> RunConfig:
+    gpu_layout = GPU_LAYOUTS[args.gpu_layout]
+    embedding_device = args.embedding_device or gpu_layout["embedding_device"]
+    reranker_device = args.reranker_device or gpu_layout["reranker_device"]
+    reader_device = args.reader_device or gpu_layout["reader_device"]
+    return RunConfig(
         document_path=args.document,
         chunks_path=args.chunks,
         questions_path=args.questions,
@@ -85,10 +113,12 @@ def main() -> None:
         treatments=args.treatments,
         top_k=args.top_k,
         random_seed=args.random_seed,
+        gpu_layout=args.gpu_layout,
         embedding_batch_size=args.embedding_batch_size,
-        embedding_device=args.embedding_device,
+        embedding_device=embedding_device,
         reranker_batch_size=args.reranker_batch_size,
-        reranker_device=args.reranker_device,
+        reranker_device=reranker_device,
+        reader_device=reader_device,
         bm25_k1=args.bm25_k1,
         bm25_b=args.bm25_b,
         tensor_parallel_size=args.tensor_parallel_size,
@@ -96,6 +126,11 @@ def main() -> None:
         prepare_only=args.prepare_only,
         overwrite=args.overwrite,
     )
+
+
+def main() -> None:
+    args = parse_args()
+    config = config_from_args(args)
     results_path = run_experiment(config)
     print(f"Wrote results to {results_path}")
 

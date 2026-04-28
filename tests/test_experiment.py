@@ -38,6 +38,47 @@ class StubReader:
         raise AssertionError("generate should not be called in prepare-only mode")
 
 
+class RecordingReader:
+    def __init__(self, events: list[str]):
+        self.events = events
+        self.model_max_context = 4096
+
+    def format_prompt(self, system_prompt: str, user_prompt: str) -> str:
+        return f"SYSTEM: {system_prompt}\nUSER: {user_prompt}\nASSISTANT:"
+
+    def count_tokens(self, text: str) -> int:
+        return len(text.split())
+
+    def generate(self, system_prompt: str, user_prompt: str) -> str:
+        del system_prompt, user_prompt
+        self.events.append("generate")
+        return "answer"
+
+
+class RecordingRetriever:
+    def __init__(self, events: list[str]):
+        self.events = events
+
+    def retrieve(self, query: str, top_k: int) -> list[dict]:
+        del query, top_k
+        self.events.append("retrieve")
+        return [
+            {
+                "rank": 1,
+                "chunk_id": "act01_scene01_chunk001",
+                "score": 1.0,
+                "dense_rank": 1,
+                "dense_score": 1.0,
+                "rerank_score": 1.0,
+                "retrieval_method": "dense_faiss_reranked",
+                "global_index": 0,
+                "act": 1,
+                "scene": 1,
+                "scene_title": "First.",
+            }
+        ]
+
+
 def synthetic_chunks() -> list[dict]:
     return [
         {
@@ -369,6 +410,10 @@ class SelectionAndPromptTests(unittest.TestCase):
         self.assertEqual(row["model_name"], config.reader_model)
         self.assertEqual(row["embedding_model"], config.embedding_model)
         self.assertEqual(row["reranker_model"], config.reranker_model)
+        self.assertEqual(row["gpu_layout"], config.gpu_layout)
+        self.assertEqual(row["embedding_device"], config.embedding_device)
+        self.assertEqual(row["reranker_device"], config.reranker_device)
+        self.assertEqual(row["reader_device"], config.reader_device)
         self.assertEqual(row["model_max_context"], 4096)
         self.assertEqual(row["max_new_tokens"], config.max_new_tokens)
         self.assertGreater(row["prompt_tokens"], row["context_tokens"])
@@ -402,6 +447,29 @@ class PrepareOnlyRunTests(unittest.TestCase):
             self.assertEqual(len(rows), 10)
             self.assertTrue(all(row["model_output"] is None for row in rows))
             self.assertTrue(all(row["selected_chunk_ids"] == [] for row in rows))
+
+    def test_dense_retrieval_is_precomputed_before_generation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            events: list[str] = []
+            config = RunConfig(
+                chunks_path=str(REPO_ROOT / "data" / "hamlet_chunks.jsonl"),
+                questions_path=str(REPO_ROOT / "data" / "hamlet_questions.json"),
+                output_dir=tmp,
+                run_name="precompute",
+                treatments=["dense_reranked"],
+                context_budgets=[500],
+                prepare_only=False,
+            )
+
+            run_experiment(
+                config,
+                reader=RecordingReader(events),
+                dense_retriever=RecordingRetriever(events),
+            )
+
+            first_generate = events.index("generate")
+            self.assertTrue(events[:first_generate])
+            self.assertTrue(all(event == "retrieve" for event in events[:first_generate]))
 
 
 if __name__ == "__main__":

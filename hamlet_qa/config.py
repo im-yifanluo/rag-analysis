@@ -28,6 +28,19 @@ DEFAULT_TOP_K = 50
 DEFAULT_RANDOM_SEED = 13
 DEFAULT_BM25_K1 = 1.5
 DEFAULT_BM25_B = 0.75
+DEFAULT_GPU_LAYOUT = "single"
+GPU_LAYOUTS = {
+    "single": {
+        "embedding_device": "cuda",
+        "reranker_device": "cuda",
+        "reader_device": "cuda",
+    },
+    "a40-3gpu": {
+        "embedding_device": "cuda:0",
+        "reranker_device": "cuda:1",
+        "reader_device": "cuda:2",
+    },
+}
 
 REASONING_SKILLS = [
     "local_fact",
@@ -69,11 +82,13 @@ class RunConfig:
     treatments: list[str] = field(default_factory=lambda: DEFAULT_TREATMENTS.copy())
     top_k: int = DEFAULT_TOP_K
     random_seed: int = DEFAULT_RANDOM_SEED
+    gpu_layout: str = DEFAULT_GPU_LAYOUT
 
     embedding_batch_size: int = 64
     embedding_device: str = "cuda"
     reranker_batch_size: int = 8
     reranker_device: str = "cuda"
+    reader_device: str = "cuda"
     bm25_k1: float = DEFAULT_BM25_K1
     bm25_b: float = DEFAULT_BM25_B
     tensor_parallel_size: int = 1

@@ -101,10 +101,24 @@ Defaults:
 - context budgets: `1000`
 - dense retrieval: Qwen embedding vectors in FAISS, then Qwen reranker scores
   define the final dense ranking
+- GPU layout: `single`, which stages embedder, reranker, and reader on the
+  default CUDA device so a one-GPU run remains intact
 - dense prompt order variants: reranker rank, document order, deterministic
   random order
 - sparse retrieval: BM25 over chunk text
 - random seed: `13`
+
+On a 3xA40 server, opt into the multi-GPU placement explicitly:
+
+```bash
+python -m hamlet_qa.run_experiment \
+  --run-name qwen_hamlet_probe \
+  --gpu-layout a40-3gpu
+```
+
+That preset uses `cuda:0` for the embedder, `cuda:1` for the reranker, and
+`cuda:2` for the vLLM reader. It changes only model placement, not retrieval
+selection, reranking, prompt ordering, or scoring logic.
 
 Outputs are written to `runs/<run_name>/results.jsonl`, with copies of the
 config, chunks, input questions, and quote-resolved questions used for the run.

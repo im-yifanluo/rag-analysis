@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 from hamlet_qa.prompts import fallback_chat_prompt
 
 
@@ -15,10 +17,17 @@ class VLLMReader:
         max_new_tokens: int = 512,
         tensor_parallel_size: int = 1,
         gpu_memory_utilization: float = 0.90,
+        device: str = "cuda",
     ):
+        if device.startswith("cuda:"):
+            os.environ["CUDA_VISIBLE_DEVICES"] = device.split(":", 1)[1]
+        elif device == "cpu":
+            os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
         from vllm import LLM, SamplingParams
 
         self.model_name = model_name
+        self.device = device
         self.llm = LLM(
             model=model_name,
             tensor_parallel_size=tensor_parallel_size,

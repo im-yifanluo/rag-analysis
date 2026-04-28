@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-import shutil
+import gc
 import hashlib
 import random
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
@@ -51,6 +52,22 @@ class ReaderLike(Protocol):
 class RetrieverLike(Protocol):
     def retrieve(self, query: str, top_k: int) -> list[dict[str, Any]]:
         ...
+
+
+def clear_cuda_cache() -> None:
+    """Release PyTorch CUDA cache after unloading retrieval models."""
+    gc.collect()
+    try:
+        import torch
+    except ImportError:
+        return
+    if not torch.cuda.is_available():
+        return
+    torch.cuda.empty_cache()
+    try:
+        torch.cuda.ipc_collect()
+    except RuntimeError:
+        pass
 
 
 def chunks_by_id(chunks: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -362,6 +379,10 @@ def build_result_row(
         "bm25_k1": config.bm25_k1,
         "bm25_b": config.bm25_b,
         "random_seed": config.random_seed,
+        "gpu_layout": config.gpu_layout,
+        "embedding_device": config.embedding_device,
+        "reranker_device": config.reranker_device,
+        "reader_device": config.reader_device,
         "temperature": config.temperature,
         "run_config": config.to_dict(),
     }
@@ -376,17 +397,22 @@ def make_reader(config: RunConfig) -> Any:
         max_new_tokens=config.max_new_tokens,
         tensor_parallel_size=config.tensor_parallel_size,
         gpu_memory_utilization=config.gpu_memory_utilization,
+        device=config.reader_device,
     )
 
 
-def make_dense_retriever(config: RunConfig, chunks: list[dict[str, Any]]) -> DenseRetriever:
+def make_dense_retriever(
+    config: RunConfig,
+    chunks: list[dict[str, Any]],
+    include_reranker: bool = True,
+) -> DenseRetriever:
     embedder = SentenceTransformerEmbedder(
         config.embedding_model,
         device=config.embedding_device,
         batch_size=config.embedding_batch_size,
     )
     reranker = None
-    if config.reranker_model:
+    if include_reranker and config.reranker_model:
         reranker = CrossEncoderReranker(
             config.reranker_model,
             device=config.reranker_device,
@@ -395,8 +421,114 @@ def make_dense_retriever(config: RunConfig, chunks: list[dict[str, Any]]) -> Den
     return DenseRetriever(embedder, chunks, reranker=reranker)
 
 
+def make_reranker(config: RunConfig) -> CrossEncoderReranker:
+    if not config.reranker_model:
+        raise ValueError("No reranker model configured")
+    return CrossEncoderReranker(
+        config.reranker_model,
+        device=config.reranker_device,
+        batch_size=config.reranker_batch_size,
+    )
+
+
 def make_sparse_retriever(config: RunConfig, chunks: list[dict[str, Any]]) -> BM25Retriever:
     return BM25Retriever(chunks, k1=config.bm25_k1, b=config.bm25_b)
+
+
+def rerank_dense_trace(
+    query: str,
+    dense_trace: list[dict[str, Any]],
+    chunk_lookup: dict[str, dict[str, Any]],
+    reranker: CrossEncoderReranker,
+) -> list[dict[str, Any]]:
+    documents = [str(chunk_lookup[str(row["chunk_id"])]["text"]) for row in dense_trace]
+    rerank_scores = reranker.score(query, documents)
+    candidates: list[dict[str, Any]] = []
+    for row, rerank_score in zip(dense_trace, rerank_scores):
+        candidate = dict(row)
+        candidate["rerank_score"] = rerank_score
+        candidate["score"] = rerank_score
+        candidate["retrieval_method"] = "dense_faiss_reranked"
+        candidates.append(candidate)
+    reranked = sorted(
+        candidates,
+        key=lambda candidate: (
+            -float(candidate["rerank_score"]),
+            int(candidate["dense_rank"]),
+        ),
+    )
+    for rank, candidate in enumerate(reranked, start=1):
+        candidate["rank"] = rank
+    return reranked
+
+
+def build_retrieval_traces(
+    config: RunConfig,
+    chunks: list[dict[str, Any]],
+    questions: list[Question],
+    dense_retriever: RetrieverLike | None = None,
+    sparse_retriever: RetrieverLike | None = None,
+) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    traces: dict[str, dict[str, list[dict[str, Any]]]] = {
+        question.id: {} for question in questions
+    }
+    needs_dense_trace = any(treatment in DENSE_TREATMENTS for treatment in config.treatments)
+    needs_sparse_trace = any(treatment in SPARSE_TREATMENTS for treatment in config.treatments)
+
+    if needs_dense_trace:
+        if dense_retriever is not None:
+            for question in questions:
+                traces[question.id]["dense"] = dense_retriever.retrieve(
+                    question.question,
+                    config.top_k,
+                )
+        else:
+            active_dense_retriever = make_dense_retriever(
+                config,
+                chunks,
+                include_reranker=False,
+            )
+            try:
+                for question in questions:
+                    traces[question.id]["dense"] = active_dense_retriever.retrieve(
+                        question.question,
+                        config.top_k,
+                    )
+            finally:
+                del active_dense_retriever
+                clear_cuda_cache()
+
+            if config.reranker_model:
+                chunk_lookup = chunks_by_id(chunks)
+                reranker = make_reranker(config)
+                try:
+                    for question in questions:
+                        traces[question.id]["dense"] = rerank_dense_trace(
+                            question.question,
+                            traces[question.id]["dense"],
+                            chunk_lookup,
+                            reranker,
+                        )
+                finally:
+                    del reranker
+                    clear_cuda_cache()
+
+    if needs_sparse_trace:
+        active_sparse_retriever = sparse_retriever or make_sparse_retriever(
+            config,
+            chunks,
+        )
+        try:
+            for question in questions:
+                traces[question.id]["sparse"] = active_sparse_retriever.retrieve(
+                    question.question,
+                    config.top_k,
+                )
+        finally:
+            if sparse_retriever is None:
+                del active_sparse_retriever
+
+    return traces
 
 
 def prepare_run_dir(config: RunConfig, questions: list[Question]) -> Path:
@@ -436,31 +568,23 @@ def run_experiment(
 
     run_dir = prepare_run_dir(config, questions)
     results_path = run_dir / "results.jsonl"
+    retrieval_traces = build_retrieval_traces(
+        config,
+        chunks,
+        questions,
+        dense_retriever=dense_retriever,
+        sparse_retriever=sparse_retriever,
+    )
     active_reader = reader or make_reader(config)
-    active_dense_retriever = dense_retriever
-    active_sparse_retriever = sparse_retriever
 
-    needs_dense_trace = any(treatment in DENSE_TREATMENTS for treatment in config.treatments)
-    needs_sparse_trace = any(treatment in SPARSE_TREATMENTS for treatment in config.treatments)
     for question in questions:
-        dense_trace: list[dict[str, Any]] | None = None
-        sparse_trace: list[dict[str, Any]] | None = None
-        if needs_dense_trace:
-            if active_dense_retriever is None:
-                active_dense_retriever = make_dense_retriever(config, chunks)
-            dense_trace = active_dense_retriever.retrieve(question.question, config.top_k)
-        if needs_sparse_trace:
-            if active_sparse_retriever is None:
-                active_sparse_retriever = make_sparse_retriever(config, chunks)
-            sparse_trace = active_sparse_retriever.retrieve(question.question, config.top_k)
-
         for context_budget in config.context_budgets:
             for treatment in config.treatments:
                 retrieval_trace = None
                 if treatment in DENSE_TREATMENTS:
-                    retrieval_trace = dense_trace
+                    retrieval_trace = retrieval_traces[question.id].get("dense")
                 elif treatment in SPARSE_TREATMENTS:
-                    retrieval_trace = sparse_trace
+                    retrieval_trace = retrieval_traces[question.id].get("sparse")
                 prepared = prepare_treatment(
                     question,
                     treatment,
