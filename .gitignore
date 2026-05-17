@@ -23,4 +23,5 @@ Thumbs.db
 *.swp
 *.swo
 
-./Miniforge3-Linux-x86_64.shMiniforge3-Linux-x86_64.sh
+# Local installers
+Miniforge3-Linux-x86_64.sh
