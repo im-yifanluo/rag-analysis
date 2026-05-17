@@ -215,7 +215,7 @@ write_inspection_report(
 
 ## Demo Video
 
-TODO: Add the shared Google Drive demo video link before final submission.
+[Google Drive Link](https://drive.google.com/drive/folders/1Ty-7_uF6VIguJL_L8Qjo9Hy28sjdwu1Z?usp=sharing)
 
 ## Algorithmic Design
 
