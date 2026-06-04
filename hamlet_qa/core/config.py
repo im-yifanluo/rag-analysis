@@ -48,6 +48,11 @@ GPU_LAYOUTS = {
         "reranker_device": "cuda",
         "reader_device": "cuda",
     },
+    "a40-2gpu": {
+        "embedding_device": "cuda:0",
+        "reranker_device": "cuda:0",
+        "reader_device": "cuda:1",
+    },
     "a40-3gpu": {
         "embedding_device": "cuda:0",
         "reranker_device": "cuda:1",

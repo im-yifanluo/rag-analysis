@@ -65,8 +65,10 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_GPU_LAYOUT,
         help=(
             "Device placement preset. 'single' keeps the default staged "
-            "single-GPU run intact; 'a40-3gpu' uses cuda:0 for the embedder, "
-            "cuda:1 for the reranker, and cuda:2 for the vLLM reader."
+            "single-GPU run intact; 'a40-2gpu' uses cuda:0 for retrieval and "
+            "reranking and cuda:1 for the vLLM reader; 'a40-3gpu' uses cuda:0 "
+            "for the embedder, cuda:1 for the reranker, and cuda:2 for the "
+            "vLLM reader."
         ),
     )
     parser.add_argument("--embedding-batch-size", type=int, default=64)

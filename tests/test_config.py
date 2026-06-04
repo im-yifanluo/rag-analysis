@@ -41,6 +41,14 @@ class ConfigDefaultsTests(unittest.TestCase):
         self.assertEqual(config.reranker_device, "cuda")
         self.assertEqual(config.reader_device, "cuda")
         self.assertEqual(
+            GPU_LAYOUTS["a40-2gpu"],
+            {
+                "embedding_device": "cuda:0",
+                "reranker_device": "cuda:0",
+                "reader_device": "cuda:1",
+            },
+        )
+        self.assertEqual(
             GPU_LAYOUTS["a40-3gpu"],
             {
                 "embedding_device": "cuda:0",
@@ -82,6 +90,15 @@ class ConfigDefaultsTests(unittest.TestCase):
         self.assertEqual(config.embedding_device, "cuda:0")
         self.assertEqual(config.reranker_device, "cuda:1")
         self.assertEqual(config.reader_device, "cuda:2")
+
+    def test_cli_a40_2gpu_layout_sets_expected_devices(self):
+        with patch("sys.argv", ["run_experiment", "--gpu-layout", "a40-2gpu"]):
+            config = config_from_args(parse_args())
+
+        self.assertEqual(config.gpu_layout, "a40-2gpu")
+        self.assertEqual(config.embedding_device, "cuda:0")
+        self.assertEqual(config.reranker_device, "cuda:0")
+        self.assertEqual(config.reader_device, "cuda:1")
 
     def test_cli_device_overrides_take_precedence_over_layout(self):
         with patch(

@@ -139,7 +139,18 @@ Defaults:
 - `domain`: Hamlet domain-KG scaffold plus KG-guided dense candidate ordering
 - random seed: `13`
 
-On a 3xA40 server, opt into the multi-GPU placement explicitly:
+On a server where only GPU 0 and GPU 1 are available, use:
+
+```bash
+python -m hamlet_qa.cli.run_experiment \
+  --run-name qwen_hamlet_probe \
+  --gpu-layout a40-2gpu
+```
+
+That preset uses `cuda:0` for embedding and reranking, and `cuda:1` for the
+vLLM reader and SetR selector.
+
+On a 3xA40 server with GPU 2 available, use:
 
 ```bash
 python -m hamlet_qa.cli.run_experiment \
@@ -148,8 +159,8 @@ python -m hamlet_qa.cli.run_experiment \
 ```
 
 That preset uses `cuda:0` for the embedder, `cuda:1` for the reranker, and
-`cuda:2` for the vLLM reader. It changes only model placement, not retrieval
-selection, reranking, prompt ordering, or scoring logic.
+`cuda:2` for the vLLM reader. GPU presets change only model placement, not
+retrieval selection, reranking, prompt ordering, or scoring logic.
 
 Outputs are written to `runs/<run_name>/results.jsonl`, with copies of the
 config, chunks, input questions, and quote-resolved questions used for the run.
