@@ -11,6 +11,8 @@ echo "========================================"
 PYTHON_VERSION="${PYTHON_VERSION:-3.12}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-hamlet-qa}"
 MINIFORGE_PREFIX="${MINIFORGE_PREFIX:-$HOME/miniforge3}"
+TORCH_BACKEND="${TORCH_BACKEND:-cu129}"
+VLLM_VERSION="${VLLM_VERSION:-0.22.0}"
 
 print_miniforge_help() {
     cat <<EOF
@@ -76,14 +78,31 @@ CONDA_BASE="$(conda_base_for "$CONDA_CMD")"
 echo "Using $CONDA_CMD to manage environment: $CONDA_ENV_NAME"
 
 if "$CONDA_CMD" env list | awk '{print $1}' | grep -Fxq "$CONDA_ENV_NAME"; then
-    echo "[1/3] Conda environment exists; updating from environment.yml ..."
+    echo "[1/4] Conda environment exists; updating from environment.yml ..."
 else
-    echo "[1/3] Creating conda environment: $CONDA_ENV_NAME ..."
+    echo "[1/4] Creating conda environment: $CONDA_ENV_NAME ..."
     "$CONDA_CMD" create -y -n "$CONDA_ENV_NAME" "python=$PYTHON_VERSION" pip
 fi
 
-echo "[2/3] Syncing dependencies from environment.yml ..."
+echo "[2/4] Syncing conda dependencies from environment.yml ..."
 "$CONDA_CMD" env update -n "$CONDA_ENV_NAME" -f environment.yml --prune
+
+VLLM_SPEC="vllm==${VLLM_VERSION}"
+if [ "$(uname -s)" = "Linux" ] && [ "$(uname -m)" = "x86_64" ] && [ "$TORCH_BACKEND" = "cu129" ]; then
+    VLLM_SPEC="https://github.com/vllm-project/vllm/releases/download/v${VLLM_VERSION}/vllm-${VLLM_VERSION}%2Bcu129-cp38-abi3-manylinux_2_28_x86_64.whl"
+fi
+
+echo "[3/4] Installing PyTorch/vLLM stack with CUDA backend: $TORCH_BACKEND ..."
+"$CONDA_CMD" run -n "$CONDA_ENV_NAME" uv pip install \
+    --torch-backend="$TORCH_BACKEND" \
+    --reinstall-package torch \
+    --reinstall-package vllm \
+    "torch" \
+    "$VLLM_SPEC" \
+    "transformers>=4.51.0" \
+    "sentence-transformers>=2.7.0" \
+    "faiss-cpu>=1.7.4"
+"$CONDA_CMD" run -n "$CONDA_ENV_NAME" uv pip uninstall -y torchvision torchaudio || true
 
 ACTUAL_PYTHON="$("$CONDA_CMD" run -n "$CONDA_ENV_NAME" python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')"
 if [ "$ACTUAL_PYTHON" != "$PYTHON_VERSION" ]; then
@@ -91,7 +110,7 @@ if [ "$ACTUAL_PYTHON" != "$PYTHON_VERSION" ]; then
     exit 1
 fi
 
-echo "[3/3] Preparing local directories ..."
+echo "[4/4] Preparing local directories ..."
 mkdir -p data runs
 
 echo ""

@@ -47,20 +47,38 @@ conda activate hamlet-qa
 
 The repo expects Python `3.12`; `.python-version` pins the local pyenv-style
 version to `3.12.3`, and `environment.yml` creates or updates a `hamlet-qa`
-conda env with Python `3.12` plus the project dependencies. To run without
-activating the shell:
+conda env with Python `3.12` plus non-GPU dependencies. `setup.sh` then
+installs PyTorch, vLLM, Transformers, SentenceTransformers, and FAISS with
+`uv pip install --torch-backend=cu129`. On Linux x86_64, it pins vLLM to the
+matching `vllm-0.22.0+cu129` wheel so vLLM and PyTorch load the same CUDA
+runtime family. To run without activating the shell:
 
 ```bash
 conda run -n hamlet-qa python -m unittest discover -s tests
 ```
 
 The server run uses vLLM for generation. Implementation and tests do not run
-reader-model inference. Qwen3.5's official model card recommends installing
-vLLM from the nightly wheels for serving support; if the PyPI `vllm` package in
-`environment.yml` lags your server, install vLLM inside the conda env with:
+reader-model inference. If you see a PyTorch error like `The NVIDIA driver on
+your system is too old`, or a vLLM import error like `libcudart.so.13: cannot
+open shared object file`, repair only the GPU Python packages inside the
+activated env:
 
 ```bash
-uv pip install vllm --torch-backend=auto --extra-index-url https://wheels.vllm.ai/nightly
+uv pip install \
+  --torch-backend=cu129 \
+  --reinstall-package torch \
+  --reinstall-package vllm \
+  torch \
+  "https://github.com/vllm-project/vllm/releases/download/v0.22.0/vllm-0.22.0%2Bcu129-cp38-abi3-manylinux_2_28_x86_64.whl"
+uv pip uninstall -y torchvision torchaudio
+```
+
+This project does not use TorchVision/TorchAudio. If Transformers fails with
+`operator torchvision::nms does not exist`, remove the incompatible optional
+vision/audio packages from the activated env:
+
+```bash
+uv pip uninstall -y torchvision torchaudio
 ```
 
 ## Pipeline Structure
