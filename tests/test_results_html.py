@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from hamlet_qa.results_html import render_results_html
+from hamlet_qa.inspection.results_html import render_results_html
 
 
 class ResultsHtmlTests(unittest.TestCase):

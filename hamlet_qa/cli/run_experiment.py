@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import argparse
 
-from hamlet_qa.config import (
+from hamlet_qa.core.config import (
     DEFAULT_BM25_B,
     DEFAULT_BM25_K1,
+    DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR,
     DEFAULT_CONTEXT_BUDGETS,
+    DEFAULT_DOMAIN_KG_PATH,
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_GPU_LAYOUT,
     DEFAULT_READER_MODEL,
@@ -19,7 +21,7 @@ from hamlet_qa.config import (
     GPU_LAYOUTS,
     RunConfig,
 )
-from hamlet_qa.experiment import run_experiment
+from hamlet_qa.core.experiment import run_experiment
 
 
 def parse_args() -> argparse.Namespace:
@@ -27,7 +29,7 @@ def parse_args() -> argparse.Namespace:
         description="Run Hamlet QA failure-analysis treatments.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--document", default="hamlet.txt")
+    parser.add_argument("--document", default="data/hamlet.txt")
     parser.add_argument("--chunks", default="data/hamlet_chunks.jsonl")
     parser.add_argument("--questions", default="data/hamlet_questions.json")
     parser.add_argument("--output-dir", default="runs")
@@ -84,6 +86,16 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--bm25-k1", type=float, default=DEFAULT_BM25_K1)
     parser.add_argument("--bm25-b", type=float, default=DEFAULT_BM25_B)
+    parser.add_argument(
+        "--domain-kg",
+        default=DEFAULT_DOMAIN_KG_PATH,
+        help="Editable domain knowledge graph used by the domain treatment.",
+    )
+    parser.add_argument(
+        "--context-assembly-cache-dir",
+        default=DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR,
+        help="Directory for cached SetR-lite role labels and chunk-role judgments.",
+    )
     parser.add_argument("--tensor-parallel-size", type=int, default=1)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.90)
     parser.add_argument("--prepare-only", action="store_true")
@@ -121,6 +133,8 @@ def config_from_args(args: argparse.Namespace) -> RunConfig:
         reader_device=reader_device,
         bm25_k1=args.bm25_k1,
         bm25_b=args.bm25_b,
+        domain_kg_path=args.domain_kg,
+        context_assembly_cache_dir=args.context_assembly_cache_dir,
         tensor_parallel_size=args.tensor_parallel_size,
         gpu_memory_utilization=args.gpu_memory_utilization,
         prepare_only=args.prepare_only,

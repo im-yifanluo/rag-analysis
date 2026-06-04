@@ -1,9 +1,0 @@
-# Hamlet QA failure-analysis harness
-torch>=2.1.0
-transformers>=4.51.0
-sentence-transformers>=2.7.0
-faiss-cpu>=1.7.4
-# Qwen3.5 official docs recommend vLLM nightly wheels; stable PyPI may lag.
-vllm
-numpy>=1.24.0
-tqdm>=4.65.0

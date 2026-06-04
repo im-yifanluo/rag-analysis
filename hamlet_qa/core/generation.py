@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 
-from hamlet_qa.prompts import fallback_chat_prompt
+from hamlet_qa.core.prompts import fallback_chat_prompt
 
 
 class VLLMReader:

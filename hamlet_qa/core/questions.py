@@ -8,8 +8,8 @@ import warnings
 from dataclasses import dataclass, field
 from typing import Any
 
-from hamlet_qa.config import REASONING_SKILLS
-from hamlet_qa.io_utils import load_json
+from hamlet_qa.core.config import REASONING_SKILLS
+from hamlet_qa.core.io import load_json
 
 MANY_MATCH_WARNING_THRESHOLD = 3
 

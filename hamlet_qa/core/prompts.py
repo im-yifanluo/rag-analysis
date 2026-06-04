@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Protocol
 
 CLOSED_BOOK_SYSTEM_PROMPT = (
     "You are a careful research assistant studying Hamlet. No document context "
@@ -13,6 +14,33 @@ GROUNDED_SYSTEM_PROMPT = (
     "context as evidence."
 )
 SYSTEM_PROMPT = GROUNDED_SYSTEM_PROMPT
+
+
+@dataclass(frozen=True)
+class PromptBundle:
+    system_prompt: str
+    user_prompt: str
+    full_prompt: str
+    prompt_tokens: int
+
+
+class ReaderPromptFormatter(Protocol):
+    def format_prompt(self, system_prompt: str, user_prompt: str) -> str:
+        ...
+
+    def count_tokens(self, text: str) -> int:
+        ...
+
+
+class PromptBuilder(Protocol):
+    def build(
+        self,
+        question: str,
+        selected_chunks: list[dict[str, Any]],
+        treatment: str,
+        reader: ReaderPromptFormatter,
+    ) -> PromptBundle:
+        ...
 
 
 def format_context_chunk(chunk: dict[str, Any]) -> str:
@@ -45,6 +73,44 @@ def build_user_prompt(
         "that provide the evidence for the answer. If the answer is not supported "
         "by the context, say that the provided context does not answer it."
     )
+
+
+def system_prompt_for_treatment(treatment: str) -> str:
+    if treatment == "closed_book":
+        return CLOSED_BOOK_SYSTEM_PROMPT
+    return GROUNDED_SYSTEM_PROMPT
+
+
+def count_prompt_tokens(reader: Any, full_prompt: str) -> int:
+    count_tokens = getattr(reader, "count_tokens", None)
+    if callable(count_tokens):
+        return int(count_tokens(full_prompt))
+    return len(full_prompt.split())
+
+
+class HamletQAPromptBuilder:
+    """Default context-to-input adapter for Hamlet QA prompts."""
+
+    def build(
+        self,
+        question: str,
+        selected_chunks: list[dict[str, Any]],
+        treatment: str,
+        reader: ReaderPromptFormatter,
+    ) -> PromptBundle:
+        system_prompt = system_prompt_for_treatment(treatment)
+        user_prompt = build_user_prompt(
+            question,
+            selected_chunks,
+            closed_book=treatment == "closed_book",
+        )
+        full_prompt = reader.format_prompt(system_prompt, user_prompt)
+        return PromptBundle(
+            system_prompt=system_prompt,
+            user_prompt=user_prompt,
+            full_prompt=full_prompt,
+            prompt_tokens=count_prompt_tokens(reader, full_prompt),
+        )
 
 
 def fallback_chat_prompt(system_prompt: str, user_prompt: str) -> str:

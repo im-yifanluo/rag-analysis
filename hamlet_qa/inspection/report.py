@@ -6,7 +6,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-from hamlet_qa.io_utils import load_jsonl
+from hamlet_qa.core.io import load_jsonl
 
 
 def _mean(values: list[float]) -> float | None:

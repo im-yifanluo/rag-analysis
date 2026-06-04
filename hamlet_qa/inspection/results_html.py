@@ -7,8 +7,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from hamlet_qa.io_utils import load_jsonl
-from hamlet_qa.read_results import load_result_rows
+from hamlet_qa.core.io import load_jsonl
+from hamlet_qa.inspection.read_results import load_result_rows
 
 
 HTML_TEMPLATE = """<!doctype html>

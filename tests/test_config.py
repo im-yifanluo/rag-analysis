@@ -3,7 +3,10 @@ from __future__ import annotations
 import unittest
 from unittest.mock import patch
 
-from hamlet_qa.config import (
+from hamlet_qa.core.config import (
+    BASELINE_TREATMENTS,
+    DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR,
+    DEFAULT_DOMAIN_KG_PATH,
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_GPU_LAYOUT,
     DEFAULT_READER_MODEL,
@@ -11,9 +14,10 @@ from hamlet_qa.config import (
     DEFAULT_TREATMENTS,
     DEFAULT_TOKENIZER_MODEL,
     GPU_LAYOUTS,
+    ORDERING_TREATMENTS,
     RunConfig,
 )
-from hamlet_qa.run_experiment import config_from_args, parse_args
+from hamlet_qa.cli.run_experiment import config_from_args, parse_args
 
 
 class ConfigDefaultsTests(unittest.TestCase):
@@ -42,16 +46,27 @@ class ConfigDefaultsTests(unittest.TestCase):
             },
         )
         self.assertEqual(
-            DEFAULT_TREATMENTS,
+            BASELINE_TREATMENTS,
             [
                 "closed_book",
                 "gold_evidence",
                 "dense_reranked",
-                "dense_document_order",
-                "dense_random_order",
                 "sparse_bm25",
             ],
         )
+        self.assertEqual(
+            ORDERING_TREATMENTS,
+            [
+                "dense_document_order",
+                "dense_random_order",
+            ],
+        )
+        self.assertEqual(
+            DEFAULT_TREATMENTS,
+            BASELINE_TREATMENTS + ORDERING_TREATMENTS + ["setr", "domain"],
+        )
+        self.assertEqual(config.domain_kg_path, DEFAULT_DOMAIN_KG_PATH)
+        self.assertEqual(config.context_assembly_cache_dir, DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR)
 
     def test_cli_a40_3gpu_layout_sets_expected_devices(self):
         with patch("sys.argv", ["run_experiment", "--gpu-layout", "a40-3gpu"]):

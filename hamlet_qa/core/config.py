@@ -16,19 +16,30 @@ DEFAULT_CHUNK_OVERLAP = 64
 DEFAULT_TOKENIZER_MODEL = DEFAULT_READER_MODEL
 
 DEFAULT_CONTEXT_BUDGETS = [1000]
-DEFAULT_TREATMENTS = [
+BASELINE_TREATMENTS = [
     "closed_book",
     "gold_evidence",
     "dense_reranked",
-    "dense_document_order",
-    "dense_random_order",
     "sparse_bm25",
 ]
+ORDERING_TREATMENTS = [
+    "dense_document_order",
+    "dense_random_order",
+]
+NEW_CONTEXT_ASSEMBLY_TREATMENTS = [
+    "setr",
+    "domain",
+]
+DEFAULT_TREATMENTS = (
+    BASELINE_TREATMENTS + ORDERING_TREATMENTS + NEW_CONTEXT_ASSEMBLY_TREATMENTS
+)
 DEFAULT_TOP_K = 50
 DEFAULT_RANDOM_SEED = 13
 DEFAULT_BM25_K1 = 1.5
 DEFAULT_BM25_B = 0.75
 DEFAULT_GPU_LAYOUT = "single"
+DEFAULT_DOMAIN_KG_PATH = "data/hamlet_domain_kg.yaml"
+DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR = "data/cache"
 GPU_LAYOUTS = {
     "single": {
         "embedding_device": "cuda",
@@ -61,7 +72,7 @@ QUESTION_CATEGORIES = REASONING_SKILLS
 class RunConfig:
     """Serializable settings for one Hamlet QA run."""
 
-    document_path: str = "hamlet.txt"
+    document_path: str = "data/hamlet.txt"
     chunks_path: str = "data/hamlet_chunks.jsonl"
     questions_path: str = "data/hamlet_questions.json"
     output_dir: str = "runs"
@@ -91,6 +102,8 @@ class RunConfig:
     reader_device: str = "cuda"
     bm25_k1: float = DEFAULT_BM25_K1
     bm25_b: float = DEFAULT_BM25_B
+    domain_kg_path: str = DEFAULT_DOMAIN_KG_PATH
+    context_assembly_cache_dir: str = DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR
     tensor_parallel_size: int = 1
     gpu_memory_utilization: float = 0.90
     prepare_only: bool = False

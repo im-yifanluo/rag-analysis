@@ -1,6 +1,6 @@
 """Small Hamlet-only QA failure-analysis harness."""
 
-from hamlet_qa.config import (
+from hamlet_qa.core.config import (
     DEFAULT_BM25_B,
     DEFAULT_BM25_K1,
     DEFAULT_CHUNK_OVERLAP,
@@ -15,6 +15,7 @@ from hamlet_qa.config import (
     DEFAULT_TREATMENTS,
     DEFAULT_TOKENIZER_MODEL,
     GPU_LAYOUTS,
+    ORDERING_TREATMENTS,
     QUESTION_CATEGORIES,
     REASONING_SKILLS,
     RunConfig,
@@ -35,6 +36,7 @@ __all__ = [
     "DEFAULT_TREATMENTS",
     "DEFAULT_TOKENIZER_MODEL",
     "GPU_LAYOUTS",
+    "ORDERING_TREATMENTS",
     "QUESTION_CATEGORIES",
     "REASONING_SKILLS",
     "RunConfig",

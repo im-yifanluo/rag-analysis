@@ -3,9 +3,9 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from hamlet_qa.config import REASONING_SKILLS
-from hamlet_qa.io_utils import load_jsonl
-from hamlet_qa.questions import (
+from hamlet_qa.core.config import REASONING_SKILLS
+from hamlet_qa.core.io import load_jsonl
+from hamlet_qa.core.questions import (
     RequiredEvidenceQuote,
     derive_gold_chunk_ids,
     load_questions,

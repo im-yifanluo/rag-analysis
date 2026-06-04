@@ -5,8 +5,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from hamlet_qa.config import RunConfig
-from hamlet_qa.experiment import (
+from hamlet_qa.core.config import BASELINE_TREATMENTS, RunConfig
+from hamlet_qa.core.questions import Question, RequiredEvidenceQuote
+from hamlet_qa.core.experiment import (
     build_result_row,
     chunks_by_id,
     document_order_chunk_ids,
@@ -15,7 +16,6 @@ from hamlet_qa.experiment import (
     required_quotes_present_in_context,
     run_experiment,
 )
-from hamlet_qa.questions import Question, RequiredEvidenceQuote
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -470,6 +470,68 @@ class PrepareOnlyRunTests(unittest.TestCase):
             first_generate = events.index("generate")
             self.assertTrue(events[:first_generate])
             self.assertTrue(all(event == "retrieve" for event in events[:first_generate]))
+
+    def test_existing_treatments_still_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            events: list[str] = []
+            config = RunConfig(
+                chunks_path=str(REPO_ROOT / "data" / "hamlet_chunks.jsonl"),
+                questions_path=str(REPO_ROOT / "data" / "hamlet_questions.json"),
+                output_dir=tmp,
+                run_name="baseline_smoke",
+                treatments=BASELINE_TREATMENTS.copy(),
+                context_budgets=[300],
+                prepare_only=True,
+            )
+
+            results_path = run_experiment(
+                config,
+                reader=StubReader(),
+                dense_retriever=RecordingRetriever(events),
+            )
+
+            rows = [
+                json.loads(line)
+                for line in Path(results_path).read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            self.assertEqual(len(rows), 10 * len(BASELINE_TREATMENTS))
+            self.assertEqual({row["treatment"] for row in rows}, set(BASELINE_TREATMENTS))
+            self.assertTrue(all(row["model_output"] is None for row in rows))
+
+    def test_prepare_only_works_for_new_context_assembly_treatments(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            events: list[str] = []
+            config = RunConfig(
+                chunks_path=str(REPO_ROOT / "data" / "hamlet_chunks.jsonl"),
+                questions_path=str(REPO_ROOT / "data" / "hamlet_questions.json"),
+                output_dir=tmp,
+                run_name="new_prepare_only",
+                treatments=["setr", "domain"],
+                context_budgets=[300],
+                prepare_only=True,
+                context_assembly_cache_dir=str(Path(tmp) / "cache"),
+            )
+
+            results_path = run_experiment(
+                config,
+                reader=StubReader(),
+                dense_retriever=RecordingRetriever(events),
+            )
+
+            rows = [
+                json.loads(line)
+                for line in Path(results_path).read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            self.assertEqual(len(rows), 20)
+            self.assertEqual({row["treatment"] for row in rows}, {"setr", "domain"})
+            self.assertTrue(all(row["model_output"] is None for row in rows))
+            self.assertTrue(all(row["context_assembly_trace"] for row in rows))
+            domain_rows = [row for row in rows if row["treatment"] == "domain"]
+            self.assertTrue(
+                all(row["selected_chunk_ids"][0] == "domain_scaffold" for row in domain_rows)
+            )
 
 
 if __name__ == "__main__":

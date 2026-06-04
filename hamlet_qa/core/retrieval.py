@@ -9,7 +9,7 @@ from typing import Any, Protocol
 
 import numpy as np
 
-from hamlet_qa.config import (
+from hamlet_qa.core.config import (
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_RERANKER_MODEL,
     DEFAULT_TOP_K,

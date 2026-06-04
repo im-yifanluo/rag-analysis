@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import numpy as np
 
-from hamlet_qa.retrieval import BM25Retriever, DenseRetriever
+from hamlet_qa.core.retrieval import BM25Retriever, DenseRetriever
 
 
 class FakeFaissIndex:

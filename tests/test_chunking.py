@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from hamlet_qa.chunking import SceneRecord, chunk_scenes, parse_scenes
+from hamlet_qa.core.chunking import SceneRecord, chunk_scenes, parse_scenes
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -25,7 +25,7 @@ class FakeTokenizer:
 
 class SceneParsingTests(unittest.TestCase):
     def test_parse_real_hamlet_scenes_skips_front_matter(self):
-        text = (REPO_ROOT / "hamlet.txt").read_text(encoding="utf-8")
+        text = (REPO_ROOT / "data" / "hamlet.txt").read_text(encoding="utf-8")
         scenes = parse_scenes(text)
 
         self.assertEqual(len(scenes), 20)

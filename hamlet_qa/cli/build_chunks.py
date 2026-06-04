@@ -4,20 +4,20 @@ from __future__ import annotations
 
 import argparse
 
-from hamlet_qa.chunking import build_chunks, load_tokenizer, write_chunks
-from hamlet_qa.config import (
+from hamlet_qa.core.config import (
     DEFAULT_CHUNK_OVERLAP,
     DEFAULT_CHUNK_SIZE,
     DEFAULT_TOKENIZER_MODEL,
 )
+from hamlet_qa.core.chunking import build_chunks, load_tokenizer, write_chunks
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Build token-window chunks from hamlet.txt.",
+        description="Build token-window chunks from data/hamlet.txt.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--document", default="hamlet.txt")
+    parser.add_argument("--document", default="data/hamlet.txt")
     parser.add_argument("--output", default="data/hamlet_chunks.jsonl")
     parser.add_argument("--tokenizer-model", default=DEFAULT_TOKENIZER_MODEL)
     parser.add_argument("--chunk-size", type=int, default=DEFAULT_CHUNK_SIZE)

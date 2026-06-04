@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from hamlet_qa.report import render_inspection_report
+from hamlet_qa.inspection.report import render_inspection_report
 
 
 class InspectionReportTests(unittest.TestCase):

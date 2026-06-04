@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 
-from hamlet_qa.report import write_inspection_report
+from hamlet_qa.inspection.report import write_inspection_report
 
 
 def parse_args() -> argparse.Namespace:

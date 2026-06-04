@@ -12,12 +12,12 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Protocol
 
-from hamlet_qa.config import (
+from hamlet_qa.core.config import (
     DEFAULT_CHUNK_OVERLAP,
     DEFAULT_CHUNK_SIZE,
     DEFAULT_TOKENIZER_MODEL,
 )
-from hamlet_qa.io_utils import read_text, write_jsonl
+from hamlet_qa.core.io import read_text, write_jsonl
 
 
 class TokenizerLike(Protocol):

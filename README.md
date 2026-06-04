@@ -1,21 +1,22 @@
 # Hamlet QA Failure Analysis
 
 This repo is a small, inspectable harness for studying why long-document QA
-fails on one document: `hamlet.txt`.
+fails on one document: `data/hamlet.txt`.
 
 The workflow is:
 
 1. Split Hamlet into stable act/scene chunks.
 2. Keep a small editable question set with required evidence quotes.
 3. Derive gold chunk IDs automatically by quote matching.
-4. Run closed-book, gold-evidence, dense, and sparse-retrieval treatments.
+4. Run closed-book, gold-evidence, dense, sparse-retrieval, and lightweight
+   post-retrieval context-assembly treatments.
 5. Inspect the full prompt, selected chunks, retrieval scores, evidence recall,
    quote recall, and model output for every question.
 
 ## Setup
 
-Recommended on the research servers: use Miniforge/conda so the Python version
-is explicit and independent of the system `python`.
+This repo uses Miniforge/conda as the environment manager so the Python version
+and package set are explicit and independent of the system `python`.
 
 ```bash
 bash setup.sh
@@ -31,8 +32,8 @@ source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate hamlet-qa
 ```
 
-If `bash setup.sh` says Python 3.12 and conda/mamba were not found, install
-Miniforge in your home directory, then rerun setup:
+If `bash setup.sh` says Miniforge/conda was not found, install Miniforge in
+your home directory, then rerun setup:
 
 ```bash
 curl -L -o Miniforge3-Linux-x86_64.sh \
@@ -45,28 +46,54 @@ conda activate hamlet-qa
 ```
 
 The repo expects Python `3.12`; `.python-version` pins the local pyenv-style
-version to `3.12.3`, and `environment.yml` creates a `hamlet-qa` conda env with
-Python `3.12`. If conda/mamba is not available, `setup.sh` falls back to a local
-`venv/` only when `python3.12` is installed:
+version to `3.12.3`, and `environment.yml` creates or updates a `hamlet-qa`
+conda env with Python `3.12` plus the project dependencies. To run without
+activating the shell:
 
 ```bash
-source venv/bin/activate
+conda run -n hamlet-qa python -m unittest discover -s tests
 ```
 
 The server run uses vLLM for generation. Implementation and tests do not run
 reader-model inference. Qwen3.5's official model card recommends installing
 vLLM from the nightly wheels for serving support; if the PyPI `vllm` package in
-`requirements.txt` lags your server, install vLLM with:
+`environment.yml` lags your server, install vLLM inside the conda env with:
 
 ```bash
 uv pip install vllm --torch-backend=auto --extra-index-url https://wheels.vllm.ai/nightly
 ```
 
+## Pipeline Structure
+
+The source code is organized around the experiment boundary this repo studies:
+post-retrieval context assembly.
+
+- `hamlet_qa/core/`: stable RAG pipeline code shared by every method. This
+  includes config, chunking, question loading, retrieval, prompt construction,
+  generation, experiment orchestration, result logging, and the shared
+  `ContextAssemblyRequest` / `ContextAssemblyResult` contract.
+- `hamlet_qa/features/`: context assembly methods. Each method gets its own
+  folder and owns the logic for turning candidate chunks into prompt-ready
+  context. Current folders are `baseline/`, `ordering/`, `setr/`, and
+  `domain/`.
+- `hamlet_qa/features/registry.py`: maps CLI treatment names to feature
+  adapters and declares whether a method needs dense retrieval, sparse
+  retrieval, or a domain graph.
+- `hamlet_qa/cli/` and `hamlet_qa/inspection/`: command-line and result-viewing
+  utilities around the core pipeline.
+
+The core pipeline always follows the same path: load chunks/questions, build
+retrieval traces, call the registered context assembly feature, build the model
+prompt, and log artifacts uniformly. To add a future method such as MMR,
+RankRAG, RECOMP, or IRCoT, create a new `hamlet_qa/features/<method>/` folder
+with an `assemble_*` adapter and add one `TreatmentSpec` row to
+`hamlet_qa/features/registry.py`.
+
 ## Regenerate Chunks
 
 ```bash
-python -m hamlet_qa.build_chunks \
-  --document hamlet.txt \
+python -m hamlet_qa.cli.build_chunks \
+  --document data/hamlet.txt \
   --output data/hamlet_chunks.jsonl
 ```
 
@@ -86,7 +113,7 @@ hard max token cutoff.
 ## Run An Experiment
 
 ```bash
-python -m hamlet_qa.run_experiment \
+python -m hamlet_qa.cli.run_experiment \
   --run-name qwen_hamlet_probe
 ```
 
@@ -97,7 +124,7 @@ Defaults:
 - embedding model: `Qwen/Qwen3-Embedding-8B`
 - reranker model: `Qwen/Qwen3-Reranker-8B`
 - temperature: `0.0`
-- treatments: `closed_book gold_evidence dense_reranked dense_document_order dense_random_order sparse_bm25`
+- treatments: `closed_book gold_evidence dense_reranked dense_document_order dense_random_order sparse_bm25 setr domain`
 - context budgets: `1000`
 - dense retrieval: Qwen embedding vectors in FAISS, then Qwen reranker scores
   define the final dense ranking
@@ -106,12 +133,14 @@ Defaults:
 - dense prompt order variants: reranker rank, document order, deterministic
   random order
 - sparse retrieval: BM25 over chunk text
+- `setr`: SetR-style role set selection over the dense candidate list
+- `domain`: Hamlet domain-KG scaffold plus KG-guided dense candidate ordering
 - random seed: `13`
 
 On a 3xA40 server, opt into the multi-GPU placement explicitly:
 
 ```bash
-python -m hamlet_qa.run_experiment \
+python -m hamlet_qa.cli.run_experiment \
   --run-name qwen_hamlet_probe \
   --gpu-layout a40-3gpu
 ```
@@ -128,7 +157,7 @@ tokens are logged separately.
 To build prompts and traces without vLLM generation:
 
 ```bash
-python -m hamlet_qa.run_experiment --run-name dry_prompts --prepare-only
+python -m hamlet_qa.cli.run_experiment --run-name dry_prompts --prepare-only
 ```
 
 This still performs dense retrieval for grounded treatments so relevance
@@ -138,13 +167,78 @@ BM25 when `sparse_bm25` is selected. To disable reranking, pass
 smoke test, restrict treatments to `closed_book`; tests can inject cached/stub
 retrievers.
 
+## Post-Retrieval Context Assembly
+
+### Baseline And Ordering
+
+`dense_reranked` is the vanilla relevance-ranked dense baseline: retrieve dense
+hits, optionally rerank them, and fill the context budget in relevance order.
+`sparse_bm25` is the sparse relevance baseline. `closed_book` and
+`gold_evidence` are controls.
+
+`dense_document_order` and `dense_random_order` live under
+`hamlet_qa/features/ordering/`. They use the same dense candidate set as
+`dense_reranked`, then reorder selected chunks by document order or a
+deterministic seeded shuffle.
+
+### `setr`
+
+`setr` is a lightweight SetR-style selector inspired by the cloned
+`third_party/SetR/` implementation and the paper
+[Shifting from Ranking to Set Selection for Retrieval Augmented Generation](https://arxiv.org/abs/2507.06838).
+The original SetR code centers on the `selection_IRI` prompt: identify the
+query's information requirements, map passages to those requirements, then
+select a set of passages that covers clear and diverse information. This repo
+keeps that logic but implements a deterministic `setr_lite` prototype instead
+of training or serving a new SetR model.
+
+What this implementation does:
+
+- derives information requirements from the question's evidence-role labels,
+  falling back to query terms for unanswerable or unlabeled questions;
+- judges which dense-retrieved chunks cover each role using explicit test
+  labels when present, otherwise deterministic lexical role templates;
+- greedily selects chunks that cover missing roles before filling remaining
+  budget with the dense order;
+- writes cached query-role labels and chunk-role judgments to
+  `data/cache/setr_lite_cache.json` by default;
+- logs `context_assembly_trace` in each result row for inspection.
+
+This is intentionally a failure-analysis prototype. It does not train a model,
+does not require external datasets, and does not claim to reproduce the SetR
+paper's learned selector.
+
+### `domain`
+
+`domain` is a deterministic Hamlet domain-knowledge-guided assembler. It loads
+`data/hamlet_domain_kg.yaml`, detects aliases in the question, expands related
+graph nodes, creates a compact `domain_scaffold` pseudo-chunk within the context
+budget, then orders dense-retrieved chunks by matches to the expanded graph
+nodes before filling the remaining budget.
+
+The editable KG currently includes:
+
+- a short story summary;
+- Hamlet, Claudius, Gertrude, Horatio, Ophelia, Polonius, Laertes, and the
+  Ghost;
+- aliases such as `King -> Claudius`, `Queen -> Gertrude`, and
+  `Ghost -> Hamlet's father`;
+- events including ghost revelation, antic disposition, Mousetrap, closet
+  scene, Polonius death, Ophelia madness, and the duel;
+- event aliases and relations such as
+  `Mousetrap -> Claudius reaction -> Horatio confirmation`;
+- optional evidence-role templates used by `setr_lite`.
+
+Use `--domain-kg path/to/file.yaml` to point at an edited graph, and
+`--context-assembly-cache-dir path/to/cache` to move the SetR-lite cache.
+
 ## Inspect Results
 
 For the interactive browser view, render the JSONL results into a standalone
 HTML file:
 
 ```bash
-python -m hamlet_qa.results_html \
+python -m hamlet_qa.inspection.results_html \
   runs/qwen_hamlet_probe/results.jsonl \
   --output runs/qwen_hamlet_probe/results_viewer.html
 ```
@@ -158,7 +252,7 @@ falls back to the `chunks_path` recorded in the run config, then
 `data/hamlet_chunks.jsonl`. To choose a specific chunk file:
 
 ```bash
-python -m hamlet_qa.results_html \
+python -m hamlet_qa.inspection.results_html \
   runs/qwen_hamlet_probe/results.jsonl \
   --chunks runs/qwen_hamlet_probe/hamlet_chunks.jsonl \
   --output runs/qwen_hamlet_probe/results_viewer.html
@@ -170,7 +264,7 @@ file and another chunk JSONL/JSON file.
 For a compact Markdown summary:
 
 ```bash
-python -m hamlet_qa.inspect_results \
+python -m hamlet_qa.cli.inspect_results \
   --results runs/qwen_hamlet_probe/results.jsonl \
   --output runs/qwen_hamlet_probe/inspection.md
 ```
@@ -179,6 +273,8 @@ python -m hamlet_qa.inspect_results \
 
 - `data/hamlet_chunks.jsonl`: generated default chunks.
 - `data/hamlet_questions.json`: starter questions and required evidence quotes.
+- `data/hamlet_domain_kg.yaml`: editable Hamlet domain graph used by `domain`
+  and optional role templates for `setr`.
 
 Gold chunk IDs are derived from `required_evidence_quotes` during validation and
 written to `hamlet_questions_resolved.json` inside each run directory. If

@@ -3,37 +3,40 @@
 from __future__ import annotations
 
 import gc
-import hashlib
-import random
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Protocol
 
-from hamlet_qa.config import DEFAULT_TREATMENTS, RunConfig
-from hamlet_qa.generation import VLLMReader
-from hamlet_qa.io_utils import append_jsonl, dump_json, load_jsonl
-from hamlet_qa.prompts import (
-    CLOSED_BOOK_SYSTEM_PROMPT,
-    GROUNDED_SYSTEM_PROMPT,
-    TokenizerPromptFormatter,
-    build_user_prompt,
+from hamlet_qa.features.domain.kg import DomainKnowledgeGraph
+from hamlet_qa.features.registry import (
+    DENSE_TREATMENTS,
+    SPARSE_TREATMENTS,
+    get_treatment,
+    known_treatment_names,
+    treatments_using_domain_kg,
 )
-from hamlet_qa.questions import Question, load_questions, validate_questions
-from hamlet_qa.retrieval import (
+from hamlet_qa.core.config import RunConfig
+from hamlet_qa.core.io import append_jsonl, dump_json, load_jsonl
+from hamlet_qa.core.questions import Question, load_questions, validate_questions
+from hamlet_qa.core.generation import VLLMReader
+from hamlet_qa.core.context import (
+    ContextAssemblyRequest,
+    ContextAssemblyResult,
+    chunks_by_id,
+    document_order_chunk_ids,
+)
+from hamlet_qa.core.prompts import (
+    HamletQAPromptBuilder,
+    PromptBundle,
+    TokenizerPromptFormatter,
+)
+from hamlet_qa.core.retrieval import (
     BM25Retriever,
     CrossEncoderReranker,
     DenseRetriever,
     SentenceTransformerEmbedder,
 )
-
-
-DENSE_TREATMENTS = {
-    "dense_reranked",
-    "dense_document_order",
-    "dense_random_order",
-}
-SPARSE_TREATMENTS = {"sparse_bm25"}
 
 
 class ReaderLike(Protocol):
@@ -68,74 +71,6 @@ def clear_cuda_cache() -> None:
         torch.cuda.ipc_collect()
     except RuntimeError:
         pass
-
-
-def chunks_by_id(chunks: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    return {chunk["chunk_id"]: dict(chunk) for chunk in chunks}
-
-
-def document_order_chunk_ids(chunks: list[dict[str, Any]]) -> list[str]:
-    return [
-        chunk["chunk_id"]
-        for chunk in sorted(chunks, key=lambda item: int(item["global_index"]))
-    ]
-
-
-def dedupe_preserve_order(chunk_ids: list[str]) -> list[str]:
-    seen: set[str] = set()
-    deduped: list[str] = []
-    for chunk_id in chunk_ids:
-        if chunk_id in seen:
-            continue
-        seen.add(chunk_id)
-        deduped.append(chunk_id)
-    return deduped
-
-
-def sort_by_document_order(
-    chunk_ids: list[str],
-    chunk_lookup: dict[str, dict[str, Any]],
-) -> list[str]:
-    return sorted(
-        dedupe_preserve_order(chunk_ids),
-        key=lambda chunk_id: int(chunk_lookup[chunk_id]["global_index"]),
-    )
-
-
-def stable_random_order(chunk_ids: list[str], random_seed: int, salt: str) -> list[str]:
-    ordered = list(chunk_ids)
-    seed_material = f"{random_seed}:{salt}".encode("utf-8")
-    seed = int.from_bytes(hashlib.sha256(seed_material).digest()[:8], "big")
-    random.Random(seed).shuffle(ordered)
-    return ordered
-
-
-def select_chunk_ids_for_budget(
-    candidate_chunk_ids: list[str],
-    chunk_lookup: dict[str, dict[str, Any]],
-    context_budget: int,
-) -> list[str]:
-    selected: list[str] = []
-    total_tokens = 0
-    for chunk_id in dedupe_preserve_order(candidate_chunk_ids):
-        chunk = chunk_lookup[chunk_id]
-        token_count = int(chunk["token_count"])
-        if total_tokens + token_count > context_budget:
-            continue
-        selected.append(chunk_id)
-        total_tokens += token_count
-    return selected
-
-
-def selected_chunks(
-    selected_chunk_ids: list[str],
-    chunk_lookup: dict[str, dict[str, Any]],
-) -> list[dict[str, Any]]:
-    return [dict(chunk_lookup[chunk_id]) for chunk_id in selected_chunk_ids]
-
-
-def context_token_count(chunks: list[dict[str, Any]]) -> int:
-    return sum(int(chunk["token_count"]) for chunk in chunks)
 
 
 def required_quotes_present_in_context(
@@ -213,83 +148,45 @@ def prepare_treatment(
     doc_order_ids: list[str],
     retrieval_trace: list[dict[str, Any]] | None = None,
     random_seed: int = 13,
+    domain_kg: DomainKnowledgeGraph | None = None,
+    setr_cache_path: str | Path | None = None,
 ) -> dict[str, Any]:
-    del doc_order_ids
     trace = [dict(row) for row in retrieval_trace] if retrieval_trace else []
-    original_hit_chunk_ids: list[str] = []
-    retrieval_method = "none"
+    request = ContextAssemblyRequest(
+        question=question,
+        treatment=treatment,
+        context_budget=context_budget,
+        chunk_lookup=chunk_lookup,
+        doc_order_ids=doc_order_ids,
+        retrieval_trace=trace,
+        random_seed=random_seed,
+        domain_kg=domain_kg,
+        setr_cache_path=Path(setr_cache_path) if setr_cache_path else None,
+    )
+    assembly = get_treatment(treatment).assemble(request)
+    return prepared_context_from_assembly(question, context_budget, assembly)
 
-    if treatment == "closed_book":
-        selected_ids: list[str] = []
-        prompt_order = "none"
-    elif treatment == "gold_evidence":
-        original_hit_chunk_ids = sort_by_document_order(
-            list(question.derived_gold_chunk_ids),
-            chunk_lookup,
-        )
-        selected_ids = select_chunk_ids_for_budget(
-            original_hit_chunk_ids,
-            chunk_lookup,
-            context_budget,
-        )
-        prompt_order = "gold_chunks_document_order"
-        retrieval_method = "gold"
-    elif treatment in DENSE_TREATMENTS:
-        if retrieval_trace is None:
-            raise ValueError(f"{treatment} requires a dense retrieval trace")
-        original_hit_chunk_ids = [str(row["chunk_id"]) for row in trace]
-        reranked_selection = select_chunk_ids_for_budget(
-            original_hit_chunk_ids,
-            chunk_lookup,
-            context_budget,
-        )
-        retrieval_method = (
-            str(trace[0].get("retrieval_method", "dense_faiss_reranked"))
-            if trace
-            else "dense_faiss_reranked"
-        )
-        if treatment == "dense_reranked":
-            selected_ids = reranked_selection
-            prompt_order = "dense_reranker_rank"
-        elif treatment == "dense_document_order":
-            selected_ids = sort_by_document_order(reranked_selection, chunk_lookup)
-            prompt_order = "dense_hits_document_order"
-        else:
-            selected_ids = stable_random_order(
-                reranked_selection,
-                random_seed,
-                f"{question.id}:{context_budget}:{treatment}",
-            )
-            prompt_order = "dense_hits_random_order"
-    elif treatment in SPARSE_TREATMENTS:
-        if retrieval_trace is None:
-            raise ValueError(f"{treatment} requires a sparse retrieval trace")
-        original_hit_chunk_ids = [str(row["chunk_id"]) for row in trace]
-        selected_ids = select_chunk_ids_for_budget(
-            original_hit_chunk_ids,
-            chunk_lookup,
-            context_budget,
-        )
-        prompt_order = "bm25_score"
-        retrieval_method = (
-            str(trace[0].get("retrieval_method", "bm25")) if trace else "bm25"
-        )
-    else:
-        raise ValueError(f"Unknown treatment: {treatment}")
 
-    final_chunks = selected_chunks(selected_ids, chunk_lookup)
+def prepared_context_from_assembly(
+    question: Question,
+    context_budget: int,
+    assembly: ContextAssemblyResult,
+) -> dict[str, Any]:
+    selected_ids = assembly.selected_chunk_ids
+    final_chunks = assembly.selected_chunks
     quote_presence = required_quotes_present_in_context(question, selected_ids)
     quote_recall = evidence_quote_recall(quote_presence)
     return {
         "selected_chunk_ids": selected_ids,
         "final_selected_chunk_ids": selected_ids,
         "selected_chunks": final_chunks,
-        "context_tokens": context_token_count(final_chunks),
-        "retrieval_trace": trace,
-        "retrieval_scores": retrieval_scores_for(selected_ids, trace),
-        "retrieval_method": retrieval_method,
-        "prompt_order": prompt_order,
-        "original_hit_chunk_ids": original_hit_chunk_ids,
+        "context_tokens": assembly.context_tokens,
+        "retrieval_trace": assembly.retrieval_trace,
+        "retrieval_scores": retrieval_scores_for(selected_ids, assembly.retrieval_trace),
+        "retrieval_method": assembly.retrieval_method,
+        "prompt_order": assembly.prompt_order,
+        "context_assembly_trace": assembly.context_assembly_trace,
+        "original_hit_chunk_ids": assembly.original_hit_chunk_ids,
         "evidence_chunk_recall": evidence_chunk_recall(
             selected_ids,
             question.derived_gold_chunk_ids,
@@ -297,24 +194,11 @@ def prepare_treatment(
         "evidence_quote_recall": quote_recall,
         "required_quotes_present_in_context": quote_presence,
         "coverage_ratio": (
-            context_token_count(final_chunks) / context_budget
+            assembly.context_tokens / context_budget
             if context_budget > 0
             else None
         ),
     }
-
-
-def system_prompt_for_treatment(treatment: str) -> str:
-    if treatment == "closed_book":
-        return CLOSED_BOOK_SYSTEM_PROMPT
-    return GROUNDED_SYSTEM_PROMPT
-
-
-def count_prompt_tokens(reader: Any, full_prompt: str) -> int:
-    count_tokens = getattr(reader, "count_tokens", None)
-    if callable(count_tokens):
-        return int(count_tokens(full_prompt))
-    return len(full_prompt.split())
 
 
 def build_result_row(
@@ -325,15 +209,15 @@ def build_result_row(
     reader: Any,
     config: RunConfig,
     model_output: str | None,
+    prompt_bundle: PromptBundle | None = None,
 ) -> dict[str, Any]:
-    system_prompt = system_prompt_for_treatment(treatment)
-    user_prompt = build_user_prompt(
-        question.question,
-        prepared["selected_chunks"],
-        closed_book=treatment == "closed_book",
-    )
-    full_prompt = reader.format_prompt(system_prompt, user_prompt)
-    prompt_tokens = count_prompt_tokens(reader, full_prompt)
+    if prompt_bundle is None:
+        prompt_bundle = HamletQAPromptBuilder().build(
+            question.question,
+            prepared["selected_chunks"],
+            treatment,
+            reader,
+        )
     return {
         "run_name": config.run_name,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
@@ -359,8 +243,8 @@ def build_result_row(
             "required_quotes_present_in_context"
         ],
         "context_tokens": prepared["context_tokens"],
-        "prompt_tokens": prompt_tokens,
-        "total_input_tokens": prompt_tokens,
+        "prompt_tokens": prompt_bundle.prompt_tokens,
+        "total_input_tokens": prompt_bundle.prompt_tokens,
         "max_new_tokens": config.max_new_tokens,
         "model_name": config.reader_model,
         "model_max_context": getattr(reader, "model_max_context", None),
@@ -369,9 +253,10 @@ def build_result_row(
         "retrieval_scores": prepared["retrieval_scores"],
         "retrieval_trace": prepared["retrieval_trace"],
         "prompt_order": prepared["prompt_order"],
-        "system_prompt": system_prompt,
-        "user_prompt": user_prompt,
-        "full_prompt": full_prompt,
+        "context_assembly_trace": prepared["context_assembly_trace"],
+        "system_prompt": prompt_bundle.system_prompt,
+        "user_prompt": prompt_bundle.user_prompt,
+        "full_prompt": prompt_bundle.full_prompt,
         "model_output": model_output,
         "failure_label": None,
         "embedding_model": config.embedding_model,
@@ -543,6 +428,9 @@ def prepare_run_dir(config: RunConfig, questions: list[Question]) -> Path:
     dump_json(run_dir / "run_config.json", config.to_dict())
     shutil.copy2(config.chunks_path, run_dir / "hamlet_chunks.jsonl")
     shutil.copy2(config.questions_path, run_dir / "hamlet_questions_input.json")
+    domain_kg_path = Path(config.domain_kg_path)
+    if domain_kg_path.exists():
+        shutil.copy2(domain_kg_path, run_dir / "hamlet_domain_kg.yaml")
     dump_json(
         run_dir / "hamlet_questions_resolved.json",
         [question.to_dict(include_matches=True) for question in questions],
@@ -556,7 +444,7 @@ def run_experiment(
     dense_retriever: RetrieverLike | None = None,
     sparse_retriever: RetrieverLike | None = None,
 ) -> Path:
-    unknown_treatments = sorted(set(config.treatments) - set(DEFAULT_TREATMENTS))
+    unknown_treatments = sorted(set(config.treatments) - known_treatment_names())
     if unknown_treatments:
         raise ValueError(f"Unknown treatments: {unknown_treatments}")
 
@@ -565,6 +453,9 @@ def run_experiment(
     doc_order_ids = document_order_chunk_ids(chunks)
     questions = load_questions(config.questions_path)
     validate_questions(questions, chunks)
+    domain_kg = None
+    if treatments_using_domain_kg(config.treatments):
+        domain_kg = DomainKnowledgeGraph.from_file(config.domain_kg_path)
 
     run_dir = prepare_run_dir(config, questions)
     results_path = run_dir / "results.jsonl"
@@ -593,16 +484,25 @@ def run_experiment(
                     doc_order_ids,
                     retrieval_trace=retrieval_trace,
                     random_seed=config.random_seed,
+                    domain_kg=domain_kg,
+                    setr_cache_path=(
+                        Path(config.context_assembly_cache_dir) / "setr_lite_cache.json"
+                        if treatment == "setr"
+                        else None
+                    ),
                 )
-                system_prompt = system_prompt_for_treatment(treatment)
-                user_prompt = build_user_prompt(
+                prompt_bundle = HamletQAPromptBuilder().build(
                     question.question,
                     prepared["selected_chunks"],
-                    closed_book=treatment == "closed_book",
+                    treatment,
+                    active_reader,
                 )
                 model_output = None
                 if not config.prepare_only:
-                    model_output = active_reader.generate(system_prompt, user_prompt)
+                    model_output = active_reader.generate(
+                        prompt_bundle.system_prompt,
+                        prompt_bundle.user_prompt,
+                    )
                 row = build_result_row(
                     question,
                     treatment,
@@ -611,6 +511,7 @@ def run_experiment(
                     active_reader,
                     config,
                     model_output,
+                    prompt_bundle=prompt_bundle,
                 )
                 append_jsonl(results_path, row)
 
