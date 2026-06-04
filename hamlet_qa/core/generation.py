@@ -28,6 +28,8 @@ class VLLMReader:
 
         self.model_name = model_name
         self.device = device
+        self.temperature = temperature
+        self.max_new_tokens = max_new_tokens
         self.llm = LLM(
             model=model_name,
             tensor_parallel_size=tensor_parallel_size,
@@ -74,7 +76,20 @@ class VLLMReader:
     def count_tokens(self, text: str) -> int:
         return len(self.tokenizer.encode(text, add_special_tokens=False))
 
-    def generate(self, system_prompt: str, user_prompt: str) -> str:
+    def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: int | None = None,
+    ) -> str:
         prompt = self.format_prompt(system_prompt, user_prompt)
-        output = self.llm.generate([prompt], self.sampling_params)[0]
+        sampling_params = self.sampling_params
+        if max_tokens is not None and max_tokens != self.max_new_tokens:
+            from vllm import SamplingParams
+
+            sampling_params = SamplingParams(
+                temperature=self.temperature,
+                max_tokens=max_tokens,
+            )
+        output = self.llm.generate([prompt], sampling_params)[0]
         return output.outputs[0].text.strip()

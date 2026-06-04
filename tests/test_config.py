@@ -11,8 +11,11 @@ from hamlet_qa.core.config import (
     DEFAULT_GPU_LAYOUT,
     DEFAULT_READER_MODEL,
     DEFAULT_RERANKER_MODEL,
+    DEFAULT_SETR_MAX_PASSAGES,
+    DEFAULT_SETR_SELECTOR_MAX_TOKENS,
     DEFAULT_TREATMENTS,
     DEFAULT_TOKENIZER_MODEL,
+    DEFAULT_TOP_K,
     GPU_LAYOUTS,
     ORDERING_TREATMENTS,
     RunConfig,
@@ -67,6 +70,9 @@ class ConfigDefaultsTests(unittest.TestCase):
         )
         self.assertEqual(config.domain_kg_path, DEFAULT_DOMAIN_KG_PATH)
         self.assertEqual(config.context_assembly_cache_dir, DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR)
+        self.assertEqual(DEFAULT_SETR_MAX_PASSAGES, DEFAULT_TOP_K)
+        self.assertEqual(config.setr_max_passages, DEFAULT_SETR_MAX_PASSAGES)
+        self.assertEqual(config.setr_selector_max_tokens, DEFAULT_SETR_SELECTOR_MAX_TOKENS)
 
     def test_cli_a40_3gpu_layout_sets_expected_devices(self):
         with patch("sys.argv", ["run_experiment", "--gpu-layout", "a40-3gpu"]):

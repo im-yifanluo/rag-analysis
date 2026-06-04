@@ -1,17 +1,18 @@
-"""SetR-lite role-set selector."""
+"""LLM-backed SetR selector using the original selection_IRI prompt."""
 
 from __future__ import annotations
 
 import hashlib
+import inspect
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
-from hamlet_qa.core.context import candidate_rank_map, dedupe_existing_chunk_ids
-from hamlet_qa.core.text import flatten_string_list, phrase_in_text, tokenize_terms
+from hamlet_qa.core.context import dedupe_existing_chunk_ids
 
 
+SETR_MAX_PASSAGES = 50
 SETR_SELECTION_SYS_PROMPT = (
     "You are RankLLM, an intelligent assistant that can rank and select passages "
     "based on their relevancy to the query."
@@ -31,71 +32,48 @@ Step 2. for each requirement in Step 1, find the passages that has the informati
 Step 3. Choose the passages that mostly covers clear and diverse informations to answer the query. Number of passages is unlimited. The format of final output should be '### Final Selection: [] []', e.g., ### Final Selection: [4] [2]."""
 
 
-DEFAULT_ROLE_KEYWORDS: dict[str, list[str]] = {
-    "answer": [],
-    "speaker_attribution": ["speaker", "says", "said", "line"],
-    "plan": ["plan", "players", "play", "observe", "looks"],
-    "bridge_to_execution": ["play", "tonight", "king", "circumstance"],
-    "staged_evidence": ["poisons", "garden", "estate", "murder"],
-    "reaction_confirmation": ["note", "noted", "observe", "confirmation"],
-    "earlier_event": ["first", "earlier", "before"],
-    "later_event": ["later", "after"],
-    "cup_setup": ["cup", "drink", "union"],
-    "cup_state": ["poison", "poisoned", "cup"],
-    "outcome": ["dies", "death", "poisoned", "outcome"],
-    "mistaken_action": ["arras", "rat", "draws", "stabs"],
-    "mistaken_belief": ["king", "belief"],
-    "actual_victim": ["polonius", "victim", "killed"],
-    "reason_one": ["queen", "mother", "reason", "motive"],
-    "reason_two": ["public", "love", "general", "reason", "motive"],
-    "symbolic_image": ["vows", "brokers", "implorators", "image"],
-}
+class SetRSelectorModel(Protocol):
+    model_name: str
 
-STOPWORDS = {
-    "about",
-    "after",
-    "also",
-    "does",
-    "from",
-    "have",
-    "into",
-    "that",
-    "the",
-    "their",
-    "then",
-    "there",
-    "they",
-    "this",
-    "what",
-    "when",
-    "where",
-    "which",
-    "while",
-    "with",
-    "would",
-}
+    def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: int | None = None,
+    ) -> str:
+        ...
 
-class JsonCache:
-    """Small JSON cache for role labels and chunk-role judgments."""
+
+class SetRSelectionError(ValueError):
+    """Raised when the SetR selector model does not produce a usable selection."""
+
+
+class SetRJsonCache:
+    """JSON cache for selector prompts, raw outputs, and parsed selections."""
 
     def __init__(self, path: str | Path | None):
         self.path = Path(path) if path else None
-        self.data: dict[str, Any] = {
-            "query_role_labels": {},
-            "chunk_role_judgments": {},
-        }
+        self.data: dict[str, Any] = {"selector_outputs": {}}
         if self.path and self.path.exists():
             with self.path.open("r", encoding="utf-8") as handle:
                 loaded = json.load(handle)
             if isinstance(loaded, dict):
                 self.data.update(loaded)
 
-    def get_section(self, section: str) -> dict[str, Any]:
-        value = self.data.setdefault(section, {})
-        if not isinstance(value, dict):
-            value = {}
-            self.data[section] = value
-        return value
+    def get(self, cache_key: str) -> dict[str, Any] | None:
+        section = self.data.setdefault("selector_outputs", {})
+        if not isinstance(section, dict):
+            self.data["selector_outputs"] = {}
+            return None
+        value = section.get(cache_key)
+        return dict(value) if isinstance(value, dict) else None
+
+    def set(self, cache_key: str, value: dict[str, Any]) -> None:
+        section = self.data.setdefault("selector_outputs", {})
+        if not isinstance(section, dict):
+            section = {}
+            self.data["selector_outputs"] = section
+        section[cache_key] = value
 
     def save(self) -> None:
         if not self.path:
@@ -111,242 +89,191 @@ def stable_hash(value: Any) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def normalize_role(role: str) -> str:
-    normalized = re.sub(r"[^a-z0-9]+", "_", role.lower()).strip("_")
-    return normalized or "answer"
+def format_setr_passage(index: int, chunk: dict[str, Any]) -> str:
+    text = re.sub(r"\n+", " ", str(chunk.get("text", "")).strip())
+    return f"[{index}] {text}"
 
 
-def important_terms(text: str, limit: int = 8) -> list[str]:
-    terms: list[str] = []
-    seen: set[str] = set()
-    for token in tokenize_terms(text):
-        if len(token) <= 2 or token in STOPWORDS or token in seen:
-            continue
-        seen.add(token)
-        terms.append(token)
-        if len(terms) >= limit:
-            break
-    return terms
-
-
-def trace_by_chunk_id(retrieval_trace: list[dict[str, Any]] | None) -> dict[str, dict[str, Any]]:
-    if not retrieval_trace:
-        return {}
-    return {str(row["chunk_id"]): dict(row) for row in retrieval_trace}
-
-
-def derive_setr_role_requirements(
-    question: Any,
-    role_templates: dict[str, list[str]] | None = None,
-    cache: JsonCache | None = None,
-) -> list[dict[str, Any]]:
-    """Derive SetR-style information requirements from question metadata."""
-
-    evidence = list(getattr(question, "required_evidence_quotes", []) or [])
-    cache_key = stable_hash(
-        {
-            "question": getattr(question, "question", str(question)),
-            "roles": [
-                {
-                    "role": getattr(item, "role", ""),
-                    "speaker": getattr(item, "speaker", ""),
-                }
-                for item in evidence
-            ],
-            "role_templates": role_templates or {},
-        }
+def build_setr_user_prompt(
+    question_text: str,
+    candidate_chunks: list[dict[str, Any]],
+) -> str:
+    passages = [
+        format_setr_passage(index, chunk)
+        for index, chunk in enumerate(candidate_chunks, start=1)
+    ]
+    return SETR_SELECTION_IRI_PROMPT.format(
+        question=question_text,
+        context="\n\n\n".join(passages),
+        num=len(candidate_chunks),
     )
-    if cache is not None:
-        cached = cache.get_section("query_role_labels").get(cache_key)
-        if isinstance(cached, list):
-            return [dict(item) for item in cached]
 
-    role_templates = role_templates or {}
-    query_terms = important_terms(getattr(question, "question", str(question)))
-    requirements: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    for item in evidence:
-        role = normalize_role(str(getattr(item, "role", "answer")))
-        if role in seen:
-            continue
-        seen.add(role)
-        speaker = str(getattr(item, "speaker", "") or "").lower()
-        keywords = []
-        keywords.extend(tokenize_terms(role.replace("_", " ")))
-        keywords.extend(tokenize_terms(speaker))
-        keywords.extend(DEFAULT_ROLE_KEYWORDS.get(role, []))
-        keywords.extend(role_templates.get(role, []))
-        if role == "answer" or not keywords:
-            keywords.extend(query_terms)
-        requirements.append(
-            {
-                "role": role,
-                "speaker": speaker,
-                "keywords": sorted({keyword for keyword in keywords if keyword}),
-            }
+
+def parse_setr_final_selection(output: str, num_candidates: int) -> list[int]:
+    match = re.search(
+        r"###\s*Final Selection([\w\W]+)",
+        output,
+        flags=re.IGNORECASE,
+    )
+    if match is None:
+        raise SetRSelectionError(
+            "SetR selector output is missing '### Final Selection'."
         )
 
-    if not requirements:
-        requirements = [
-            {
-                "role": "answer",
-                "speaker": "",
-                "keywords": query_terms,
-            }
-        ]
+    selected: list[int] = []
+    seen: set[int] = set()
+    for raw_number in re.findall(r"\[(\d+)\]", match.group(1)):
+        passage_number = int(raw_number)
+        if passage_number < 1 or passage_number > num_candidates:
+            continue
+        if passage_number in seen:
+            continue
+        seen.add(passage_number)
+        selected.append(passage_number)
 
-    if cache is not None:
-        cache.get_section("query_role_labels")[cache_key] = requirements
-    return requirements
-
-
-def explicit_roles_for_candidate(
-    chunk: dict[str, Any],
-    trace_row: dict[str, Any] | None = None,
-) -> set[str]:
-    roles: set[str] = set()
-    for source in (trace_row or {}, chunk):
-        for key in ("covered_roles", "roles", "role_labels", "evidence_roles", "setr_roles"):
-            for role in flatten_string_list(source.get(key)):
-                roles.add(normalize_role(role))
-    return roles
+    if not selected:
+        raise SetRSelectionError(
+            "SetR selector output did not contain any valid passage numbers."
+        )
+    return selected
 
 
-def judge_chunk_roles(
-    question: Any,
-    chunk: dict[str, Any],
-    role_requirements: list[dict[str, Any]],
-    trace_row: dict[str, Any] | None = None,
-    cache: JsonCache | None = None,
-) -> list[str]:
-    """Judge which derived roles a chunk covers, using explicit labels if present."""
-
-    explicit_roles = explicit_roles_for_candidate(chunk, trace_row)
-    cache_key = stable_hash(
-        {
-            "question": getattr(question, "question", str(question)),
-            "chunk_id": chunk.get("chunk_id"),
-            "chunk_text": chunk.get("text"),
-            "role_requirements": role_requirements,
-            "explicit_roles": sorted(explicit_roles),
-        }
-    )
-    if cache is not None:
-        cached = cache.get_section("chunk_role_judgments").get(cache_key)
-        if isinstance(cached, list):
-            return [str(item) for item in cached]
-
-    requirement_roles = {str(item["role"]) for item in role_requirements}
-    if explicit_roles:
-        covered = sorted(explicit_roles & requirement_roles)
-    else:
-        text = str(chunk.get("text", ""))
-        text_terms = set(tokenize_terms(text))
-        covered = []
-        for requirement in role_requirements:
-            keywords = [str(item).lower() for item in requirement.get("keywords", [])]
-            keyword_hits = 0
-            for keyword in keywords:
-                keyword_terms = tokenize_terms(keyword)
-                if len(keyword_terms) > 1:
-                    keyword_hits += int(phrase_in_text(text, keyword))
-                elif keyword_terms and keyword_terms[0] in text_terms:
-                    keyword_hits += 1
-            if keyword_hits:
-                covered.append(str(requirement["role"]))
-
-    if cache is not None:
-        cache.get_section("chunk_role_judgments")[cache_key] = covered
-    return covered
+def call_selector_model(
+    selector_model: SetRSelectorModel,
+    user_prompt: str,
+    max_tokens: int,
+) -> str:
+    signature = inspect.signature(selector_model.generate)
+    if "max_tokens" in signature.parameters:
+        return selector_model.generate(
+            SETR_SELECTION_SYS_PROMPT,
+            user_prompt,
+            max_tokens=max_tokens,
+        )
+    return selector_model.generate(SETR_SELECTION_SYS_PROMPT, user_prompt)
 
 
-def select_setr_lite(
+def selected_ids_within_budget(
+    selected_chunk_ids: list[str],
+    chunk_lookup: dict[str, dict[str, Any]],
+    context_budget: int,
+) -> tuple[list[str], list[str], int]:
+    selected: list[str] = []
+    skipped_over_budget: list[str] = []
+    total_tokens = 0
+    for chunk_id in selected_chunk_ids:
+        token_count = int(chunk_lookup[chunk_id]["token_count"])
+        if total_tokens + token_count > context_budget:
+            skipped_over_budget.append(chunk_id)
+            continue
+        selected.append(chunk_id)
+        total_tokens += token_count
+    if not selected:
+        raise SetRSelectionError(
+            "SetR selector chose passages, but none fit the context budget."
+        )
+    return selected, skipped_over_budget, total_tokens
+
+
+def select_setr(
     question: Any,
     candidate_chunk_ids: list[str],
     chunk_lookup: dict[str, dict[str, Any]],
     context_budget: int,
+    selector_model: SetRSelectorModel,
     retrieval_trace: list[dict[str, Any]] | None = None,
-    role_templates: dict[str, list[str]] | None = None,
     cache_path: str | Path | None = None,
+    selector_max_tokens: int = 4096,
+    max_passages: int = SETR_MAX_PASSAGES,
 ) -> dict[str, Any]:
-    """Select a diverse set of chunks covering SetR-style role requirements."""
+    """Run SetR selection_IRI with a selector LLM and return selected chunks."""
 
-    cache = JsonCache(cache_path)
     candidates = dedupe_existing_chunk_ids(candidate_chunk_ids, chunk_lookup)
-    trace_rows = trace_by_chunk_id(retrieval_trace)
-    rank_map = candidate_rank_map(candidates)
-    role_requirements = derive_setr_role_requirements(
-        question,
-        role_templates=role_templates,
-        cache=cache,
+    candidates = candidates[:max_passages]
+    if not candidates:
+        raise SetRSelectionError("SetR requires at least one candidate chunk.")
+
+    question_text = str(getattr(question, "question", str(question)))
+    candidate_chunks = [dict(chunk_lookup[chunk_id]) for chunk_id in candidates]
+    user_prompt = build_setr_user_prompt(question_text, candidate_chunks)
+    selector_model_name = str(getattr(selector_model, "model_name", "reader_model"))
+    cache = SetRJsonCache(cache_path)
+    cache_key = stable_hash(
+        {
+            "question": question_text,
+            "candidate_chunk_ids": candidates,
+            "candidate_texts": [chunk["text"] for chunk in candidate_chunks],
+            "selector_model": selector_model_name,
+            "selector_prompt": user_prompt,
+            "selector_max_tokens": selector_max_tokens,
+        }
     )
-    target_roles = {str(item["role"]) for item in role_requirements}
-    judgments = {
-        chunk_id: judge_chunk_roles(
-            question,
-            chunk_lookup[chunk_id],
-            role_requirements,
-            trace_row=trace_rows.get(chunk_id),
-            cache=cache,
+
+    cached = cache.get(cache_key)
+    if cached is not None:
+        selector_output = str(cached.get("selector_output", ""))
+        selected_positions = [int(item) for item in cached.get("selected_positions", [])]
+        cache_hit = True
+    else:
+        selector_output = call_selector_model(
+            selector_model,
+            user_prompt,
+            max_tokens=selector_max_tokens,
         )
-        for chunk_id in candidates
-    }
+        selected_positions = parse_setr_final_selection(
+            selector_output,
+            num_candidates=len(candidates),
+        )
+        cache.set(
+            cache_key,
+            {
+                "selector_model": selector_model_name,
+                "selector_system_prompt": SETR_SELECTION_SYS_PROMPT,
+                "selector_user_prompt": user_prompt,
+                "selector_output": selector_output,
+                "selected_positions": selected_positions,
+                "selected_chunk_ids": [
+                    candidates[position - 1] for position in selected_positions
+                ],
+            },
+        )
+        cache.save()
+        cache_hit = False
 
-    selected: list[str] = []
-    selected_roles: set[str] = set()
-    total_tokens = 0
-
-    def can_fit(chunk_id: str) -> bool:
-        return total_tokens + int(chunk_lookup[chunk_id]["token_count"]) <= context_budget
-
-    while selected_roles != target_roles:
-        eligible = [
-            chunk_id
-            for chunk_id in candidates
-            if chunk_id not in selected
-            and can_fit(chunk_id)
-            and (set(judgments[chunk_id]) - selected_roles)
-        ]
-        if not eligible:
-            break
-        best = sorted(
-            eligible,
-            key=lambda chunk_id: (
-                -len(set(judgments[chunk_id]) - selected_roles),
-                rank_map[chunk_id],
-                int(chunk_lookup[chunk_id]["token_count"]),
-                int(chunk_lookup[chunk_id]["global_index"]),
-            ),
-        )[0]
-        selected.append(best)
-        selected_roles.update(judgments[best])
-        total_tokens += int(chunk_lookup[best]["token_count"])
-
-    for chunk_id in candidates:
-        if chunk_id in selected or not can_fit(chunk_id):
-            continue
-        selected.append(chunk_id)
-        total_tokens += int(chunk_lookup[chunk_id]["token_count"])
-
-    selected_chunks = [dict(chunk_lookup[chunk_id]) for chunk_id in selected]
-    cache.save()
+    if not selected_positions:
+        selected_positions = parse_setr_final_selection(
+            selector_output,
+            num_candidates=len(candidates),
+        )
+    selected_by_model = [candidates[position - 1] for position in selected_positions]
+    selected_ids, skipped_over_budget, total_tokens = selected_ids_within_budget(
+        selected_by_model,
+        chunk_lookup,
+        context_budget,
+    )
     return {
-        "selected_chunk_ids": selected,
-        "selected_chunks": selected_chunks,
+        "selected_chunk_ids": selected_ids,
+        "selected_chunks": [dict(chunk_lookup[chunk_id]) for chunk_id in selected_ids],
         "context_tokens": total_tokens,
-        "prompt_order": "setr_lite_set_selection",
+        "prompt_order": "setr_selection_iri",
         "retrieval_method": (
-            f"{retrieval_trace[0].get('retrieval_method', 'dense_faiss')}_setr_lite"
+            f"{retrieval_trace[0].get('retrieval_method', 'dense_faiss')}_setr"
             if retrieval_trace
-            else "setr_lite"
+            else "setr"
         ),
         "context_assembly_trace": {
-            "method": "setr_lite",
-            "source": "SetR selection_IRI prompt adapted to deterministic role set cover",
-            "setr_system_prompt": SETR_SELECTION_SYS_PROMPT,
-            "setr_user_prompt_template": SETR_SELECTION_IRI_PROMPT,
-            "role_requirements": role_requirements,
-            "chunk_role_judgments": judgments,
-            "selected_role_coverage": sorted(selected_roles),
+            "method": "setr",
+            "source": "third_party/SetR selection_IRI prompt with reader model as selector",
+            "selector_model": selector_model_name,
+            "selector_max_tokens": selector_max_tokens,
+            "max_passages": max_passages,
+            "cache_hit": cache_hit,
+            "selector_system_prompt": SETR_SELECTION_SYS_PROMPT,
+            "selector_user_prompt": user_prompt,
+            "selector_output": selector_output,
+            "selected_positions": selected_positions,
+            "selected_chunk_ids_before_budget": selected_by_model,
+            "selected_chunk_ids": selected_ids,
+            "skipped_over_budget_chunk_ids": skipped_over_budget,
         },
     }

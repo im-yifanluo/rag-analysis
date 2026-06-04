@@ -15,6 +15,7 @@ from hamlet_qa.features.registry import (
     get_treatment,
     known_treatment_names,
     treatments_using_domain_kg,
+    treatments_using_llm_assembly,
 )
 from hamlet_qa.core.config import RunConfig
 from hamlet_qa.core.io import append_jsonl, dump_json, load_jsonl
@@ -48,7 +49,12 @@ class ReaderLike(Protocol):
     def count_tokens(self, text: str) -> int:
         ...
 
-    def generate(self, system_prompt: str, user_prompt: str) -> str:
+    def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: int | None = None,
+    ) -> str:
         ...
 
 
@@ -149,7 +155,10 @@ def prepare_treatment(
     retrieval_trace: list[dict[str, Any]] | None = None,
     random_seed: int = 13,
     domain_kg: DomainKnowledgeGraph | None = None,
+    selector_model: Any = None,
     setr_cache_path: str | Path | None = None,
+    setr_max_passages: int = 50,
+    setr_selector_max_tokens: int = 4096,
 ) -> dict[str, Any]:
     trace = [dict(row) for row in retrieval_trace] if retrieval_trace else []
     request = ContextAssemblyRequest(
@@ -161,7 +170,10 @@ def prepare_treatment(
         retrieval_trace=trace,
         random_seed=random_seed,
         domain_kg=domain_kg,
+        selector_model=selector_model,
         setr_cache_path=Path(setr_cache_path) if setr_cache_path else None,
+        setr_max_passages=setr_max_passages,
+        setr_selector_max_tokens=setr_selector_max_tokens,
     )
     assembly = get_treatment(treatment).assemble(request)
     return prepared_context_from_assembly(question, context_budget, assembly)
@@ -273,8 +285,8 @@ def build_result_row(
     }
 
 
-def make_reader(config: RunConfig) -> Any:
-    if config.prepare_only:
+def make_reader(config: RunConfig, force_generation_model: bool = False) -> Any:
+    if config.prepare_only and not force_generation_model:
         return TokenizerPromptFormatter(config.reader_model)
     return VLLMReader(
         config.reader_model,
@@ -466,7 +478,10 @@ def run_experiment(
         dense_retriever=dense_retriever,
         sparse_retriever=sparse_retriever,
     )
-    active_reader = reader or make_reader(config)
+    active_reader = reader or make_reader(
+        config,
+        force_generation_model=treatments_using_llm_assembly(config.treatments),
+    )
 
     for question in questions:
         for context_budget in config.context_budgets:
@@ -485,11 +500,14 @@ def run_experiment(
                     retrieval_trace=retrieval_trace,
                     random_seed=config.random_seed,
                     domain_kg=domain_kg,
+                    selector_model=active_reader,
                     setr_cache_path=(
-                        Path(config.context_assembly_cache_dir) / "setr_lite_cache.json"
+                        Path(config.context_assembly_cache_dir) / "setr_selector_cache.json"
                         if treatment == "setr"
                         else None
                     ),
+                    setr_max_passages=config.setr_max_passages,
+                    setr_selector_max_tokens=config.setr_selector_max_tokens,
                 )
                 prompt_bundle = HamletQAPromptBuilder().build(
                     question.question,

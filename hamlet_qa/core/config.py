@@ -34,12 +34,14 @@ DEFAULT_TREATMENTS = (
     BASELINE_TREATMENTS + ORDERING_TREATMENTS + NEW_CONTEXT_ASSEMBLY_TREATMENTS
 )
 DEFAULT_TOP_K = 50
+DEFAULT_SETR_MAX_PASSAGES = DEFAULT_TOP_K
 DEFAULT_RANDOM_SEED = 13
 DEFAULT_BM25_K1 = 1.5
 DEFAULT_BM25_B = 0.75
 DEFAULT_GPU_LAYOUT = "single"
 DEFAULT_DOMAIN_KG_PATH = "data/hamlet_domain_kg.yaml"
 DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR = "data/cache"
+DEFAULT_SETR_SELECTOR_MAX_TOKENS = 4096
 GPU_LAYOUTS = {
     "single": {
         "embedding_device": "cuda",
@@ -104,6 +106,8 @@ class RunConfig:
     bm25_b: float = DEFAULT_BM25_B
     domain_kg_path: str = DEFAULT_DOMAIN_KG_PATH
     context_assembly_cache_dir: str = DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR
+    setr_max_passages: int = DEFAULT_SETR_MAX_PASSAGES
+    setr_selector_max_tokens: int = DEFAULT_SETR_SELECTOR_MAX_TOKENS
     tensor_parallel_size: int = 1
     gpu_memory_utilization: float = 0.90
     prepare_only: bool = False

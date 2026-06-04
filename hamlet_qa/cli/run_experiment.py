@@ -15,6 +15,8 @@ from hamlet_qa.core.config import (
     DEFAULT_READER_MODEL,
     DEFAULT_RERANKER_MODEL,
     DEFAULT_RANDOM_SEED,
+    DEFAULT_SETR_MAX_PASSAGES,
+    DEFAULT_SETR_SELECTOR_MAX_TOKENS,
     DEFAULT_TEMPERATURE,
     DEFAULT_TOP_K,
     DEFAULT_TREATMENTS,
@@ -94,7 +96,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--context-assembly-cache-dir",
         default=DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR,
-        help="Directory for cached SetR-lite role labels and chunk-role judgments.",
+        help="Directory for cached SetR selector prompts, outputs, and parsed selections.",
+    )
+    parser.add_argument(
+        "--setr-max-passages",
+        type=int,
+        default=DEFAULT_SETR_MAX_PASSAGES,
+        help="Number of dense candidates exposed to the SetR selector.",
+    )
+    parser.add_argument(
+        "--setr-selector-max-tokens",
+        type=int,
+        default=DEFAULT_SETR_SELECTOR_MAX_TOKENS,
+        help="Maximum tokens for the SetR selection_IRI selector response.",
     )
     parser.add_argument("--tensor-parallel-size", type=int, default=1)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.90)
@@ -135,6 +149,8 @@ def config_from_args(args: argparse.Namespace) -> RunConfig:
         bm25_b=args.bm25_b,
         domain_kg_path=args.domain_kg,
         context_assembly_cache_dir=args.context_assembly_cache_dir,
+        setr_max_passages=args.setr_max_passages,
+        setr_selector_max_tokens=args.setr_selector_max_tokens,
         tensor_parallel_size=args.tensor_parallel_size,
         gpu_memory_utilization=args.gpu_memory_utilization,
         prepare_only=args.prepare_only,

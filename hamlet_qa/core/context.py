@@ -26,7 +26,10 @@ class ContextAssemblyRequest:
     retrieval_trace: list[dict[str, Any]] = field(default_factory=list)
     random_seed: int = 13
     domain_kg: Any = None
+    selector_model: Any = None
     setr_cache_path: Path | None = None
+    setr_max_passages: int = 50
+    setr_selector_max_tokens: int = 4096
 
 
 @dataclass(frozen=True)
@@ -57,6 +60,7 @@ class TreatmentSpec:
     assemble: AssemblyFn
     retrieval_source: RetrievalSource = "none"
     uses_domain_kg: bool = False
+    uses_llm_assembly: bool = False
 
 
 def chunks_by_id(chunks: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:

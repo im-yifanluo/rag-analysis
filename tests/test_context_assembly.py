@@ -8,13 +8,15 @@ from hamlet_qa.features.domain.kg import (
     DomainKnowledgeGraph,
     select_domain_kg_lite,
 )
-from hamlet_qa.features.setr.selector import select_setr_lite
-from hamlet_qa.core.questions import Question, RequiredEvidenceQuote
-from hamlet_qa.core.context import (
-    chunks_by_id,
-    context_token_count,
-    select_chunk_ids_for_budget,
+from hamlet_qa.features.setr.selector import (
+    SETR_SELECTION_IRI_PROMPT,
+    SETR_SELECTION_SYS_PROMPT,
+    SetRSelectionError,
+    parse_setr_final_selection,
+    select_setr,
 )
+from hamlet_qa.core.questions import Question, RequiredEvidenceQuote
+from hamlet_qa.core.context import chunks_by_id, context_token_count
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -83,16 +85,43 @@ def role_chunks() -> list[dict]:
     ]
 
 
-def covered_roles(chunks: list[dict], selected_ids: list[str]) -> set[str]:
-    lookup = chunks_by_id(chunks)
-    roles: set[str] = set()
-    for chunk_id in selected_ids:
-        roles.update(lookup[chunk_id].get("roles", []))
-    return roles
+class FakeSetRSelector:
+    model_name = "fake-reader"
+
+    def __init__(self, output: str):
+        self.output = output
+        self.calls: list[dict[str, object]] = []
+
+    def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: int | None = None,
+    ) -> str:
+        self.calls.append(
+            {
+                "system_prompt": system_prompt,
+                "user_prompt": user_prompt,
+                "max_tokens": max_tokens,
+            }
+        )
+        return self.output
 
 
-class SetRLiteTests(unittest.TestCase):
-    def test_setr_lite_selects_more_distinct_roles_than_plain_top_k(self):
+class SetRSelectorTests(unittest.TestCase):
+    def test_parse_setr_final_selection_dedupes_and_filters_invalid_numbers(self):
+        parsed = parse_setr_final_selection(
+            "reasoning\n### Final Selection: [3] [1] [3] [99]",
+            num_candidates=3,
+        )
+
+        self.assertEqual(parsed, [3, 1])
+
+    def test_parse_setr_final_selection_requires_final_selection_marker(self):
+        with self.assertRaises(SetRSelectionError):
+            parse_setr_final_selection("[1] [2]", num_candidates=2)
+
+    def test_setr_uses_selector_model_output_and_original_prompt(self):
         chunks = role_chunks()
         lookup = chunks_by_id(chunks)
         trace = [
@@ -101,23 +130,33 @@ class SetRLiteTests(unittest.TestCase):
             {"rank": 3, "chunk_id": "c_confirmation", "score": 0.8},
         ]
         candidate_ids = [row["chunk_id"] for row in trace]
+        selector = FakeSetRSelector(
+            "Step 1. setup and confirmation.\n"
+            "Step 2. [1] and [3].\n"
+            "### Final Selection: [1] [3]"
+        )
 
-        top_k_ids = select_chunk_ids_for_budget(candidate_ids, lookup, context_budget=6)
-        setr = select_setr_lite(
+        setr = select_setr(
             role_question(),
             candidate_ids,
             lookup,
             context_budget=6,
+            selector_model=selector,
             retrieval_trace=trace,
+            selector_max_tokens=123,
         )
 
-        self.assertEqual(covered_roles(chunks, top_k_ids), {"setup"})
-        self.assertEqual(
-            covered_roles(chunks, setr["selected_chunk_ids"]),
-            {"setup", "confirmation"},
-        )
+        self.assertEqual(setr["selected_chunk_ids"], ["c_setup_1", "c_confirmation"])
+        self.assertEqual(len(selector.calls), 1)
+        self.assertEqual(selector.calls[0]["system_prompt"], SETR_SELECTION_SYS_PROMPT)
+        self.assertEqual(selector.calls[0]["max_tokens"], 123)
+        self.assertIn("Step 1. Please list up", SETR_SELECTION_IRI_PROMPT)
+        self.assertIn("[1] setup duplicate one", str(selector.calls[0]["user_prompt"]))
+        self.assertIn("[3] missing confirmation", str(selector.calls[0]["user_prompt"]))
+        self.assertEqual(setr["context_assembly_trace"]["selected_positions"], [1, 3])
+        self.assertFalse(setr["context_assembly_trace"]["cache_hit"])
 
-    def test_setr_lite_avoids_duplicate_role_when_missing_role_is_available(self):
+    def test_setr_selector_output_is_cached(self):
         chunks = role_chunks()
         lookup = chunks_by_id(chunks)
         trace = [
@@ -125,17 +164,70 @@ class SetRLiteTests(unittest.TestCase):
             {"rank": 2, "chunk_id": "c_setup_2", "score": 0.9},
             {"rank": 3, "chunk_id": "c_confirmation", "score": 0.8},
         ]
+        with self.subTest("cache miss then hit"):
+            cache_path = REPO_ROOT / "runs" / "tmp_setr_selector_test_cache.json"
+            try:
+                cache_path.unlink(missing_ok=True)
+                selector = FakeSetRSelector("### Final Selection: [1] [3]")
+                first = select_setr(
+                    role_question(),
+                    [row["chunk_id"] for row in trace],
+                    lookup,
+                    context_budget=6,
+                    selector_model=selector,
+                    retrieval_trace=trace,
+                    cache_path=cache_path,
+                )
+                second = select_setr(
+                    role_question(),
+                    [row["chunk_id"] for row in trace],
+                    lookup,
+                    context_budget=6,
+                    selector_model=selector,
+                    retrieval_trace=trace,
+                    cache_path=cache_path,
+                )
+            finally:
+                cache_path.unlink(missing_ok=True)
 
-        setr = select_setr_lite(
+        self.assertEqual(first["selected_chunk_ids"], second["selected_chunk_ids"])
+        self.assertEqual(len(selector.calls), 1)
+        self.assertFalse(first["context_assembly_trace"]["cache_hit"])
+        self.assertTrue(second["context_assembly_trace"]["cache_hit"])
+
+    def test_setr_can_select_from_top_50_not_only_top_20(self):
+        chunks = [
+            {
+                "chunk_id": f"c_{index:02d}",
+                "global_index": index,
+                "act": 1,
+                "scene": 1,
+                "scene_title": "Synthetic.",
+                "token_count": 1,
+                "text": f"candidate {index}",
+            }
+            for index in range(1, 51)
+        ]
+        lookup = chunks_by_id(chunks)
+        trace = [
+            {"rank": index, "chunk_id": f"c_{index:02d}", "score": 1.0 / index}
+            for index in range(1, 51)
+        ]
+        selector = FakeSetRSelector("### Final Selection: [25]")
+
+        setr = select_setr(
             role_question(),
             [row["chunk_id"] for row in trace],
             lookup,
-            context_budget=6,
+            context_budget=10,
+            selector_model=selector,
             retrieval_trace=trace,
+            max_passages=50,
         )
 
-        self.assertEqual(setr["selected_chunk_ids"], ["c_setup_1", "c_confirmation"])
-        self.assertNotIn("c_setup_2", setr["selected_chunk_ids"])
+        self.assertEqual(setr["selected_chunk_ids"], ["c_25"])
+        self.assertIn("[25] candidate 25", str(selector.calls[0]["user_prompt"]))
+        self.assertEqual(setr["context_assembly_trace"]["max_passages"], 50)
 
 
 class DomainKGLiteTests(unittest.TestCase):

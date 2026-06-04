@@ -14,7 +14,7 @@ from hamlet_qa.features.ordering.assembly import (
     assemble_dense_document_order,
     assemble_dense_random_order,
 )
-from hamlet_qa.features.setr.assembly import assemble_setr_lite
+from hamlet_qa.features.setr.assembly import assemble_setr
 
 
 TREATMENT_REGISTRY: dict[str, TreatmentSpec] = {
@@ -42,9 +42,9 @@ TREATMENT_REGISTRY: dict[str, TreatmentSpec] = {
     ),
     "setr": TreatmentSpec(
         "setr",
-        assemble_setr_lite,
+        assemble_setr,
         retrieval_source="dense",
-        uses_domain_kg=True,
+        uses_llm_assembly=True,
     ),
     "domain": TreatmentSpec(
         "domain",
@@ -75,6 +75,10 @@ def get_treatment(treatment: str) -> TreatmentSpec:
 
 def treatments_using_domain_kg(treatments: list[str]) -> bool:
     return any(get_treatment(treatment).uses_domain_kg for treatment in treatments)
+
+
+def treatments_using_llm_assembly(treatments: list[str]) -> bool:
+    return any(get_treatment(treatment).uses_llm_assembly for treatment in treatments)
 
 
 def known_treatment_names() -> set[str]:

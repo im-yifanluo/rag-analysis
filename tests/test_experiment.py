@@ -49,10 +49,34 @@ class RecordingReader:
     def count_tokens(self, text: str) -> int:
         return len(text.split())
 
-    def generate(self, system_prompt: str, user_prompt: str) -> str:
+    def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: int | None = None,
+    ) -> str:
+        del max_tokens
         del system_prompt, user_prompt
         self.events.append("generate")
         return "answer"
+
+
+class SetRPrepareOnlyReader(StubReader):
+    model_name = "fake-reader"
+
+    def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: int | None = None,
+    ) -> str:
+        self.generate_calls += 1
+        self.last_selector_prompt = {
+            "system_prompt": system_prompt,
+            "user_prompt": user_prompt,
+            "max_tokens": max_tokens,
+        }
+        return "Step 1. Need selected evidence.\n### Final Selection: [1]"
 
 
 class RecordingRetriever:
@@ -513,9 +537,10 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 context_assembly_cache_dir=str(Path(tmp) / "cache"),
             )
 
+            reader = SetRPrepareOnlyReader()
             results_path = run_experiment(
                 config,
-                reader=StubReader(),
+                reader=reader,
                 dense_retriever=RecordingRetriever(events),
             )
 
@@ -528,6 +553,14 @@ class PrepareOnlyRunTests(unittest.TestCase):
             self.assertEqual({row["treatment"] for row in rows}, {"setr", "domain"})
             self.assertTrue(all(row["model_output"] is None for row in rows))
             self.assertTrue(all(row["context_assembly_trace"] for row in rows))
+            self.assertEqual(reader.generate_calls, 10)
+            setr_rows = [row for row in rows if row["treatment"] == "setr"]
+            self.assertTrue(
+                all(
+                    row["context_assembly_trace"]["selector_model"] == "fake-reader"
+                    for row in setr_rows
+                )
+            )
             domain_rows = [row for row in rows if row["treatment"] == "domain"]
             self.assertTrue(
                 all(row["selected_chunk_ids"][0] == "domain_scaffold" for row in domain_rows)

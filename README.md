@@ -128,12 +128,14 @@ Defaults:
 - context budgets: `1000`
 - dense retrieval: Qwen embedding vectors in FAISS, then Qwen reranker scores
   define the final dense ranking
+- top-k candidates: `50`
 - GPU layout: `single`, which stages embedder, reranker, and reader on the
   default CUDA device so a one-GPU run remains intact
 - dense prompt order variants: reranker rank, document order, deterministic
   random order
 - sparse retrieval: BM25 over chunk text
-- `setr`: SetR-style role set selection over the dense candidate list
+- `setr`: LLM-backed SetR `selection_IRI` set selection over the dense
+  candidate list, using the reader model as the selector
 - `domain`: Hamlet domain-KG scaffold plus KG-guided dense candidate ordering
 - random seed: `13`
 
@@ -162,10 +164,11 @@ python -m hamlet_qa.cli.run_experiment --run-name dry_prompts --prepare-only
 
 This still performs dense retrieval for grounded treatments so relevance
 ordering and reranking are available when a dense treatment is selected, and
-BM25 when `sparse_bm25` is selected. To disable reranking, pass
-`--reranker-model none`. For a model-, embedder-, reranker-, and BM25-free CLI
-smoke test, restrict treatments to `closed_book`; tests can inject cached/stub
-retrievers.
+BM25 when `sparse_bm25` is selected. If `setr` is selected, prepare-only still
+loads and calls the reader model for SetR context selection; it only skips the
+final answer generation. To disable reranking, pass `--reranker-model none`.
+For a model-, embedder-, reranker-, and BM25-free CLI smoke test, restrict
+treatments to `closed_book`; tests can inject cached/stub retrievers.
 
 ## Post-Retrieval Context Assembly
 
@@ -183,30 +186,35 @@ deterministic seeded shuffle.
 
 ### `setr`
 
-`setr` is a lightweight SetR-style selector inspired by the cloned
-`third_party/SetR/` implementation and the paper
+`setr` is an LLM-backed SetR selector using the cloned `third_party/SetR/`
+`selection_IRI` prompt and the paper
 [Shifting from Ranking to Set Selection for Retrieval Augmented Generation](https://arxiv.org/abs/2507.06838).
 The original SetR code centers on the `selection_IRI` prompt: identify the
 query's information requirements, map passages to those requirements, then
-select a set of passages that covers clear and diverse information. This repo
-keeps that logic but implements a deterministic `setr_lite` prototype instead
-of training or serving a new SetR model.
+select a set of passages that covers clear and diverse information.
 
 What this implementation does:
 
-- derives information requirements from the question's evidence-role labels,
-  falling back to query terms for unanswerable or unlabeled questions;
-- judges which dense-retrieved chunks cover each role using explicit test
-  labels when present, otherwise deterministic lexical role templates;
-- greedily selects chunks that cover missing roles before filling remaining
-  budget with the dense order;
-- writes cached query-role labels and chunk-role judgments to
-  `data/cache/setr_lite_cache.json` by default;
-- logs `context_assembly_trace` in each result row for inspection.
+- formats the top dense/reranked candidates as SetR numbered passages; by
+  default this is the same `50`-candidate pool used by the other dense
+  treatments;
+- sends the original `selection_IRI` system/user prompt to the configured
+  reader model, which acts as the SetR selector;
+- requires the selector output to contain `### Final Selection: [..] [..]`;
+- maps selected passage numbers back to chunk IDs and enforces the context
+  budget without adding unselected fallback chunks;
+- writes cached selector prompts, raw outputs, and parsed selections to
+  `data/cache/setr_selector_cache.json` by default;
+- logs the selector prompt, selector output, selected passage numbers, and
+  selected chunks in `context_assembly_trace`.
 
-This is intentionally a failure-analysis prototype. It does not train a model,
-does not require external datasets, and does not claim to reproduce the SetR
-paper's learned selector.
+This is a runtime adaptation of the original SetR selection prompt. It does not
+train a SetR checkpoint. To approximate the paper more closely, use a strong
+reader model or a separately fine-tuned SetR selector checkpoint as
+`--reader-model`. Use `--setr-max-passages` to control how many retrieved
+candidates the selector sees, and `--setr-selector-max-tokens` to control the
+selector response budget. The default selector response budget is `4096`,
+matching the long selector-response budget used by the cloned SetR scripts.
 
 ### `domain`
 
@@ -227,10 +235,10 @@ The editable KG currently includes:
   scene, Polonius death, Ophelia madness, and the duel;
 - event aliases and relations such as
   `Mousetrap -> Claudius reaction -> Horatio confirmation`;
-- optional evidence-role templates used by `setr_lite`.
+- optional evidence-role templates retained for graph editing experiments.
 
 Use `--domain-kg path/to/file.yaml` to point at an edited graph, and
-`--context-assembly-cache-dir path/to/cache` to move the SetR-lite cache.
+`--context-assembly-cache-dir path/to/cache` to move the SetR selector cache.
 
 ## Inspect Results
 
