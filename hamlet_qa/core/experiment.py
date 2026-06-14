@@ -19,7 +19,12 @@ from hamlet_qa.features.registry import (
 )
 from hamlet_qa.core.config import RunConfig
 from hamlet_qa.core.io import append_jsonl, dump_json, load_jsonl
-from hamlet_qa.core.questions import Question, load_questions, validate_questions
+from hamlet_qa.core.questions import (
+    Question,
+    load_questions,
+    normalize_text,
+    validate_questions,
+)
 from hamlet_qa.core.generation import VLLMReader
 from hamlet_qa.core.context import (
     ContextAssemblyRequest,
@@ -82,18 +87,37 @@ def clear_cuda_cache() -> None:
 def required_quotes_present_in_context(
     question: Question,
     selected_chunk_ids: list[str],
+    selected_chunks: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
+    """Check quote presence by matched chunk ID or by selected context text.
+
+    The text check matters for treatments whose context contains synthetic
+    pseudo-chunks (CRAG refined knowledge, RECOMP summaries, MacRAG merged
+    blocks): evidence can be present verbatim without any gold chunk ID being
+    selected.
+    """
     selected = set(selected_chunk_ids)
+    context_text = ""
+    if selected_chunks:
+        context_text = normalize_text(
+            "\n".join(str(chunk.get("text", "")) for chunk in selected_chunks)
+        )
     present: list[dict[str, Any]] = []
     for index, evidence_quote in enumerate(question.required_evidence_quotes):
         matched = list(evidence_quote.matched_chunk_ids)
+        present_by_chunk_id = bool(selected & set(matched))
+        present_by_text = bool(
+            context_text and normalize_text(evidence_quote.quote) in context_text
+        )
         present.append(
             {
                 "quote_index": index,
                 "quote": evidence_quote.quote,
                 "role": evidence_quote.role,
                 "matched_chunk_ids": matched,
-                "present": bool(selected & set(matched)),
+                "present": present_by_chunk_id or present_by_text,
+                "present_by_chunk_id": present_by_chunk_id,
+                "present_by_text": present_by_text,
             }
         )
     return present
@@ -159,6 +183,8 @@ def prepare_treatment(
     setr_cache_path: str | Path | None = None,
     setr_max_passages: int = 50,
     setr_selector_max_tokens: int = 4096,
+    feature_params: dict[str, Any] | None = None,
+    feature_handles: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     trace = [dict(row) for row in retrieval_trace] if retrieval_trace else []
     request = ContextAssemblyRequest(
@@ -174,6 +200,8 @@ def prepare_treatment(
         setr_cache_path=Path(setr_cache_path) if setr_cache_path else None,
         setr_max_passages=setr_max_passages,
         setr_selector_max_tokens=setr_selector_max_tokens,
+        feature_params=dict(feature_params or {}),
+        feature_handles=dict(feature_handles or {}),
     )
     assembly = get_treatment(treatment).assemble(request)
     return prepared_context_from_assembly(question, context_budget, assembly)
@@ -186,7 +214,11 @@ def prepared_context_from_assembly(
 ) -> dict[str, Any]:
     selected_ids = assembly.selected_chunk_ids
     final_chunks = assembly.selected_chunks
-    quote_presence = required_quotes_present_in_context(question, selected_ids)
+    quote_presence = required_quotes_present_in_context(
+        question,
+        selected_ids,
+        selected_chunks=final_chunks,
+    )
     quote_recall = evidence_quote_recall(quote_presence)
     return {
         "selected_chunk_ids": selected_ids,
@@ -365,12 +397,17 @@ def build_retrieval_traces(
     questions: list[Question],
     dense_retriever: RetrieverLike | None = None,
     sparse_retriever: RetrieverLike | None = None,
+    feature_handles: dict[str, Any] | None = None,
 ) -> dict[str, dict[str, list[dict[str, Any]]]]:
     traces: dict[str, dict[str, list[dict[str, Any]]]] = {
         question.id: {} for question in questions
     }
     needs_dense_trace = any(treatment in DENSE_TREATMENTS for treatment in config.treatments)
     needs_sparse_trace = any(treatment in SPARSE_TREATMENTS for treatment in config.treatments)
+    needs_macrag_trace = any(
+        get_treatment(treatment).retrieval_source == "macrag"
+        for treatment in config.treatments
+    )
 
     if needs_dense_trace:
         if dense_retriever is not None:
@@ -425,7 +462,188 @@ def build_retrieval_traces(
             if sparse_retriever is None:
                 del active_sparse_retriever
 
+    if needs_macrag_trace:
+        from hamlet_qa.features.macrag.retrieval import build_macrag_traces
+
+        build_macrag_traces(
+            config,
+            chunks,
+            questions,
+            traces,
+            feature_handles=feature_handles,
+        )
+
     return traces
+
+
+def prepare_crag_handles(
+    config: RunConfig,
+    chunks: list[dict[str, Any]],
+    handles: dict[str, Any],
+) -> None:
+    """Construct the CRAG strip evaluator and doc-wide BM25 re-retriever.
+
+    The BM25 retriever is CPU-only. The strip evaluator reuses the configured
+    reranker model; on the single-GPU layout it runs on CPU so it can stay
+    resident next to the vLLM reader (small workload, documented slowness),
+    while multi-GPU layouts place it on the reranker device.
+    """
+    if "crag_reretriever" not in handles:
+        handles["crag_reretriever"] = make_sparse_retriever(config, chunks)
+    if "crag_evaluator" not in handles:
+        if not config.reranker_model:
+            raise ValueError(
+                "The crag treatment uses the reranker model as its retrieval "
+                "evaluator; configure --reranker-model."
+            )
+        device = config.crag_evaluator_device or (
+            "cpu" if config.gpu_layout == "single" else config.reranker_device
+        )
+        handles["crag_evaluator"] = CrossEncoderReranker(
+            config.reranker_model,
+            device=device,
+            batch_size=config.reranker_batch_size,
+        )
+
+
+def feature_params_from_config(config: RunConfig) -> dict[str, Any]:
+    """Per-treatment scalars passed through ContextAssemblyRequest."""
+    cache_dir = Path(config.context_assembly_cache_dir)
+    return {
+        "crag_ndocs": config.crag_ndocs,
+        "crag_upper_threshold": config.crag_upper_threshold,
+        "crag_lower_threshold": config.crag_lower_threshold,
+        "crag_decompose_mode": config.crag_decompose_mode,
+        "crag_external_top_k": config.crag_external_top_k,
+        "crag_rewrite_cache_path": cache_dir / "crag_rewrite_cache.json",
+        "macrag_top_k2": config.macrag_top_k2,
+        "macrag_chunk_ext": config.macrag_chunk_ext,
+        "macrag_merge_version": config.macrag_merge_version,
+        "recomp_input_docs": config.recomp_input_docs,
+        "recomp_top_sentences": config.recomp_top_sentences,
+        "recomp_abstractive_mode": config.recomp_abstractive_mode,
+        "recomp_cache_path": cache_dir / "recomp_cache.json",
+    }
+
+
+def recomp_input_chunks_for_question(
+    config: RunConfig,
+    question_trace: list[dict[str, Any]],
+    chunk_lookup: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    chunk_ids = [
+        str(row["chunk_id"])
+        for row in question_trace[: config.recomp_input_docs]
+        if str(row["chunk_id"]) in chunk_lookup
+    ]
+    return [dict(chunk_lookup[chunk_id]) for chunk_id in chunk_ids]
+
+
+def precompute_recomp_summaries(
+    config: RunConfig,
+    questions: list[Question],
+    retrieval_traces: dict[str, dict[str, list[dict[str, Any]]]],
+    chunk_lookup: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Run the RECOMP compressors before the reader claims the GPU.
+
+    Compression depends only on (question, dense trace), so all summaries are
+    computed and cached here, and the compressor models are unloaded again.
+    The prompted-Qwen abstractive mode is excluded: it runs at assembly time
+    against the resident reader.
+    """
+    from hamlet_qa.core.llm_cache import JsonKVCache, stable_hash
+    from hamlet_qa.features.recomp.compressor import (
+        AbstractiveCompressor,
+        ExtractiveCompressor,
+        compress_abstractive_t5,
+        compress_extractive,
+    )
+
+    needs_extractive = "recomp_extractive" in config.treatments
+    needs_t5_abstractive = (
+        "recomp_abstractive" in config.treatments
+        and config.recomp_abstractive_mode == "t5"
+    )
+    if not (needs_extractive or needs_t5_abstractive):
+        return {}
+
+    cache = JsonKVCache(
+        Path(config.context_assembly_cache_dir) / "recomp_cache.json",
+        section="recomp_precomputed",
+    )
+    summaries: dict[str, dict[str, Any]] = {}
+
+    def inputs_for(question: Question) -> list[dict[str, Any]]:
+        question_trace = retrieval_traces.get(question.id, {}).get("dense") or []
+        return recomp_input_chunks_for_question(config, question_trace, chunk_lookup)
+
+    def run_stage(
+        treatment: str,
+        model_name: str,
+        make_model: Any,
+        compress: Any,
+    ) -> None:
+        pending: dict[str, tuple[Question, list[dict[str, Any]], str]] = {}
+        for question in questions:
+            input_chunks = inputs_for(question)
+            cache_key = stable_hash(
+                {
+                    "treatment": treatment,
+                    "question": question.question,
+                    "input_texts": [chunk["text"] for chunk in input_chunks],
+                    "model": model_name,
+                    "top_sentences": config.recomp_top_sentences,
+                }
+            )
+            cached = cache.get(cache_key)
+            if cached is not None:
+                summaries[f"{treatment}:{question.id}"] = dict(cached, cache_hit=True)
+            else:
+                pending[question.id] = (question, input_chunks, cache_key)
+        if not pending:
+            return
+        model = make_model()
+        try:
+            for question, input_chunks, cache_key in pending.values():
+                record = compress(model, question, input_chunks)
+                cache.set(cache_key, record)
+                summaries[f"{treatment}:{question.id}"] = dict(record, cache_hit=False)
+        finally:
+            del model
+            clear_cuda_cache()
+        cache.save()
+
+    if needs_extractive:
+        run_stage(
+            "recomp_extractive",
+            config.recomp_extractive_model,
+            lambda: ExtractiveCompressor(
+                config.recomp_extractive_model,
+                device=config.embedding_device,
+            ),
+            lambda model, question, input_chunks: compress_extractive(
+                question.question,
+                input_chunks,
+                model,
+                config.recomp_top_sentences,
+            ),
+        )
+    if needs_t5_abstractive:
+        run_stage(
+            "recomp_abstractive",
+            config.recomp_abstractive_model,
+            lambda: AbstractiveCompressor(
+                config.recomp_abstractive_model,
+                device=config.embedding_device,
+            ),
+            lambda model, question, input_chunks: compress_abstractive_t5(
+                question.question,
+                input_chunks,
+                model,
+            ),
+        )
+    return summaries
 
 
 def prepare_run_dir(config: RunConfig, questions: list[Question]) -> Path:
@@ -455,6 +673,7 @@ def run_experiment(
     reader: ReaderLike | None = None,
     dense_retriever: RetrieverLike | None = None,
     sparse_retriever: RetrieverLike | None = None,
+    feature_handles: dict[str, Any] | None = None,
 ) -> Path:
     unknown_treatments = sorted(set(config.treatments) - known_treatment_names())
     if unknown_treatments:
@@ -477,17 +696,38 @@ def run_experiment(
         questions,
         dense_retriever=dense_retriever,
         sparse_retriever=sparse_retriever,
+        feature_handles=feature_handles,
+    )
+
+    active_handles = dict(feature_handles or {})
+    if "recomp_summaries" not in active_handles:
+        active_handles["recomp_summaries"] = precompute_recomp_summaries(
+            config,
+            questions,
+            retrieval_traces,
+            lookup,
+        )
+    if "crag" in config.treatments:
+        prepare_crag_handles(config, chunks, active_handles)
+
+    needs_reader_for_assembly = treatments_using_llm_assembly(config.treatments) or (
+        "recomp_abstractive" in config.treatments
+        and config.recomp_abstractive_mode == "prompted_qwen"
     )
     active_reader = reader or make_reader(
         config,
-        force_generation_model=treatments_using_llm_assembly(config.treatments),
+        force_generation_model=needs_reader_for_assembly,
     )
+    feature_params = feature_params_from_config(config)
 
     for question in questions:
         for context_budget in config.context_budgets:
             for treatment in config.treatments:
                 retrieval_trace = None
-                if treatment in DENSE_TREATMENTS:
+                spec = get_treatment(treatment)
+                if spec.retrieval_source == "macrag":
+                    retrieval_trace = retrieval_traces[question.id].get("macrag")
+                elif treatment in DENSE_TREATMENTS:
                     retrieval_trace = retrieval_traces[question.id].get("dense")
                 elif treatment in SPARSE_TREATMENTS:
                     retrieval_trace = retrieval_traces[question.id].get("sparse")
@@ -508,6 +748,8 @@ def run_experiment(
                     ),
                     setr_max_passages=config.setr_max_passages,
                     setr_selector_max_tokens=config.setr_selector_max_tokens,
+                    feature_params=feature_params,
+                    feature_handles=active_handles,
                 )
                 prompt_bundle = HamletQAPromptBuilder().build(
                     question.question,

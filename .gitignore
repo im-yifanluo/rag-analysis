@@ -23,4 +23,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Cloned upstream repos + papers (not redistributed). Reproduce locally with
+# the clone commands in third_party/README.md, which is the one tracked file.
+third_party/*
+!third_party/README.md
+
 ./Miniforge3-Linux-x86_64.shMiniforge3-Linux-x86_64.sh

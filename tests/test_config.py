@@ -74,7 +74,10 @@ class ConfigDefaultsTests(unittest.TestCase):
         )
         self.assertEqual(
             DEFAULT_TREATMENTS,
-            BASELINE_TREATMENTS + ORDERING_TREATMENTS + ["setr", "domain"],
+            BASELINE_TREATMENTS
+            + ORDERING_TREATMENTS
+            + ["setr", "domain"]
+            + ["crag", "macrag", "recomp_extractive", "recomp_abstractive"],
         )
         self.assertEqual(config.domain_kg_path, DEFAULT_DOMAIN_KG_PATH)
         self.assertEqual(config.context_assembly_cache_dir, DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR)

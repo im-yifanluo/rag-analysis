@@ -11,7 +11,7 @@ from typing import Any, Callable, Literal
 from hamlet_qa.core.questions import Question
 
 
-RetrievalSource = Literal["none", "dense", "sparse"]
+RetrievalSource = Literal["none", "dense", "sparse", "macrag"]
 
 
 @dataclass(frozen=True)
@@ -30,6 +30,8 @@ class ContextAssemblyRequest:
     setr_cache_path: Path | None = None
     setr_max_passages: int = 50
     setr_selector_max_tokens: int = 4096
+    feature_params: dict[str, Any] = field(default_factory=dict)
+    feature_handles: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -147,3 +149,40 @@ def selected_chunks(
 
 def context_token_count(chunks: list[dict[str, Any]]) -> int:
     return sum(int(chunk["token_count"]) for chunk in chunks)
+
+
+def truncate_text_to_word_budget(text: str, word_budget: int) -> str:
+    """Trim text to at most word_budget whitespace-delimited words."""
+    if word_budget <= 0:
+        return ""
+    words = text.split()
+    if len(words) <= word_budget:
+        return text
+    return " ".join(words[:word_budget])
+
+
+def make_pseudo_chunk(
+    chunk_id: str,
+    text: str,
+    scene_title: str,
+    scene_id: str = "synthetic",
+) -> dict[str, Any]:
+    """Build a synthetic context chunk (domain-scaffold convention).
+
+    Token count uses whitespace word count, matching the existing
+    `domain_scaffold` pseudo-chunk convention.
+    """
+    word_count = len(text.split())
+    return {
+        "chunk_id": chunk_id,
+        "global_index": -1,
+        "act": 0,
+        "scene": 0,
+        "scene_id": scene_id,
+        "scene_title": scene_title,
+        "chunk_in_scene": 0,
+        "start_token": 0,
+        "end_token": word_count,
+        "token_count": word_count,
+        "text": text,
+    }

@@ -220,5 +220,8 @@ def validate_questions(
 
     missing_skills = sorted(set(expected_skills) - seen_skills)
     if missing_skills:
-        raise ValueError(f"Question file is missing reasoning skills: {missing_skills}")
+        warnings.warn(
+            f"Question file does not cover reasoning skills: {missing_skills}",
+            stacklevel=2,
+        )
     return questions

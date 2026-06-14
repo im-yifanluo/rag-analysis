@@ -9,10 +9,25 @@ from hamlet_qa.core.config import (
     DEFAULT_BM25_K1,
     DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR,
     DEFAULT_CONTEXT_BUDGETS,
+    DEFAULT_CRAG_DECOMPOSE_MODE,
+    DEFAULT_CRAG_EXTERNAL_TOP_K,
+    DEFAULT_CRAG_LOWER_THRESHOLD,
+    DEFAULT_CRAG_NDOCS,
+    DEFAULT_CRAG_UPPER_THRESHOLD,
     DEFAULT_DOMAIN_KG_PATH,
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_GPU_LAYOUT,
+    DEFAULT_MACRAG_ARTIFACTS_DIR,
+    DEFAULT_MACRAG_CHUNK_EXT,
+    DEFAULT_MACRAG_MERGE_VERSION,
+    DEFAULT_MACRAG_TOP_K1,
+    DEFAULT_MACRAG_TOP_K2,
     DEFAULT_READER_MODEL,
+    DEFAULT_RECOMP_ABSTRACTIVE_MODE,
+    DEFAULT_RECOMP_ABSTRACTIVE_MODEL,
+    DEFAULT_RECOMP_EXTRACTIVE_MODEL,
+    DEFAULT_RECOMP_INPUT_DOCS,
+    DEFAULT_RECOMP_TOP_SENTENCES,
     DEFAULT_RERANKER_MODEL,
     DEFAULT_RANDOM_SEED,
     DEFAULT_SETR_MAX_PASSAGES,
@@ -24,6 +39,7 @@ from hamlet_qa.core.config import (
     RunConfig,
 )
 from hamlet_qa.core.experiment import run_experiment
+from hamlet_qa.features.registry import known_treatment_names
 
 
 def parse_args() -> argparse.Namespace:
@@ -55,7 +71,7 @@ def parse_args() -> argparse.Namespace:
         "--treatments",
         nargs="+",
         default=DEFAULT_TREATMENTS,
-        choices=DEFAULT_TREATMENTS,
+        choices=sorted(known_treatment_names()),
     )
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K)
     parser.add_argument("--random-seed", type=int, default=DEFAULT_RANDOM_SEED)
@@ -112,6 +128,93 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_SETR_SELECTOR_MAX_TOKENS,
         help="Maximum tokens for the SetR selection_IRI selector response.",
     )
+    parser.add_argument(
+        "--crag-ndocs",
+        type=int,
+        default=DEFAULT_CRAG_NDOCS,
+        help="Number of top dense candidates the CRAG evaluator judges.",
+    )
+    parser.add_argument(
+        "--crag-upper-threshold",
+        type=float,
+        default=DEFAULT_CRAG_UPPER_THRESHOLD,
+        help="Evaluator score at or above which a document counts as Correct.",
+    )
+    parser.add_argument(
+        "--crag-lower-threshold",
+        type=float,
+        default=DEFAULT_CRAG_LOWER_THRESHOLD,
+        help="Evaluator score at or above which a document counts as Ambiguous.",
+    )
+    parser.add_argument(
+        "--crag-decompose-mode",
+        choices=["fixed_num", "excerption", "selection"],
+        default=DEFAULT_CRAG_DECOMPOSE_MODE,
+        help="CRAG decompose-then-recompose strip mode (official modes).",
+    )
+    parser.add_argument(
+        "--crag-external-top-k",
+        type=int,
+        default=DEFAULT_CRAG_EXTERNAL_TOP_K,
+        help="BM25 hits retrieved by the doc-wide corrective re-retrieval.",
+    )
+    parser.add_argument(
+        "--crag-evaluator-device",
+        default=None,
+        help=(
+            "Device for the CRAG strip evaluator. Defaults to cpu on the "
+            "'single' GPU layout and the reranker device otherwise."
+        ),
+    )
+    parser.add_argument(
+        "--macrag-artifacts-dir",
+        default=DEFAULT_MACRAG_ARTIFACTS_DIR,
+        help="Directory holding build_macrag_index outputs.",
+    )
+    parser.add_argument("--macrag-top-k1", type=int, default=DEFAULT_MACRAG_TOP_K1)
+    parser.add_argument("--macrag-top-k2", type=int, default=DEFAULT_MACRAG_TOP_K2)
+    parser.add_argument(
+        "--macrag-chunk-ext",
+        type=int,
+        choices=[0, 1, 2],
+        default=DEFAULT_MACRAG_CHUNK_EXT,
+        help="MacRAG neighbor expansion hops within the same scene.",
+    )
+    parser.add_argument(
+        "--macrag-merge-version",
+        type=int,
+        choices=[1, 2],
+        default=DEFAULT_MACRAG_MERGE_VERSION,
+    )
+    parser.add_argument(
+        "--recomp-extractive-model",
+        default=DEFAULT_RECOMP_EXTRACTIVE_MODEL,
+    )
+    parser.add_argument(
+        "--recomp-abstractive-model",
+        default=DEFAULT_RECOMP_ABSTRACTIVE_MODEL,
+    )
+    parser.add_argument(
+        "--recomp-abstractive-mode",
+        choices=["t5", "prompted_qwen"],
+        default=DEFAULT_RECOMP_ABSTRACTIVE_MODE,
+        help=(
+            "Abstractive compressor: original T5 checkpoint, or the reader "
+            "model prompted with the RECOMP paper Table 8 prompt."
+        ),
+    )
+    parser.add_argument(
+        "--recomp-input-docs",
+        type=int,
+        default=DEFAULT_RECOMP_INPUT_DOCS,
+        help="Top dense candidates passed to the RECOMP compressors.",
+    )
+    parser.add_argument(
+        "--recomp-top-sentences",
+        type=int,
+        default=DEFAULT_RECOMP_TOP_SENTENCES,
+        help="Sentences kept by the extractive compressor.",
+    )
     parser.add_argument("--tensor-parallel-size", type=int, default=1)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.90)
     parser.add_argument("--prepare-only", action="store_true")
@@ -153,6 +256,22 @@ def config_from_args(args: argparse.Namespace) -> RunConfig:
         context_assembly_cache_dir=args.context_assembly_cache_dir,
         setr_max_passages=args.setr_max_passages,
         setr_selector_max_tokens=args.setr_selector_max_tokens,
+        crag_ndocs=args.crag_ndocs,
+        crag_upper_threshold=args.crag_upper_threshold,
+        crag_lower_threshold=args.crag_lower_threshold,
+        crag_decompose_mode=args.crag_decompose_mode,
+        crag_external_top_k=args.crag_external_top_k,
+        crag_evaluator_device=args.crag_evaluator_device,
+        macrag_artifacts_dir=args.macrag_artifacts_dir,
+        macrag_top_k1=args.macrag_top_k1,
+        macrag_top_k2=args.macrag_top_k2,
+        macrag_chunk_ext=args.macrag_chunk_ext,
+        macrag_merge_version=args.macrag_merge_version,
+        recomp_extractive_model=args.recomp_extractive_model,
+        recomp_abstractive_model=args.recomp_abstractive_model,
+        recomp_abstractive_mode=args.recomp_abstractive_mode,
+        recomp_input_docs=args.recomp_input_docs,
+        recomp_top_sentences=args.recomp_top_sentences,
         tensor_parallel_size=args.tensor_parallel_size,
         gpu_memory_utilization=args.gpu_memory_utilization,
         prepare_only=args.prepare_only,

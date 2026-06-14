@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-import hashlib
 import inspect
-import json
 import re
 from pathlib import Path
 from typing import Any, Protocol
 
 from hamlet_qa.core.context import dedupe_existing_chunk_ids
+from hamlet_qa.core.llm_cache import JsonKVCache, stable_hash
 
 
 SETR_MAX_PASSAGES = 50
@@ -48,45 +47,11 @@ class SetRSelectionError(ValueError):
     """Raised when the SetR selector model does not produce a usable selection."""
 
 
-class SetRJsonCache:
+class SetRJsonCache(JsonKVCache):
     """JSON cache for selector prompts, raw outputs, and parsed selections."""
 
     def __init__(self, path: str | Path | None):
-        self.path = Path(path) if path else None
-        self.data: dict[str, Any] = {"selector_outputs": {}}
-        if self.path and self.path.exists():
-            with self.path.open("r", encoding="utf-8") as handle:
-                loaded = json.load(handle)
-            if isinstance(loaded, dict):
-                self.data.update(loaded)
-
-    def get(self, cache_key: str) -> dict[str, Any] | None:
-        section = self.data.setdefault("selector_outputs", {})
-        if not isinstance(section, dict):
-            self.data["selector_outputs"] = {}
-            return None
-        value = section.get(cache_key)
-        return dict(value) if isinstance(value, dict) else None
-
-    def set(self, cache_key: str, value: dict[str, Any]) -> None:
-        section = self.data.setdefault("selector_outputs", {})
-        if not isinstance(section, dict):
-            section = {}
-            self.data["selector_outputs"] = section
-        section[cache_key] = value
-
-    def save(self) -> None:
-        if not self.path:
-            return
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        with self.path.open("w", encoding="utf-8") as handle:
-            json.dump(self.data, handle, ensure_ascii=False, indent=2)
-            handle.write("\n")
-
-
-def stable_hash(value: Any) -> str:
-    encoded = json.dumps(value, ensure_ascii=False, sort_keys=True).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
+        super().__init__(path, section="selector_outputs")
 
 
 def format_setr_passage(index: int, chunk: dict[str, Any]) -> str:
@@ -109,9 +74,17 @@ def build_setr_user_prompt(
     )
 
 
-def parse_setr_final_selection(output: str, num_candidates: int) -> list[int]:
+def parse_setr_final_selection(output: str) -> list[int]:
+    """Parse the raw selection exactly like the official SetR code.
+
+    Mirrors third_party/SetR/SetR/data_formatting.py: extract everything after
+    '### Final Selection' (case-insensitive, optional space after ###), then
+    take ALL digit runs — bare digits are accepted, duplicates and
+    out-of-range numbers are preserved. Validation against the candidate list
+    happens separately in `map_positions_to_chunk_positions`.
+    """
     match = re.search(
-        r"###\s*Final Selection([\w\W]+)",
+        r"###\s?Final Selection([\w\W]+)",
         output,
         flags=re.IGNORECASE,
     )
@@ -119,23 +92,46 @@ def parse_setr_final_selection(output: str, num_candidates: int) -> list[int]:
         raise SetRSelectionError(
             "SetR selector output is missing '### Final Selection'."
         )
+    raw_numbers = [int(number) for number in re.findall(r"\d+", match.group(1))]
+    if not raw_numbers:
+        raise SetRSelectionError(
+            "SetR selector output did not contain any passage numbers."
+        )
+    return raw_numbers
 
+
+def map_positions_to_chunk_positions(
+    raw_positions: list[int],
+    num_candidates: int,
+) -> dict[str, list[int]]:
+    """Map raw selector numbers to usable 1-based candidate positions.
+
+    The official code performs no dedupe or range check; both are necessary
+    here to map passage numbers onto chunk IDs, so dropped numbers are
+    reported for the assembly trace rather than silently discarded.
+    """
     selected: list[int] = []
     seen: set[int] = set()
-    for raw_number in re.findall(r"\[(\d+)\]", match.group(1)):
-        passage_number = int(raw_number)
-        if passage_number < 1 or passage_number > num_candidates:
+    dropped_out_of_range: list[int] = []
+    dropped_duplicates: list[int] = []
+    for position in raw_positions:
+        if position < 1 or position > num_candidates:
+            dropped_out_of_range.append(position)
             continue
-        if passage_number in seen:
+        if position in seen:
+            dropped_duplicates.append(position)
             continue
-        seen.add(passage_number)
-        selected.append(passage_number)
-
+        seen.add(position)
+        selected.append(position)
     if not selected:
         raise SetRSelectionError(
             "SetR selector output did not contain any valid passage numbers."
         )
-    return selected
+    return {
+        "selected_positions": selected,
+        "dropped_out_of_range": dropped_out_of_range,
+        "dropped_duplicates": dropped_duplicates,
+    }
 
 
 def call_selector_model(
@@ -210,9 +206,11 @@ def select_setr(
     )
 
     cached = cache.get(cache_key)
-    if cached is not None:
+    if cached is not None and cached.get("raw_selected_numbers") is not None:
         selector_output = str(cached.get("selector_output", ""))
-        selected_positions = [int(item) for item in cached.get("selected_positions", [])]
+        raw_selected_numbers = [
+            int(item) for item in cached.get("raw_selected_numbers", [])
+        ]
         cache_hit = True
     else:
         selector_output = call_selector_model(
@@ -220,10 +218,15 @@ def select_setr(
             user_prompt,
             max_tokens=selector_max_tokens,
         )
-        selected_positions = parse_setr_final_selection(
-            selector_output,
-            num_candidates=len(candidates),
-        )
+        raw_selected_numbers = parse_setr_final_selection(selector_output)
+        cache_hit = False
+
+    mapping = map_positions_to_chunk_positions(
+        raw_selected_numbers,
+        num_candidates=len(candidates),
+    )
+    selected_positions = mapping["selected_positions"]
+    if not cache_hit:
         cache.set(
             cache_key,
             {
@@ -231,6 +234,7 @@ def select_setr(
                 "selector_system_prompt": SETR_SELECTION_SYS_PROMPT,
                 "selector_user_prompt": user_prompt,
                 "selector_output": selector_output,
+                "raw_selected_numbers": raw_selected_numbers,
                 "selected_positions": selected_positions,
                 "selected_chunk_ids": [
                     candidates[position - 1] for position in selected_positions
@@ -238,13 +242,6 @@ def select_setr(
             },
         )
         cache.save()
-        cache_hit = False
-
-    if not selected_positions:
-        selected_positions = parse_setr_final_selection(
-            selector_output,
-            num_candidates=len(candidates),
-        )
     selected_by_model = [candidates[position - 1] for position in selected_positions]
     selected_ids, skipped_over_budget, total_tokens = selected_ids_within_budget(
         selected_by_model,
@@ -271,7 +268,10 @@ def select_setr(
             "selector_system_prompt": SETR_SELECTION_SYS_PROMPT,
             "selector_user_prompt": user_prompt,
             "selector_output": selector_output,
+            "raw_selected_numbers": raw_selected_numbers,
             "selected_positions": selected_positions,
+            "dropped_out_of_range_numbers": mapping["dropped_out_of_range"],
+            "dropped_duplicate_numbers": mapping["dropped_duplicates"],
             "selected_chunk_ids_before_budget": selected_by_model,
             "selected_chunk_ids": selected_ids,
             "skipped_over_budget_chunk_ids": skipped_over_budget,

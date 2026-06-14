@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from hamlet_qa.core.context import TreatmentSpec
+from hamlet_qa.features.crag.assembly import assemble_crag
 from hamlet_qa.features.baseline.assembly import (
     assemble_closed_book,
     assemble_dense_rank_order,
@@ -10,9 +11,14 @@ from hamlet_qa.features.baseline.assembly import (
     assemble_sparse_bm25,
 )
 from hamlet_qa.features.domain.assembly import assemble_domain_kg_lite
+from hamlet_qa.features.macrag.assembly import assemble_macrag
 from hamlet_qa.features.ordering.assembly import (
     assemble_dense_document_order,
     assemble_dense_random_order,
+)
+from hamlet_qa.features.recomp.assembly import (
+    assemble_recomp_abstractive,
+    assemble_recomp_extractive,
 )
 from hamlet_qa.features.setr.assembly import assemble_setr
 
@@ -51,6 +57,27 @@ TREATMENT_REGISTRY: dict[str, TreatmentSpec] = {
         assemble_domain_kg_lite,
         retrieval_source="dense",
         uses_domain_kg=True,
+    ),
+    "recomp_extractive": TreatmentSpec(
+        "recomp_extractive",
+        assemble_recomp_extractive,
+        retrieval_source="dense",
+    ),
+    "recomp_abstractive": TreatmentSpec(
+        "recomp_abstractive",
+        assemble_recomp_abstractive,
+        retrieval_source="dense",
+    ),
+    "crag": TreatmentSpec(
+        "crag",
+        assemble_crag,
+        retrieval_source="dense",
+        uses_llm_assembly=True,
+    ),
+    "macrag": TreatmentSpec(
+        "macrag",
+        assemble_macrag,
+        retrieval_source="macrag",
     ),
 }
 

@@ -30,8 +30,17 @@ NEW_CONTEXT_ASSEMBLY_TREATMENTS = [
     "setr",
     "domain",
 ]
+METHOD_TREATMENTS = [
+    "crag",
+    "macrag",
+    "recomp_extractive",
+    "recomp_abstractive",
+]
 DEFAULT_TREATMENTS = (
-    BASELINE_TREATMENTS + ORDERING_TREATMENTS + NEW_CONTEXT_ASSEMBLY_TREATMENTS
+    BASELINE_TREATMENTS
+    + ORDERING_TREATMENTS
+    + NEW_CONTEXT_ASSEMBLY_TREATMENTS
+    + METHOD_TREATMENTS
 )
 DEFAULT_TOP_K = 50
 DEFAULT_SETR_MAX_PASSAGES = DEFAULT_TOP_K
@@ -42,6 +51,33 @@ DEFAULT_GPU_LAYOUT = "single"
 DEFAULT_DOMAIN_KG_PATH = "data/hamlet_domain_kg.yaml"
 DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR = "data/cache"
 DEFAULT_SETR_SELECTOR_MAX_TOKENS = 4096
+
+# CRAG: action thresholds over Qwen reranker logits, calibrated by
+# `python -m hamlet_qa.cli.calibrate_crag` on runs/qwen_hamlet_probe:
+# upper = smallest score with >=0.9 gold precision, lower = non-gold p90.
+DEFAULT_CRAG_NDOCS = 10
+DEFAULT_CRAG_UPPER_THRESHOLD = 2.5
+DEFAULT_CRAG_LOWER_THRESHOLD = 0.875
+DEFAULT_CRAG_DECOMPOSE_MODE = "excerption"
+DEFAULT_CRAG_EXTERNAL_TOP_K = 5
+
+# MacRAG offline index + query-time scale-up settings (slice sizes follow the
+# official 450/300-char summary slicing).
+DEFAULT_MACRAG_ARTIFACTS_DIR = "data/macrag"
+DEFAULT_MACRAG_TOP_K1 = 100
+DEFAULT_MACRAG_TOP_K2 = 7
+DEFAULT_MACRAG_CHUNK_EXT = 1
+DEFAULT_MACRAG_MERGE_VERSION = 1
+DEFAULT_MACRAG_SLICE_SIZE = 450
+DEFAULT_MACRAG_SLICE_OVERLAP = 300
+
+# RECOMP compressors (official trained checkpoints; HotpotQA variants).
+DEFAULT_RECOMP_EXTRACTIVE_MODEL = "fangyuan/hotpotqa_extractive_compressor"
+DEFAULT_RECOMP_ABSTRACTIVE_MODEL = "fangyuan/hotpotqa_abstractive"
+DEFAULT_RECOMP_ABSTRACTIVE_MODE = "t5"
+DEFAULT_RECOMP_INPUT_DOCS = 5
+DEFAULT_RECOMP_TOP_SENTENCES = 5
+
 GPU_LAYOUTS = {
     "single": {
         "embedding_device": "cuda",
@@ -113,6 +149,22 @@ class RunConfig:
     context_assembly_cache_dir: str = DEFAULT_CONTEXT_ASSEMBLY_CACHE_DIR
     setr_max_passages: int = DEFAULT_SETR_MAX_PASSAGES
     setr_selector_max_tokens: int = DEFAULT_SETR_SELECTOR_MAX_TOKENS
+    crag_ndocs: int = DEFAULT_CRAG_NDOCS
+    crag_upper_threshold: float = DEFAULT_CRAG_UPPER_THRESHOLD
+    crag_lower_threshold: float = DEFAULT_CRAG_LOWER_THRESHOLD
+    crag_decompose_mode: str = DEFAULT_CRAG_DECOMPOSE_MODE
+    crag_external_top_k: int = DEFAULT_CRAG_EXTERNAL_TOP_K
+    crag_evaluator_device: str | None = None
+    macrag_artifacts_dir: str = DEFAULT_MACRAG_ARTIFACTS_DIR
+    macrag_top_k1: int = DEFAULT_MACRAG_TOP_K1
+    macrag_top_k2: int = DEFAULT_MACRAG_TOP_K2
+    macrag_chunk_ext: int = DEFAULT_MACRAG_CHUNK_EXT
+    macrag_merge_version: int = DEFAULT_MACRAG_MERGE_VERSION
+    recomp_extractive_model: str = DEFAULT_RECOMP_EXTRACTIVE_MODEL
+    recomp_abstractive_model: str = DEFAULT_RECOMP_ABSTRACTIVE_MODEL
+    recomp_abstractive_mode: str = DEFAULT_RECOMP_ABSTRACTIVE_MODE
+    recomp_input_docs: int = DEFAULT_RECOMP_INPUT_DOCS
+    recomp_top_sentences: int = DEFAULT_RECOMP_TOP_SENTENCES
     tensor_parallel_size: int = 1
     gpu_memory_utilization: float = 0.90
     prepare_only: bool = False

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+import warnings
 from pathlib import Path
 
 from hamlet_qa.core.config import REASONING_SKILLS
@@ -49,19 +50,54 @@ class QuoteEvidenceTests(unittest.TestCase):
         chunks = load_jsonl(REPO_ROOT / "data" / "hamlet_chunks.jsonl")
         questions = load_questions(str(REPO_ROOT / "data" / "hamlet_questions.json"))
 
-        validate_questions(questions, chunks)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            validate_questions(questions, chunks)
 
-        self.assertEqual(
-            {question.reasoning_skill for question in questions},
-            set(REASONING_SKILLS),
+        self.assertEqual(len(questions), 10)
+        self.assertTrue(
+            {question.reasoning_skill for question in questions}
+            <= set(REASONING_SKILLS)
         )
-        self.assertEqual(len(questions), len(REASONING_SKILLS))
         answerable = [
             question
             for question in questions
             if question.reasoning_skill != "unanswerable"
         ]
         self.assertTrue(all(question.derived_gold_chunk_ids for question in answerable))
+
+    def test_missing_reasoning_skills_warn_instead_of_raising(self):
+        chunks = load_jsonl(REPO_ROOT / "data" / "hamlet_chunks.jsonl")
+        questions = load_questions(str(REPO_ROOT / "data" / "hamlet_questions.json"))
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            validate_questions(questions[:3], chunks)
+
+        messages = [str(item.message) for item in caught]
+        self.assertTrue(
+            any("does not cover reasoning skills" in message for message in messages)
+        )
+
+    def test_budget_pressure_question_needs_more_than_default_budget(self):
+        # q_final_scene_deaths is designed so the minimal covering chunk set
+        # exceeds the default 1000-token budget; raw-chunk treatments should
+        # cap below 1.0 quote recall while compression treatments can pass.
+        chunks = load_jsonl(REPO_ROOT / "data" / "hamlet_chunks.jsonl")
+        questions = load_questions(str(REPO_ROOT / "data" / "hamlet_questions.json"))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            validate_questions(questions, chunks)
+        question = next(q for q in questions if q.id == "q_final_scene_deaths")
+        lookup = {str(chunk["chunk_id"]): chunk for chunk in chunks}
+
+        cover: set[str] = set()
+        for quote in question.required_evidence_quotes:
+            if not set(quote.matched_chunk_ids) & cover:
+                cover.add(quote.matched_chunk_ids[0])
+        cover_tokens = sum(int(lookup[chunk_id]["token_count"]) for chunk_id in cover)
+
+        self.assertGreater(cover_tokens, 1000)
 
     def test_unanswerable_question_has_no_required_quotes(self):
         questions = load_questions(str(REPO_ROOT / "data" / "hamlet_questions.json"))

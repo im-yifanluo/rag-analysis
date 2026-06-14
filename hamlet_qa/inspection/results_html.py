@@ -363,6 +363,14 @@ HTML_TEMPLATE = """<!doctype html>
       background: #fff6df;
     }
 
+    .metric-annotations li.ci-positive {
+      color: var(--good);
+    }
+
+    .metric-annotations li.ci-negative {
+      color: var(--bad);
+    }
+
     .result-body {
       display: grid;
       gap: 14px;
@@ -793,7 +801,7 @@ HTML_TEMPLATE = """<!doctype html>
       const table = el("table", "summary-table");
       const thead = document.createElement("thead");
       const headRow = document.createElement("tr");
-      ["Treatment", "Rows", "Mean quote recall", "Mean chunk recall", "Mean context tokens"].forEach((label, index) => {
+      ["Treatment", "Rows", "Mean quote recall", "Mean chunk recall", "Mean context tokens", "Suff. context rate", "Mean CI+ fraction"].forEach((label, index) => {
         headRow.append(el("th", index === 0 ? "" : "num", label));
       });
       thead.append(headRow);
@@ -808,6 +816,8 @@ HTML_TEMPLATE = """<!doctype html>
           mean(treatmentRows.map((item) => item.evidence_quote_recall)),
           mean(treatmentRows.map((item) => item.evidence_chunk_recall)),
           mean(treatmentRows.map((item) => item.context_tokens)),
+          mean(treatmentRows.map((item) => item.sufficient_context)),
+          mean(treatmentRows.map((item) => item.ci_positive_fraction)),
         ];
         cells.forEach((value, index) => row.append(el("td", index === 0 ? "" : "num", fmt(value))));
         tbody.append(row);
@@ -1031,6 +1041,12 @@ HTML_TEMPLATE = """<!doctype html>
       metrics.append(badge("chunk", row.evidence_chunk_recall, recallKind(row.evidence_chunk_recall)));
       metrics.append(badge("ctx", row.context_tokens));
       metrics.append(badge("prompt", row.prompt_tokens));
+      if (row.sufficient_context !== undefined && row.sufficient_context !== null) {
+        metrics.append(badge("suff", row.sufficient_context, row.sufficient_context === 1 ? "good" : "bad"));
+      }
+      if (row.ci_positive_fraction !== undefined && row.ci_positive_fraction !== null) {
+        metrics.append(badge("ci+", row.ci_positive_fraction, recallKind(row.ci_positive_fraction)));
+      }
       head.append(metrics);
       card.append(head);
 
@@ -1038,12 +1054,52 @@ HTML_TEMPLATE = """<!doctype html>
       body.append(renderPre("Model Output", row.model_output));
       body.append(renderQuotes(row));
       body.append(renderEvidenceChunks(row));
+      body.append(renderMetricAnnotations(row));
       body.append(renderIdLists(row));
       body.append(renderRetrieval(row));
       body.append(renderChunks(row));
       body.append(renderPrompts(row));
       card.append(body);
       return card;
+    }
+
+    function renderMetricAnnotations(row) {
+      const section = el("section", "metric-annotations");
+      const hasCi = Array.isArray(row.ci_values) && row.ci_values.length;
+      const hasSuff = row.sufficient_context !== undefined && row.sufficient_context !== null;
+      if (!hasCi && !hasSuff && !row.sufficient_context_explanation) return section;
+
+      if (hasCi) {
+        const details = el("details", "");
+        details.append(el("summary", "", `CI values (base loss ${fmt(row.ci_base_loss)})`));
+        const body = el("div", "details-body");
+        const list = el("ul", "");
+        row.ci_values.forEach((item) => {
+          const phi = numberValue(item.phi);
+          const marker = phi !== null && phi > 0 ? "+" : "-";
+          list.append(el(
+            "li",
+            phi !== null && phi > 0 ? "ci-positive" : "ci-negative",
+            `[${marker}] ${item.chunk_id}: phi=${fmt(item.phi)} (loss without: ${fmt(item.loss_without)})`,
+          ));
+        });
+        body.append(list);
+        details.append(body);
+        section.append(details);
+      }
+      if (hasSuff || row.sufficient_context_explanation) {
+        const details = el("details", "");
+        details.append(el(
+          "summary",
+          "",
+          `Sufficient context: ${row.sufficient_context === null || row.sufficient_context === undefined ? "n/a" : row.sufficient_context}`,
+        ));
+        const body = el("div", "details-body");
+        body.append(el("pre", "", text(row.sufficient_context_explanation) || "no explanation recorded"));
+        details.append(body);
+        section.append(details);
+      }
+      return section;
     }
 
     function renderQuestionCard(questionId, groupRows) {
@@ -1210,7 +1266,15 @@ def write_results_html(
     output_path: str | Path,
     chunks_path: str | Path | None = None,
 ) -> Path:
+    from hamlet_qa.metrics.annotate import (
+        load_annotations,
+        merge_annotations_into_rows,
+    )
+
     rows = load_result_rows(results_path)
+    annotations = load_annotations(results_path)
+    if annotations:
+        rows = merge_annotations_into_rows(rows, annotations)
     resolved_chunks_path = infer_chunks_path(results_path, rows, chunks_path)
     chunk_lookup: dict[str, dict[str, Any]] = {}
     if resolved_chunks_path is not None:

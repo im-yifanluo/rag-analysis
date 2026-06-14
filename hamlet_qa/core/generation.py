@@ -93,3 +93,40 @@ class VLLMReader:
             )
         output = self.llm.generate([prompt], sampling_params)[0]
         return output.outputs[0].text.strip()
+
+    def score_completion(self, full_prompt: str, completion: str) -> dict:
+        """Log-likelihood of `completion` given `full_prompt` via prompt_logprobs.
+
+        Used by the oracle CI value metric: utility is the mean token-level
+        log-probability of the gold answer under the reader.
+        """
+        from vllm import SamplingParams
+
+        prefix_tokens = len(self.tokenizer.encode(full_prompt))
+        scored_text = full_prompt + completion
+        total_tokens = len(self.tokenizer.encode(scored_text))
+        completion_tokens = max(1, total_tokens - prefix_tokens)
+
+        sampling_params = SamplingParams(
+            temperature=0.0,
+            max_tokens=1,
+            prompt_logprobs=0,
+        )
+        output = self.llm.generate([scored_text], sampling_params)[0]
+        prompt_logprobs = output.prompt_logprobs or []
+        tail = prompt_logprobs[-completion_tokens:]
+        sum_logprob = 0.0
+        counted = 0
+        for entry in tail:
+            if not entry:
+                continue
+            logprob_obj = next(iter(entry.values()))
+            logprob = getattr(logprob_obj, "logprob", None)
+            sum_logprob += float(logprob if logprob is not None else logprob_obj)
+            counted += 1
+        mean_logprob = sum_logprob / counted if counted else 0.0
+        return {
+            "sum_logprob": sum_logprob,
+            "num_tokens": counted,
+            "mean_logprob": mean_logprob,
+        }
