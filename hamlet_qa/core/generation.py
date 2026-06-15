@@ -24,6 +24,13 @@ class VLLMReader:
         elif device == "cpu":
             os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
+        # vLLM v1 launches its EngineCore in a child process. If CUDA is already
+        # initialized in the parent (vLLM probes it on import), a forked child
+        # raises "Cannot re-initialize CUDA in forked subprocess". Force spawn so
+        # the engine core starts with a clean CUDA context. setdefault lets an
+        # explicit env override still win.
+        os.environ.setdefault("VLLM_WORKER_MULTIPROC_METHOD", "spawn")
+
         from vllm import LLM, SamplingParams
 
         self.model_name = model_name
