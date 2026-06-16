@@ -1,0 +1,374 @@
+{
+  "recomp_precomputed": {
+    "1689446aaf5d7bd8e4df43144ad94e28e268fd4bd6cbf47c69e6120f862cdea7": {
+      "summary": "[_Pours the poison into the sleeper’s ears._] HAMLET. With juice of cursed hebenon in a vial, And in the porches of my ears did pour The leperous distilment, whose effect Holds such an enmity with blood of man That swift as quicksilver it courses through The natural gates and alleys of the body; And with a sudden vigour it doth posset And curd, like eager droppings into milk, The thin and wholesome blood. Sleeping within my orchard, My custom always of the afternoon, Upon my secure hour thy uncle stole With juice of cursed hebenon in a vial, And in the porches of my ears did pour The leperous distilment, whose effect Holds such an enmity with blood of man That swift as quicksilver it courses through The natural gates and alleys of the He poisons him i’ th’garden for’s estate. Thoughts black, hands apt, drugs fit, and time agreeing, Confederate season, else no creature seeing; Thou mixture rank, of midnight weeds collected, With Hecate’s ban thrice blasted, thrice infected, Thy natural magic and dire property On wholesome life usurp immediately.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act03_scene02_chunk019",
+          "sentence": "[_Pours the poison into the sleeper’s ears._] HAMLET.",
+          "score": 45.77685546875
+        },
+        {
+          "chunk_id": "act01_scene05_chunk005",
+          "sentence": "With juice of cursed hebenon in a vial, And in the porches of my ears did pour The leperous distilment, whose effect Holds such an enmity with blood of man That swift as quicksilver it courses through The natural gates and alleys of the body; And with a sudden vigour it doth posset And curd, like eager droppings into milk, The thin and wholesome blood.",
+          "score": 44.43669891357422
+        },
+        {
+          "chunk_id": "act01_scene05_chunk004",
+          "sentence": "Sleeping within my orchard, My custom always of the afternoon, Upon my secure hour thy uncle stole With juice of cursed hebenon in a vial, And in the porches of my ears did pour The leperous distilment, whose effect Holds such an enmity with blood of man That swift as quicksilver it courses through The natural gates and alleys of the",
+          "score": 40.12578582763672
+        },
+        {
+          "chunk_id": "act03_scene02_chunk019",
+          "sentence": "He poisons him i’ th’garden for’s estate.",
+          "score": 37.749961853027344
+        },
+        {
+          "chunk_id": "act03_scene02_chunk019",
+          "sentence": "Thoughts black, hands apt, drugs fit, and time agreeing, Confederate season, else no creature seeing; Thou mixture rank, of midnight weeds collected, With Hecate’s ban thrice blasted, thrice infected, Thy natural magic and dire property On wholesome life usurp immediately.",
+          "score": 32.85532760620117
+        }
+      ],
+      "num_input_sentences": 71,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "c114d1cb27d8cef1a965547979ebfb973abe85085881a5b8b32302dcabc4cfc6": {
+      "summary": "For this relief much thanks. ’Tis bitter cold, And I am sick at heart. [_Sings._] By Gis and by Saint Charity, Alack, and fie for shame! [_Sings._] He is dead and gone, lady, He is dead and gone, At his head a grass green turf, At his heels a stone. Nay, pray you mark. Indeed la, without an oath, I’ll make an end on’t.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act01_scene01_chunk001",
+          "sentence": "For this relief much thanks. ’Tis bitter cold, And I am sick at heart.",
+          "score": 68.0189208984375
+        },
+        {
+          "chunk_id": "act04_scene05_chunk004",
+          "sentence": "[_Sings._] By Gis and by Saint Charity, Alack, and fie for shame!",
+          "score": 45.06181335449219
+        },
+        {
+          "chunk_id": "act04_scene05_chunk003",
+          "sentence": "[_Sings._] He is dead and gone, lady, He is dead and gone, At his head a grass green turf, At his heels a stone.",
+          "score": 43.62115478515625
+        },
+        {
+          "chunk_id": "act04_scene05_chunk003",
+          "sentence": "Nay, pray you mark.",
+          "score": 38.383689880371094
+        },
+        {
+          "chunk_id": "act04_scene05_chunk004",
+          "sentence": "Indeed la, without an oath, I’ll make an end on’t.",
+          "score": 38.112403869628906
+        }
+      ],
+      "num_input_sentences": 111,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "a271a285b92f9ee710d74b53b6d8700679a4fae0b430a020976ef97b550697bc": {
+      "summary": "The ears are senseless that should give us hearing, To tell him his commandment is fulfill’d, That Rosencrantz and Guildenstern are dead. Rosencrantz and Guildenstern hold their course for England: of them I have much to tell thee. Enter King, Queen, Rosencrantz, Guildenstern and Attendants. [_Exeunt Rosencrantz and Guildenstern._] And England, if my love thou hold’st at aught,— As my great power thereof may give thee sense, Since yet thy cicatrice looks raw and red After the Danish sword, and thy free awe Pays homage to us,—thou mayst not coldly set Our sovereign process, which imports at full, By letters conjuring to that effect, The present death of Hamlet. But since, so jump upon this bloody question, You from the Polack wars, and you from England Are here arriv’d, give order that these bodies High on a stage be placed to the view, And let me speak to th’ yet unknowing world How these things came about.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act05_scene02_chunk027",
+          "sentence": "The ears are senseless that should give us hearing, To tell him his commandment is fulfill’d, That Rosencrantz and Guildenstern are dead.",
+          "score": 41.96046447753906
+        },
+        {
+          "chunk_id": "act04_scene06_chunk002",
+          "sentence": "Rosencrantz and Guildenstern hold their course for England: of them I have much to tell thee.",
+          "score": 40.68549728393555
+        },
+        {
+          "chunk_id": "act02_scene02_chunk001",
+          "sentence": "Enter King, Queen, Rosencrantz, Guildenstern and Attendants.",
+          "score": 38.390403747558594
+        },
+        {
+          "chunk_id": "act04_scene03_chunk005",
+          "sentence": "[_Exeunt Rosencrantz and Guildenstern._] And England, if my love thou hold’st at aught,— As my great power thereof may give thee sense, Since yet thy cicatrice looks raw and red After the Danish sword, and thy free awe Pays homage to us,—thou mayst not coldly set Our sovereign process, which imports at full, By letters conjuring to that effect, The present death of Hamlet.",
+          "score": 37.95484161376953
+        },
+        {
+          "chunk_id": "act05_scene02_chunk027",
+          "sentence": "But since, so jump upon this bloody question, You from the Polack wars, and you from England Are here arriv’d, give order that these bodies High on a stage be placed to the view, And let me speak to th’ yet unknowing world How these things came about.",
+          "score": 35.79494094848633
+        }
+      ],
+      "num_input_sentences": 61,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "00d575ccd862c1cb6ca5b54cd27a35194defe946e5bac7b55e452ed7e3ba2c1b": {
+      "summary": "Be thou a spirit of health or goblin damn’d, Bring with thee airs from heaven or blasts from hell, Be thy intents wicked or charitable, Thou com’st in such a questionable shape That I will speak to thee. The dram of evil Doth all the noble substance of a doubt To his own scandal. If his occulted guilt Do not itself unkennel in one speech, It is a damned ghost that we have seen; And my imaginations are as foul As Vulcan’s stithy. There is a play tonight before the King. jest, poison in jest; no offence i’ th’ world.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act01_scene04_chunk003",
+          "sentence": "Be thou a spirit of health or goblin damn’d, Bring with thee airs from heaven or blasts from hell, Be thy intents wicked or charitable, Thou com’st in such a questionable shape That I will speak to thee.",
+          "score": 25.96651840209961
+        },
+        {
+          "chunk_id": "act01_scene04_chunk003",
+          "sentence": "The dram of evil Doth all the noble substance of a doubt To his own scandal.",
+          "score": 25.560714721679688
+        },
+        {
+          "chunk_id": "act03_scene02_chunk006",
+          "sentence": "If his occulted guilt Do not itself unkennel in one speech, It is a damned ghost that we have seen; And my imaginations are as foul As Vulcan’s stithy.",
+          "score": 24.673141479492188
+        },
+        {
+          "chunk_id": "act03_scene02_chunk006",
+          "sentence": "There is a play tonight before the King.",
+          "score": 24.19729995727539
+        },
+        {
+          "chunk_id": "act03_scene02_chunk018",
+          "sentence": "jest, poison in jest; no offence i’ th’ world.",
+          "score": 23.625747680664062
+        }
+      ],
+      "num_input_sentences": 82,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "308a073b159ac106df10c9270d1d151c625fda2dff6410dabd9c01cd3a049888": {
+      "summary": "The nephew to old Norway, Fortinbras. Enter Fortinbras and Forces marching. Now, sir, young Fortinbras, Of unimproved mettle, hot and full, Hath in the skirts of Norway, here and there, Shark’d up a list of lawless resolutes, For food and diet, to some enterprise That hath a stomach in’t; which is no other, As it doth well appear unto our state, But to recover of us by strong hand And terms compulsatory, those foresaid lands So by his father lost. Now, sir, young Fortinbras, Of unimproved mettle, hot and full, Hath in the skirts of Norway, here and there, Shark’d up a list of lawless resolutes, Upon our first, he sent out to suppress His nephew’s levies, which to him appear’d To be a preparation ’gainst the Polack; But better look’d into, he truly found It was against your Highness; whereat griev’d, That so his sickness, age, and impotence Was falsely borne in hand, sends out arrests On Fortinbras; which he, in brief, obeys, Receives rebuke from Norway; and in fine, Makes vow before his uncle never more To give th’assay of arms against your Majesty.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act04_scene04_chunk001",
+          "sentence": "The nephew to old Norway, Fortinbras.",
+          "score": 37.43890380859375
+        },
+        {
+          "chunk_id": "act04_scene04_chunk001",
+          "sentence": "Enter Fortinbras and Forces marching.",
+          "score": 35.08197784423828
+        },
+        {
+          "chunk_id": "act01_scene01_chunk008",
+          "sentence": "Now, sir, young Fortinbras, Of unimproved mettle, hot and full, Hath in the skirts of Norway, here and there, Shark’d up a list of lawless resolutes, For food and diet, to some enterprise That hath a stomach in’t; which is no other, As it doth well appear unto our state, But to recover of us by strong hand And terms compulsatory, those foresaid lands So by his father lost.",
+          "score": 34.43572235107422
+        },
+        {
+          "chunk_id": "act01_scene01_chunk007",
+          "sentence": "Now, sir, young Fortinbras, Of unimproved mettle, hot and full, Hath in the skirts of Norway, here and there, Shark’d up a list of lawless resolutes,",
+          "score": 32.58100509643555
+        },
+        {
+          "chunk_id": "act02_scene02_chunk005",
+          "sentence": "Upon our first, he sent out to suppress His nephew’s levies, which to him appear’d To be a preparation ’gainst the Polack; But better look’d into, he truly found It was against your Highness; whereat griev’d, That so his sickness, age, and impotence Was falsely borne in hand, sends out arrests On Fortinbras; which he, in brief, obeys, Receives rebuke from Norway; and in fine, Makes vow before his uncle never more To give th’assay of arms against your Majesty.",
+          "score": 32.44940948486328
+        }
+      ],
+      "num_input_sentences": 56,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "8e688421ada536afe63b972133cc77f1913bd80756c6c5ecb97bd461b95e7475": {
+      "summary": "Here, thou incestuous, murderous, damned Dane, Drink off this potion. Here, thou incestuous, murderous, damned Dane, Drink off this potion. It is a poison temper’d by himself. [_The Queen falls._] OSRIC. [_Aside._] It is the poison’d cup; it is too late.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act05_scene02_chunk023",
+          "sentence": "Here, thou incestuous, murderous, damned Dane, Drink off this potion.",
+          "score": 40.52799606323242
+        },
+        {
+          "chunk_id": "act05_scene02_chunk024",
+          "sentence": "Here, thou incestuous, murderous, damned Dane, Drink off this potion.",
+          "score": 40.52799606323242
+        },
+        {
+          "chunk_id": "act05_scene02_chunk024",
+          "sentence": "It is a poison temper’d by himself.",
+          "score": 38.56380844116211
+        },
+        {
+          "chunk_id": "act05_scene02_chunk022",
+          "sentence": "[_The Queen falls._] OSRIC.",
+          "score": 35.989986419677734
+        },
+        {
+          "chunk_id": "act05_scene02_chunk021",
+          "sentence": "[_Aside._] It is the poison’d cup; it is too late.",
+          "score": 35.62986755371094
+        }
+      ],
+      "num_input_sentences": 153,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "9dfc77e4f106b9172846ce9059e917fcc3d55b1690646576d1f712960e59182d": {
+      "summary": "Wretched Queen, adieu. [_The Queen falls._] OSRIC. Here, thou incestuous, murderous, damned Dane, Drink off this potion. Here, thou incestuous, murderous, damned Dane, Drink off this potion. Exchange forgiveness with me, noble Hamlet.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act05_scene02_chunk024",
+          "sentence": "Wretched Queen, adieu.",
+          "score": 45.72357177734375
+        },
+        {
+          "chunk_id": "act05_scene02_chunk022",
+          "sentence": "[_The Queen falls._] OSRIC.",
+          "score": 42.554649353027344
+        },
+        {
+          "chunk_id": "act05_scene02_chunk023",
+          "sentence": "Here, thou incestuous, murderous, damned Dane, Drink off this potion.",
+          "score": 41.98942565917969
+        },
+        {
+          "chunk_id": "act05_scene02_chunk024",
+          "sentence": "Here, thou incestuous, murderous, damned Dane, Drink off this potion.",
+          "score": 41.98942565917969
+        },
+        {
+          "chunk_id": "act05_scene02_chunk024",
+          "sentence": "Exchange forgiveness with me, noble Hamlet.",
+          "score": 41.954307556152344
+        }
+      ],
+      "num_input_sentences": 142,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "75b7ea5e224525d6dbf7c7c9fa540343ee218f8b158bab4625a90630ba231d0c": {
+      "summary": "[_Polonius goes behind the arras._] Enter Hamlet. [_Stabs the King._] OSRIC and LORDS. [_Makes a pass through the arras._] POLONIUS. [_Makes a pass through the arras._] POLONIUS. In his lawless fit Behind the arras hearing something stir, Whips out his rapier, cries ‘A rat, a rat!’ And in this brainish apprehension kills The unseen good old man.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act03_scene04_chunk001",
+          "sentence": "[_Polonius goes behind the arras._] Enter Hamlet.",
+          "score": 47.360984802246094
+        },
+        {
+          "chunk_id": "act05_scene02_chunk023",
+          "sentence": "[_Stabs the King._] OSRIC and LORDS.",
+          "score": 45.33762741088867
+        },
+        {
+          "chunk_id": "act03_scene04_chunk003",
+          "sentence": "[_Makes a pass through the arras._] POLONIUS.",
+          "score": 45.09130096435547
+        },
+        {
+          "chunk_id": "act03_scene04_chunk002",
+          "sentence": "[_Makes a pass through the arras._] POLONIUS.",
+          "score": 45.09130096435547
+        },
+        {
+          "chunk_id": "act04_scene01_chunk001",
+          "sentence": "In his lawless fit Behind the arras hearing something stir, Whips out his rapier, cries ‘A rat, a rat!’ And in this brainish apprehension kills The unseen good old man.",
+          "score": 44.61803436279297
+        }
+      ],
+      "num_input_sentences": 139,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "5211773c9d28110c656d98e242ad498ba246415f6a6479fdfb378de70584b2b4": {
+      "summary": "Was’t Hamlet wrong’d Laertes? If Hamlet from himself be ta’en away, And when he’s not himself does wrong Laertes, Then Hamlet does it not, Hamlet denies it. But good Laertes, Will you do this, keep close within your chamber. Enter King and Laertes. LAERTES.",
+      "selected_sentences": [
+        {
+          "chunk_id": "act05_scene02_chunk016",
+          "sentence": "Was’t Hamlet wrong’d Laertes?",
+          "score": 49.32646179199219
+        },
+        {
+          "chunk_id": "act05_scene02_chunk016",
+          "sentence": "If Hamlet from himself be ta’en away, And when he’s not himself does wrong Laertes, Then Hamlet does it not, Hamlet denies it.",
+          "score": 39.09062194824219
+        },
+        {
+          "chunk_id": "act04_scene07_chunk009",
+          "sentence": "But good Laertes, Will you do this, keep close within your chamber.",
+          "score": 35.53758239746094
+        },
+        {
+          "chunk_id": "act04_scene07_chunk001",
+          "sentence": "Enter King and Laertes.",
+          "score": 31.32929039001465
+        },
+        {
+          "chunk_id": "act04_scene07_chunk001",
+          "sentence": "LAERTES.",
+          "score": 30.89362144470215
+        }
+      ],
+      "num_input_sentences": 58,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "9bfd0ac930632d1bdb9c4c5ec43d70a1749435f0f5e093512f751a8c4a76afdc": {
+      "summary": "[_Takes the skull._] Alas, poor Yorick. [_Takes the skull._] Alas, poor Yorick. QUEEN. This same skull, sir, was Yorick’s skull, the King’s jester. Whose was it?",
+      "selected_sentences": [
+        {
+          "chunk_id": "act05_scene01_chunk014",
+          "sentence": "[_Takes the skull._] Alas, poor Yorick.",
+          "score": 27.13692855834961
+        },
+        {
+          "chunk_id": "act05_scene01_chunk013",
+          "sentence": "[_Takes the skull._] Alas, poor Yorick.",
+          "score": 27.13692855834961
+        },
+        {
+          "chunk_id": "act03_scene02_chunk020",
+          "sentence": "QUEEN.",
+          "score": 27.066814422607422
+        },
+        {
+          "chunk_id": "act05_scene01_chunk013",
+          "sentence": "This same skull, sir, was Yorick’s skull, the King’s jester.",
+          "score": 25.117124557495117
+        },
+        {
+          "chunk_id": "act05_scene01_chunk013",
+          "sentence": "Whose was it?",
+          "score": 19.592449188232422
+        }
+      ],
+      "num_input_sentences": 108,
+      "compressor_model": "fangyuan/hotpotqa_extractive_compressor"
+    },
+    "1d5bd796dc34a040bca81a3fcc4c760a8f4a51dd54a1b91e7af2ad0269e27e65": {
+      "summary": "The Ghost's own account of the murder in the orchard states that King Hamlet's uncle stole juice of cursed hebenon in a vial and poured it into his ears. The poison had such an enmity with the blood of man that it posedset and curdled his blood.",
+      "compressor_input": "Question: According to the Ghost's own account of the murder in the orchard, what poison was poured into King Hamlet's ear, and what did it do to his blood?\n Document: traitorous gifts,— O wicked wit, and gifts, that have the power So to seduce!—won to his shameful lust The will of my most seeming-virtuous queen. O Hamlet, what a falling off was there, From me, whose love was of that dignity That it went hand in hand even with the vow I made to her in marriage; and to decline Upon a wretch whose natural gifts were poor To those of mine. But virtue, as it never will be mov’d, Though lewdness court it in a shape of heaven; So lust, though to a radiant angel link’d, Will sate itself in a celestial bed And prey on garbage. But soft! methinks I scent the morning air; Brief let me be. Sleeping within my orchard, My custom always of the afternoon, Upon my secure hour thy uncle stole With juice of cursed hebenon in a vial, And in the porches of my ears did pour The leperous distilment, whose effect Holds such an enmity with blood of man That swift as quicksilver it courses through The natural gates and alleys of the With juice of cursed hebenon in a vial, And in the porches of my ears did pour The leperous distilment, whose effect Holds such an enmity with blood of man That swift as quicksilver it courses through The natural gates and alleys of the body; And with a sudden vigour it doth posset And curd, like eager droppings into milk, The thin and wholesome blood. So did it mine; And a most instant tetter bark’d about, Most lazar-like, with vile and loathsome crust All my smooth body. Thus was I, sleeping, by a brother’s hand, Of life, of crown, of queen at once dispatch’d: Cut off even in the blossoms of my sin, Unhous’led, disappointed, unanel’d; No reckoning made, but sent to my account With all my imperfections on my head. O horrible! O horrible! most horrible! If thou hast nature in thee, bear it not; Let not the royal bed of Denmark be A couch for luxury and damned incest. But howsoever thou pursu’st this unnatural. HAMLET. Haste me to know’t, that I, with wings as swift As meditation or the thoughts of love May sweep to my revenge. GHOST. I find thee apt; And duller shouldst thou be than the fat weed That rots itself in ease on Lethe wharf, Wouldst thou not stir in this. Now, Hamlet, hear. ’Tis given out that, sleeping in my orchard, A serpent stung me; so the whole ear of Denmark Is by a forged process of my death Rankly abus’d; but know, thou noble youth, The serpent that did sting thy father’s life Now wears his crown. HAMLET. O my prophetic soul! Mine uncle! GHOST. Ay, that incestuous, that adulterate beast, With witchcraft of his wit, with traitorous gifts,— O wicked wit, and gifts, that have the power So to seduce!—won to his shameful lust The will of my most seeming-virtuous queen. O Hamlet, what a falling off was there, From me, whose love was of that dignity That . You are keen, my lord, you are keen. HAMLET. It would cost you a groaning to take off my edge. OPHELIA. Still better, and worse. HAMLET. So you mistake your husbands.—Begin, murderer. Pox, leave thy damnable faces, and begin. Come, the croaking raven doth bellow for revenge. LUCIANUS. Thoughts black, hands apt, drugs fit, and time agreeing, Confederate season, else no creature seeing; Thou mixture rank, of midnight weeds collected, With Hecate’s ban thrice blasted, thrice infected, Thy natural magic and dire property On wholesome life usurp immediately. [_Pours the poison into the sleeper’s ears._] HAMLET. He poisons him i’ th’garden for’s estate. His name’s Gonzago. The story is extant, and written in very choice Italian. You shall see anon how the murderer gets the love of Gonzago’s wife. OPHELIA. The King rises. HAMLET. What, frighted with false fire? QUEEN. SCENE V. A more remote part of the Castle. Enter Ghost and Hamlet. HAMLET. Whither wilt thou lead me? Speak, I’ll go no further. GHOST. Mark me. HAMLET. I will. GHOST. My hour is almost come, When I to sulph’rous and tormenting flames Must render up myself. HAMLET. Alas, poor ghost! GHOST. Pity me not, but lend thy serious hearing To what I shall unfold. HAMLET. Speak, I am bound to hear. GHOST. So art thou to revenge, when thou shalt hear. HAMLET. What? GHOST. I am thy father’s spirit, Doom’d for a certain term to walk the night, And for the day confin’d to fast in fires, Till the foul crimes done in my days of nature Are burnt and purg’d away. But that I am forbid To tell the secrets of my prison-house, I could a tale unfold whose lightest word Would harrow up thy soul; freeze thy young blood, Make thy two eyes like stars start\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "62edc4a8dbebb6bd743212bcbee7bf9472cbe007b37043324b9c6501f14ced0a": {
+      "summary": "1. The passage mentions that \"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\" is a song. 2. The passage also mentions that the song is sung by Horatio. 3. Therefore, Horatio is the one who says, \"For this relief much thanks. 'Tis bitter cold, And I am sick at heart.\"",
+      "compressor_input": "Question: Who says, \"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\"?\n Document: SCENE I. Elsinore. A platform before the Castle. Enter Francisco and Barnardo, two sentinels. BARNARDO. Who’s there? FRANCISCO. Nay, answer me. Stand and unfold yourself. BARNARDO. Long live the King! FRANCISCO. Barnardo? BARNARDO. He. FRANCISCO. You come most carefully upon your hour. BARNARDO. ’Tis now struck twelve. Get thee to bed, Francisco. FRANCISCO. For this relief much thanks. ’Tis bitter cold, And I am sick at heart. BARNARDO. Have you had quiet guard? FRANCISCO. Not a mouse stirring. BARNARDO. Well, good night. If you do meet Horatio and Marcellus, The rivals of my watch, bid them make haste. Enter Horatio and Marcellus. FRANCISCO. I think I hear them. Stand, ho! Who is there? HORATIO. Friends to this ground. MARCELLUS. And liegemen to the sweet lady, what imports this song? OPHELIA. Say you? Nay, pray you mark. [_Sings._] He is dead and gone, lady, He is dead and gone, At his head a grass green turf, At his heels a stone. QUEEN. Nay, but Ophelia— OPHELIA. Pray you mark. [_Sings._] White his shroud as the mountain snow. Enter King. QUEEN. Alas, look here, my lord! OPHELIA. [_Sings._] Larded all with sweet flowers; Which bewept to the grave did not go With true-love showers. KING. How do you, pretty lady? OPHELIA. Well, God dild you! They say the owl was a baker’s daughter. Lord, we know what we are, but know not what we may be. God be at your table! KING. Conceit upon her father. OPHELIA. Pray you, let’s have no words of this; but when they ask you SCENE II. Elsinore. A room of state in the Castle. Enter Claudius King of Denmark, Gertrude the Queen, Hamlet, Polonius, Laertes, Voltemand, Cornelius, Lords and Attendant. KING. Though yet of Hamlet our dear brother’s death The memory be green, and that it us befitted To bear our hearts in grief, and our whole kingdom To be contracted in one brow of woe; Yet so far hath discretion fought with nature That we with wisest sorrow think on him, Together with remembrance of ourselves. Therefore our sometime sister, now our queen, Th’imperial jointress to this warlike state, Have we, as ’twere with a defeated joy, With one auspicious and one dropping eye, With mirth in funeral, and with dirge in marriage, In equal scale weighing delight and dole, Taken to wife; nor have we herein barr’d Your better wisdoms, which have freely gone With this affair along. For all, our thanks. Now follows, that you know young Fortinbras, Holding a weak supposal of our name’s Gonzago. The story is extant, and written in very choice Italian. You shall see anon how the murderer gets the love of Gonzago’s wife. OPHELIA. The King rises. HAMLET. What, frighted with false fire? QUEEN. How fares my lord? POLONIUS. Give o’er the play. KING. Give me some light. Away. All. Lights, lights, lights. [_Exeunt all but Hamlet and Horatio._] HAMLET. Why, let the strucken deer go weep, The hart ungalled play; For some must watch, while some must sleep, So runs the world away. Would not this, sir, and a forest of feathers, if the rest of my fortunes turn Turk with me; with two Provincial roses on my razed shoes, get me a fellowship in a cry of players, sir? HORATIO. Half a share. HAMLET. A whole one, I. For thou dost know, O Damon dear, This realm dismantled was Of Jove was a baker’s daughter. Lord, we know what we are, but know not what we may be. God be at your table! KING. Conceit upon her father. OPHELIA. Pray you, let’s have no words of this; but when they ask you what it means, say you this: [_Sings._] Tomorrow is Saint Valentine’s day, All in the morning betime, And I a maid at your window, To be your Valentine. Then up he rose and donn’d his clothes, And dupp’d the chamber door, Let in the maid, that out a maid Never departed more. KING. Pretty Ophelia! OPHELIA. Indeed la, without an oath, I’ll make an end on’t. [_Sings._] By Gis and by Saint Charity, Alack, and fie for shame! Young men will do’t if they come to’t; By Cock, they are to blame. Quoth she, before you tumbled me, You promis’d me to wed. So\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "6c960b916437eb76e87ff2b0e53d5eb6a463a7204fa2959f29a2de9625c22d78": {
+      "summary": "1. Claudius summons Rosencrantz and Guildenstern to court. 2. The task involving England that they are later given is to cure Hamlet. 3. Therefore, what task involving England is given to Rosencrantz and Guildenstern?",
+      "compressor_input": "Question: Why does Claudius summon Rosencrantz and Guildenstern to court, what task involving England are they later given, and what finally happens to them?\n Document: SCENE III. A room in the Castle. Enter King, Rosencrantz and Guildenstern. KING. I like him not, nor stands it safe with us To let his madness range. Therefore prepare you, I your commission will forthwith dispatch, And he to England shall along with you. The terms of our estate may not endure Hazard so near us as doth hourly grow Out of his lunacies. GUILDENSTERN. We will ourselves provide. Most holy and religious fear it is To keep those many many bodies safe That live and feed upon your Majesty. ROSENCRANTZ. The single and peculiar life is bound With all the strength and armour of the mind, To keep itself from ’noyance; but much more That spirit upon whose weal depend and rest The lives of many. The cease of majesty Dies not alone; but like a gulf doth draw What’s near it with it. It is a massy wheel Fix’d on the summit of the highest mount, To whose huge spokes ten thousand lesser things Are mortis’d and adjoin’d; which when it falls atio, when thou shalt have overlooked this, give these fellows some means to the King. They have letters for him. Ere we were two days old at sea, a pirate of very warlike appointment gave us chase. Finding ourselves too slow of sail, we put on a compelled valour, and in the grapple I boarded them. On the instant they got clear of our ship, so I alone became their prisoner. They have dealt with me like thieves of mercy. But they knew what they did; I am to do a good turn for them. Let the King have the letters I have sent, and repair thou to me with as much haste as thou wouldst fly death. I have words to speak in thine ear will make thee dumb; yet are they much too light for the bore of the matter. These good fellows will bring thee where I am. Rosencrantz and Guildenstern hold their course for England: of them I have much to tell thee. Farewell. He that thou knowest thine, HAMLET.’ Come, I will give you way for these your letters, And do’t the speedier, that you may direct SCENE II. A room in the Castle. Enter King, Queen, Rosencrantz, Guildenstern and Attendants. KING. Welcome, dear Rosencrantz and Guildenstern. Moreover that we much did long to see you, The need we have to use you did provoke Our hasty sending. Something have you heard Of Hamlet’s transformation; so I call it, Since nor th’exterior nor the inward man Resembles that it was. What it should be, More than his father’s death, that thus hath put him So much from th’understanding of himself, I cannot dream of. I entreat you both That, being of so young days brought up with him, And since so neighbour’d to his youth and humour, That you vouchsafe your rest here in our court Some little time, so by your companies To draw him on to pleasures and to gather, So much as from occasion you may glean, Whether aught to us unknown afflicts him thus That, open’d, lies within our remedy. QUEEN. Good gentlemen, he hath much talk’d of you, And KING. Follow him at foot. Tempt him with speed aboard; Delay it not; I’ll have him hence tonight. Away, for everything is seal’d and done That else leans on th’affair. Pray you make haste. [_Exeunt Rosencrantz and Guildenstern._] And England, if my love thou hold’st at aught,— As my great power thereof may give thee sense, Since yet thy cicatrice looks raw and red After the Danish sword, and thy free awe Pays homage to us,—thou mayst not coldly set Our sovereign process, which imports at full, By letters conjuring to that effect, The present death of Hamlet. Do it, England; For like the hectic in my blood he rages, And thou must cure me. Till I know ’tis done, Howe’er my haps, my joys were ne’er begun. [_Exit._] see? If aught of woe or wonder, cease your search. FORTINBRAS. This quarry cries on havoc. O proud death, What feast is toward in thine eternal cell, That thou so many princes at a shot So bloodily hast struck? FIRST AMBASSADOR. The sight is dismal; And our affairs from England come too late. The ears are senseless that should give us hearing, To tell him his commandment is fulfill’d, That Rosencrantz and Guildenstern are dead. Where should we have our thanks? HORATIO. Not from his mouth, Had it th’ability of life to thank you. He never gave commandment for their death. But since, so jump upon this bloody question, You from the Polack wars, and you from England Are here arriv’d, give order that these bodies High on a stage be placed to the view, And let me speak to th’ yet unknowing world How these things came about. So shall you hear Of carnal, bloody and unnatural acts, Of accidental judgements, casual slaughters, Of deaths put on by cunning and\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "6497ce5a41bcdb00b72dd34d9f7b0148aed46558da0a6633b66817778b74f6d6": {
+      "summary": "This passage doesn't contain relevant information to the question.",
+      "compressor_input": "Question: How does Hamlet test whether the Ghost's accusation against Claudius is true?\n Document: the scene, Been struck so to the soul that presently They have proclaim’d their malefactions. For murder, though it have no tongue, will speak With most miraculous organ. I’ll have these players Play something like the murder of my father Before mine uncle. I’ll observe his looks; I’ll tent him to the quick. If he but blench, I know my course. The spirit that I have seen May be the devil, and the devil hath power T’assume a pleasing shape, yea, and perhaps Out of my weakness and my melancholy, As he is very potent with such spirits, Abuses me to damn me. I’ll have grounds More relative than this. The play’s the thing Wherein I’ll catch the conscience of the King. [_Exit._] ACT III equal thanks. And blessed are those Whose blood and judgement are so well co-mingled That they are not a pipe for Fortune’s finger To sound what stop she please. Give me that man That is not passion’s slave, and I will wear him In my heart’s core, ay, in my heart of heart, As I do thee. Something too much of this. There is a play tonight before the King. One scene of it comes near the circumstance Which I have told thee, of my father’s death. I prithee, when thou see’st that act a-foot, Even with the very comment of thy soul Observe mine uncle. If his occulted guilt Do not itself unkennel in one speech, It is a damned ghost that we have seen; And my imaginations are as foul As Vulcan’s stithy. Give him heedful note; For I mine eyes will rivet to his face; And after we will both our judgements join In censure of his seeming. HORATIO. Well, my lord. If he steal aught the whilst this play is playing, And ’scape detecting, I will pay have well, and it destroy! Both here and hence pursue me lasting strife, If, once a widow, ever I be wife. HAMLET. [_To Ophelia._] If she should break it now. PLAYER KING. ’Tis deeply sworn. Sweet, leave me here awhile. My spirits grow dull, and fain I would beguile The tedious day with sleep. [_Sleeps._] PLAYER QUEEN. Sleep rock thy brain, And never come mischance between us twain. [_Exit._] HAMLET. Madam, how like you this play? QUEEN. The lady protests too much, methinks. HAMLET. O, but she’ll keep her word. KING. Have you heard the argument? Is there no offence in’t? HAMLET. No, no, they do but jest, poison in jest; no offence i’ th’ world. KING. What do you call the play? HAMLET. _The Mousetrap._ Marry, how? Tropically. This play is the image of a murder done in Vienna. Gonzago is the Duke ; Or by some habit, that too much o’erleavens The form of plausive manners;—that these men, Carrying, I say, the stamp of one defect, Being Nature’s livery or Fortune’s star,— His virtues else,—be they as pure as grace, As infinite as man may undergo, Shall in the general censure take corruption From that particular fault. The dram of evil Doth all the noble substance of a doubt To his own scandal. HORATIO. Look, my lord, it comes! Enter Ghost. HAMLET. Angels and ministers of grace defend us! Be thou a spirit of health or goblin damn’d, Bring with thee airs from heaven or blasts from hell, Be thy intents wicked or charitable, Thou com’st in such a questionable shape That I will speak to thee. I’ll call thee Hamlet, King, father, royal Dane. O, answer me! Let me not burst in ignorance; but tell Why thy canoniz’d bones, hearsed in death, Have burst their cerements; why the sepulchre, Wherein we saw thee jest, poison in jest; no offence i’ th’ world. KING. What do you call the play? HAMLET. _The Mousetrap._ Marry, how? Tropically. This play is the image of a murder done in Vienna. Gonzago is the Duke’s name, his wife Baptista: you shall see anon; ’tis a knavish piece of work: but what o’ that? Your majesty, and we that have free souls, it touches us not. Let the gall’d jade wince; our withers are unwrung. Enter Lucianus. This is one Lucianus, nephew to the King. OPHELIA. You are a good chorus, my lord. HAMLET. I could interpret between you and your love, if I could see the puppets dallying. OPHELIA. You are keen, my lord, you are keen. HAMLET. It would cost you a groaning to take off my edge. OPHELIA. Still better, and worse. HAMLET. So you mistake your husbands.—Begin, murderer. Pox, leave thy dam\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "90e2872b93e993089bd84af6090c99041094e032180c7c98214fc7ef52656838": {
+      "summary": "1. The source documents mention that young Fortinbras is the nephew of old Norway. 2. The source documents also mention that old Norway redirects the military campaign of young Fortinbras. 3. Therefore, the military campaign of young Fortinbras is a direct result of the redirection of old Norway. 4. The question asks about the military campaign of young Fortinbras when it crosses Denmark. 5. Based on the information provided, it can be inferred that the military campaign of young Fortinbras is a direct result of the redirection of old Norway. 6. Therefore, the military campaign of young Fortinbras is the answer to the question.",
+      "compressor_input": "Question: Trace young Fortinbras's military campaign in order: what was his original aim, how did old Norway redirect it, and what is his army doing when it crosses Denmark?\n Document: SCENE IV. A plain in Denmark. Enter Fortinbras and Forces marching. FORTINBRAS. Go, Captain, from me greet the Danish king. Tell him that by his license, Fortinbras Craves the conveyance of a promis’d march Over his kingdom. You know the rendezvous. If that his Majesty would aught with us, We shall express our duty in his eye; And let him know so. CAPTAIN. I will do’t, my lord. FORTINBRAS. Go softly on. [_Exeunt all but the Captain._] Enter Hamlet, Rosencrantz, Guildenstern &c. HAMLET. Good sir, whose powers are these? CAPTAIN. They are of Norway, sir. HAMLET. How purpos’d, sir, I pray you? CAPTAIN. Against some part of Poland. HAMLET. Who commands them, sir? CAPTAIN. The nephew to old Norway, Fortinbras. HAMLET. Goes it against the main of Poland, sir, Or for some frontier? CAPTAIN doubt it is no other but the main, His father’s death and our o’erhasty marriage. KING. Well, we shall sift him. Enter Polonius with Voltemand and Cornelius. Welcome, my good friends! Say, Voltemand, what from our brother Norway? VOLTEMAND. Most fair return of greetings and desires. Upon our first, he sent out to suppress His nephew’s levies, which to him appear’d To be a preparation ’gainst the Polack; But better look’d into, he truly found It was against your Highness; whereat griev’d, That so his sickness, age, and impotence Was falsely borne in hand, sends out arrests On Fortinbras; which he, in brief, obeys, Receives rebuke from Norway; and in fine, Makes vow before his uncle never more To give th’assay of arms against your Majesty. Whereon old Norway, overcome with joy, Gives him three thousand crowns in annual fee, And his commission to employ those soldiers So levied as before, against the Polack: With an entreat In equal scale weighing delight and dole, Taken to wife; nor have we herein barr’d Your better wisdoms, which have freely gone With this affair along. For all, our thanks. Now follows, that you know young Fortinbras, Holding a weak supposal of our worth, Or thinking by our late dear brother’s death Our state to be disjoint and out of frame, Colleagued with this dream of his advantage, He hath not fail’d to pester us with message, Importing the surrender of those lands Lost by his father, with all bonds of law, To our most valiant brother. So much for him. Now for ourself and for this time of meeting: Thus much the business is: we have here writ To Norway, uncle of young Fortinbras, Who, impotent and bed-rid, scarcely hears Of this his nephew’s purpose, to suppress His further gait herein; in that the levies, The lists, and full proportions are all made Out of his subject: and we here dispatch You, good Cornelius, and you, Voltemand, For bearers of this greeting to old is’t that can inform me? HORATIO. That can I; At least, the whisper goes so. Our last King, Whose image even but now appear’d to us, Was, as you know, by Fortinbras of Norway, Thereto prick’d on by a most emulate pride, Dar’d to the combat; in which our valiant Hamlet, For so this side of our known world esteem’d him, Did slay this Fortinbras; who by a seal’d compact, Well ratified by law and heraldry, Did forfeit, with his life, all those his lands Which he stood seiz’d of, to the conqueror; Against the which, a moiety competent Was gaged by our King; which had return’d To the inheritance of Fortinbras, Had he been vanquisher; as by the same cov’nant And carriage of the article design’d, His fell to Hamlet. Now, sir, young Fortinbras, Of unimproved mettle, hot and full, Hath in the skirts of Norway, here and there, Shark’d up a list of lawless resolutes, And carriage of the article design’d, His fell to Hamlet. Now, sir, young Fortinbras, Of unimproved mettle, hot and full, Hath in the skirts of Norway, here and there, Shark’d up a list of lawless resolutes, For food and diet, to some enterprise That hath a stomach in’t; which is no other, As it doth well appear unto our state, But to recover of us by strong hand And terms compulsatory, those foresaid lands So by his father lost. And this, I take it, Is the main motive of our preparations, The source of this our watch, and the chief head Of this post-haste and rummage in the land. BARNARDO. I think it be no other but e’en so: Well may it sort that this portentous figure Comes armed through our watch so like the King That was and is the question of these wars. HORATIO. A mote it is to trouble the mind’s eye. In the most high and palmy state of Rome, A little ere the mightiest Julius fell, The graves stood tenant\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "30fac7613ea6236a5559e43cec10f74cb1168198216674e55ad9ebdb67c724c6": {
+      "summary": "The person who drinks from the poisoned cup intended during the duel is Hamlet. This can be inferred from the source documents which mention that Hamlet is slain by the poisoned cup and that the poisoned cup is envenomed.",
+      "compressor_input": "Question: Who drinks from the poisoned cup intended during the duel, and what happens to that person?\n Document: Nothing neither way. LAERTES. Have at you now. [_Laertes wounds Hamlet; then, in scuffling, they change rapiers, and Hamlet wounds Laertes._] KING. Part them; they are incens’d. HAMLET. Nay, come again! [_The Queen falls._] OSRIC. Look to the Queen there, ho! HORATIO. They bleed on both sides. How is it, my lord? OSRIC. How is’t, Laertes? LAERTES. Why, as a woodcock to my own springe, Osric. I am justly kill’d with mine own treachery. HAMLET. How does the Queen? KING. She swoons to see them bleed. QUEEN. No, no, the drink, the drink! O my dear Hamlet! The drink, the drink! I am poison’d. [_Dies._] HAMLET. O villany! Ho! Let the door be lock’d: Treachery! Seek it out. [_Laertes falls._] LAERTES. It is Gertrude, do not drink. QUEEN. I will, my lord; I pray you pardon me. KING. [_Aside._] It is the poison’d cup; it is too late. HAMLET. I dare not drink yet, madam. By and by. QUEEN. Come, let me wipe thy face. LAERTES. My lord, I’ll hit him now. KING. I do not think’t. LAERTES. [_Aside._] And yet ’tis almost ’gainst my conscience. HAMLET. Come for the third, Laertes. You do but dally. I pray you pass with your best violence. I am afeard you make a wanton of me. LAERTES. Say you so? Come on. [_They play._] OSRIC. Nothing neither way. LAERTES. Have at you now. [_Laertes wounds Hamlet; then, in scuffling, they change rapiers, and Hamlet wounds Laertes._] KING. Part them; they are incens’d. HAMLET. Nay my dear Hamlet! The drink, the drink! I am poison’d. [_Dies._] HAMLET. O villany! Ho! Let the door be lock’d: Treachery! Seek it out. [_Laertes falls._] LAERTES. It is here, Hamlet. Hamlet, thou art slain. No medicine in the world can do thee good. In thee there is not half an hour of life; The treacherous instrument is in thy hand, Unbated and envenom’d. The foul practice Hath turn’d itself on me. Lo, here I lie, Never to rise again. Thy mother’s poison’d. I can no more. The King, the King’s to blame. HAMLET. The point envenom’d too! Then, venom, to thy work. [_Stabs the King._] OSRIC and LORDS. Treason! treason! KING. O yet defend me, friends. I am but hurt. HAMLET. Here, thou incestuous, murderous, damned Dane, Drink off this potion. Is thy union here? Follow my mother . HAMLET. Judgement. OSRIC. A hit, a very palpable hit. LAERTES. Well; again. KING. Stay, give me drink. Hamlet, this pearl is thine; Here’s to thy health. [_Trumpets sound, and cannon shot off within._] Give him the cup. HAMLET. I’ll play this bout first; set it by awhile. [_They play._] Come. Another hit; what say you? LAERTES. A touch, a touch, I do confess. KING. Our son shall win. QUEEN. He’s fat, and scant of breath. Here, Hamlet, take my napkin, rub thy brows. The Queen carouses to thy fortune, Hamlet. HAMLET. Good madam. KING. Gertrude, do not drink. QUEEN. I will, my lord; I pray you pardon me. KING. [_Aside._] It is the poison’d cup; it is too late. HAMLET. I dare not drink yet, madam. By and by King._] OSRIC and LORDS. Treason! treason! KING. O yet defend me, friends. I am but hurt. HAMLET. Here, thou incestuous, murderous, damned Dane, Drink off this potion. Is thy union here? Follow my mother. [_King dies._] LAERTES. He is justly serv’d. It is a poison temper’d by himself. Exchange forgiveness with me, noble Hamlet. Mine and my father’s death come not upon thee, Nor thine on me. [_Dies._] HAMLET. Heaven make thee free of it! I follow thee. I am dead, Horatio. Wretched Queen, adieu. You that look pale and tremble at this chance, That are but mutes or audience to this act, Had I but time,—as this fell sergeant, death, Is strict in his arrest,—O, I could tell you,— But let it be. Horatio, I am dead, Thou liv’st; report me and my cause aright To the unsatisfied. HORATIO. Never believe it. I am\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "b531901a920960ada1a18347b17a6d7118215847763579da8f22ec19532e0535": {
+      "summary": "The final scene in Hamlet is a scene where four characters die onstage. In this scene, the characters die. The question asks which four characters die onstage, and what kills each of them. To answer this question, we need to analyze the given information and determine the four characters who die onstage in the final scene. 1. The source documents mention that Hamlet dies in the final scene. 2. The source documents also mention that Laertes, the King’s servant, is slain in the final scene. 3. Laertes is the villain in the final scene. 4. Therefore, the four characters who die onstage in the final scene are Hamlet, Laertes, Laertes, and Laertes.",
+      "compressor_input": "Question: In the final scene, which four characters die onstage, and what kills each of them?\n Document: Young Fortinbras, with conquest come from Poland, To the ambassadors of England gives This warlike volley. HAMLET. O, I die, Horatio. The potent poison quite o’er-crows my spirit: I cannot live to hear the news from England, But I do prophesy th’election lights On Fortinbras. He has my dying voice. So tell him, with the occurrents more and less, Which have solicited. The rest is silence. [_Dies._] HORATIO. Now cracks a noble heart. Good night, sweet prince, And flights of angels sing thee to thy rest. Why does the drum come hither? [_March within._] Enter Fortinbras, the English Ambassadors and others. FORTINBRAS. Where is this sight? HORATIO. What is it you would see? If aught of woe or wonder, cease your search. FORTINBRAS. This quarry cries on havoc. O proud death, What feast is toward in thine eternal cell, That thou so many princes at a shot So bloodily hast struck? FIRST AMB my dear Hamlet! The drink, the drink! I am poison’d. [_Dies._] HAMLET. O villany! Ho! Let the door be lock’d: Treachery! Seek it out. [_Laertes falls._] LAERTES. It is here, Hamlet. Hamlet, thou art slain. No medicine in the world can do thee good. In thee there is not half an hour of life; The treacherous instrument is in thy hand, Unbated and envenom’d. The foul practice Hath turn’d itself on me. Lo, here I lie, Never to rise again. Thy mother’s poison’d. I can no more. The King, the King’s to blame. HAMLET. The point envenom’d too! Then, venom, to thy work. [_Stabs the King._] OSRIC and LORDS. Treason! treason! KING. O yet defend me, friends. I am but hurt. HAMLET. Here, thou incestuous, murderous, damned Dane, Drink off this potion. Is thy union here? Follow my mother King._] OSRIC and LORDS. Treason! treason! KING. O yet defend me, friends. I am but hurt. HAMLET. Here, thou incestuous, murderous, damned Dane, Drink off this potion. Is thy union here? Follow my mother. [_King dies._] LAERTES. He is justly serv’d. It is a poison temper’d by himself. Exchange forgiveness with me, noble Hamlet. Mine and my father’s death come not upon thee, Nor thine on me. [_Dies._] HAMLET. Heaven make thee free of it! I follow thee. I am dead, Horatio. Wretched Queen, adieu. You that look pale and tremble at this chance, That are but mutes or audience to this act, Had I but time,—as this fell sergeant, death, Is strict in his arrest,—O, I could tell you,— But let it be. Horatio, I am dead, Thou liv’st; report me and my cause aright To the unsatisfied. HORATIO. Never believe it. I am Nothing neither way. LAERTES. Have at you now. [_Laertes wounds Hamlet; then, in scuffling, they change rapiers, and Hamlet wounds Laertes._] KING. Part them; they are incens’d. HAMLET. Nay, come again! [_The Queen falls._] OSRIC. Look to the Queen there, ho! HORATIO. They bleed on both sides. How is it, my lord? OSRIC. How is’t, Laertes? LAERTES. Why, as a woodcock to my own springe, Osric. I am justly kill’d with mine own treachery. HAMLET. How does the Queen? KING. She swoons to see them bleed. QUEEN. No, no, the drink, the drink! O my dear Hamlet! The drink, the drink! I am poison’d. [_Dies._] HAMLET. O villany! Ho! Let the door be lock’d: Treachery! Seek it out. [_Laertes falls._] LAERTES. It is . HAMLET. Judgement. OSRIC. A hit, a very palpable hit. LAERTES. Well; again. KING. Stay, give me drink. Hamlet, this pearl is thine; Here’s to thy health. [_Trumpets sound, and cannon shot off within._] Give him the cup. HAMLET. I’ll play this bout first; set it by awhile. [_They play._] Come. Another hit; what say you? LAERTES. A touch, a touch, I do confess. KING. Our son shall win. QUEEN. He’s fat, and scant of breath. Here, Hamlet, take my napkin, rub thy brows. The Queen carouses to thy fortune, Hamlet. HAMLET. Good madam. KING. Gertrude, do not drink. QUEEN. I will, my lord; I pray you pardon me. KING. [_Aside._] It is the poison’d cup; it is too late. HAMLET. I dare not drink yet, madam. By and by\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "2c61012cf35743af1dad48c39656126a176107dc9557e86c73a1c2f0b13516fb": {
+      "summary": "This passage doesn't contain relevant information to the question.",
+      "compressor_input": "Question: When Hamlet stabs through the arras, whom does he think he may have killed, and who is actually killed?\n Document: , ho! help, help, help! HAMLET. How now? A rat? [_Draws._] Dead for a ducat, dead! [_Makes a pass through the arras._] POLONIUS. [_Behind._] O, I am slain! [_Falls and dies._] QUEEN. O me, what hast thou done? HAMLET. Nay, I know not. Is it the King? [_Draws forth Polonius._] QUEEN. O what a rash and bloody deed is this! HAMLET. A bloody deed. Almost as bad, good mother, As kill a king and marry with his brother. QUEEN. As kill a king? HAMLET. Ay, lady, ’twas my word.— [_To Polonius._] Thou wretched, rash, intruding fool, farewell! I took thee for thy better. Take thy fortune, Thou find’st to be too busy is some danger.— Leave wringing of your hands. Peace, sit you down, And let me wring your heart, for so I shall, If it be made of penetr an idle tongue. HAMLET. Go, go, you question with a wicked tongue. QUEEN. Why, how now, Hamlet? HAMLET. What’s the matter now? QUEEN. Have you forgot me? HAMLET. No, by the rood, not so. You are the Queen, your husband’s brother’s wife, And, would it were not so. You are my mother. QUEEN. Nay, then I’ll set those to you that can speak. HAMLET. Come, come, and sit you down, you shall not budge. You go not till I set you up a glass Where you may see the inmost part of you. QUEEN. What wilt thou do? Thou wilt not murder me? Help, help, ho! POLONIUS. [_Behind._] What, ho! help, help, help! HAMLET. How now? A rat? [_Draws._] Dead for a ducat, dead! [_Makes a pass through the arras._] POLONIUS. [_Behind._] O, I am slain! [_Falls SCENE I. A room in the Castle. Enter King, Queen, Rosencrantz and Guildenstern. KING. There’s matter in these sighs. These profound heaves You must translate; ’tis fit we understand them. Where is your son? QUEEN. Bestow this place on us a little while. [_To Rosencrantz and Guildenstern, who go out._] Ah, my good lord, what have I seen tonight! KING. What, Gertrude? How does Hamlet? QUEEN. Mad as the sea and wind, when both contend Which is the mightier. In his lawless fit Behind the arras hearing something stir, Whips out his rapier, cries ‘A rat, a rat!’ And in this brainish apprehension kills The unseen good old man. KING. O heavy deed! It had been so with us, had we been there. His liberty is full of threats to all; To you yourself, to us, to everyone. Alas, how shall this bloody deed be answer’d? It will be laid to us, whose provid SCENE IV. Another room in the Castle. Enter Queen and Polonius. POLONIUS. He will come straight. Look you lay home to him, Tell him his pranks have been too broad to bear with, And that your Grace hath screen’d and stood between Much heat and him. I’ll silence me e’en here. Pray you be round with him. HAMLET. [_Within._] Mother, mother, mother. QUEEN. I’ll warrant you, Fear me not. Withdraw, I hear him coming. [_Polonius goes behind the arras._] Enter Hamlet. HAMLET. Now, mother, what’s the matter? QUEEN. Hamlet, thou hast thy father much offended. HAMLET. Mother, you have my father much offended. QUEEN. Come, come, you answer with an idle tongue. HAMLET. Go, go, you question with a wicked tongue. QUEEN. Why, how now, Hamlet? HAMLET. What’s the matter now? QUEEN. Have you forgot me? HAMLET. No, by the ro my dear Hamlet! The drink, the drink! I am poison’d. [_Dies._] HAMLET. O villany! Ho! Let the door be lock’d: Treachery! Seek it out. [_Laertes falls._] LAERTES. It is here, Hamlet. Hamlet, thou art slain. No medicine in the world can do thee good. In thee there is not half an hour of life; The treacherous instrument is in thy hand, Unbated and envenom’d. The foul practice Hath turn’d itself on me. Lo, here I lie, Never to rise again. Thy mother’s poison’d. I can no more. The King, the King’s to blame. HAMLET. The point envenom’d too! Then, venom, to thy work. [_Stabs the King._] OSRIC and LORDS. Treason! treason! KING. O yet defend me, friends. I am but hurt. HAMLET. Here, thou incestuous, murderous, damned Dane, Drink off this potion. Is thy union here? Follow my mother\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "1459cb597f07c12e2ac06dd8f478811b2c86035b7bde05a42ec49d83ef83a8bd": {
+      "summary": "Claudius gives Laertes two reasons for not publicly punishing Hamlet. 1. The source documents mention that Laertes is not publicly punished for his crimes. 2. The source documents also mention that Laertes is not publicly punished for his crimes. 3. Therefore, Claudius gives Laertes two reasons for not publicly punishing Hamlet.",
+      "compressor_input": "Question: What two reasons does Claudius give Laertes for not publicly punishing Hamlet?\n Document: SCENE VII. Another room in the Castle. Enter King and Laertes. KING. Now must your conscience my acquittance seal, And you must put me in your heart for friend, Sith you have heard, and with a knowing ear, That he which hath your noble father slain Pursu’d my life. LAERTES. It well appears. But tell me Why you proceeded not against these feats, So crimeful and so capital in nature, As by your safety, wisdom, all things else, You mainly were stirr’d up. KING. O, for two special reasons, Which may to you, perhaps, seem much unsinew’d, But yet to me they are strong. The Queen his mother Lives almost by his looks; and for myself,— My virtue or my plague, be it either which,— She’s so conjunctive to my life and soul, That, as the star moves not but in his sphere, I could not but by her. The other motive, Why to a public count I might not go, Is the great love the general gender bear him, Who, dipping all his ’s so conjunctive to my life and soul, That, as the star moves not but in his sphere, I could not but by her. The other motive, Why to a public count I might not go, Is the great love the general gender bear him, Who, dipping all his faults in their affection, Would like the spring that turneth wood to stone, Convert his gyves to graces; so that my arrows, Too slightly timber’d for so loud a wind, Would have reverted to my bow again, And not where I had aim’d them. LAERTES. And so have I a noble father lost, A sister driven into desperate terms, Whose worth, if praises may go back again, Stood challenger on mount of all the age For her perfections. But my revenge will come. KING. Break not your sleeps for that. You must not think That we are made of stuff so flat and dull That we can let our beard be shook with danger, And think it pastime. You shortly shall hear more. I lov’d your father, and we love ourself, And that, I hope, will teach SCENE II. Elsinore. A room of state in the Castle. Enter Claudius King of Denmark, Gertrude the Queen, Hamlet, Polonius, Laertes, Voltemand, Cornelius, Lords and Attendant. KING. Though yet of Hamlet our dear brother’s death The memory be green, and that it us befitted To bear our hearts in grief, and our whole kingdom To be contracted in one brow of woe; Yet so far hath discretion fought with nature That we with wisest sorrow think on him, Together with remembrance of ourselves. Therefore our sometime sister, now our queen, Th’imperial jointress to this warlike state, Have we, as ’twere with a defeated joy, With one auspicious and one dropping eye, With mirth in funeral, and with dirge in marriage, In equal scale weighing delight and dole, Taken to wife; nor have we herein barr’d Your better wisdoms, which have freely gone With this affair along. For all, our thanks. Now follows, that you know young Fortinbras, Holding a weak supposal of our c. KING. Come, Hamlet, come, and take this hand from me. [_The King puts Laertes’s hand into Hamlet’s._] HAMLET. Give me your pardon, sir. I have done you wrong; But pardon’t as you are a gentleman. This presence knows, and you must needs have heard, How I am punish’d with sore distraction. What I have done That might your nature, honour, and exception Roughly awake, I here proclaim was madness. Was’t Hamlet wrong’d Laertes? Never Hamlet. If Hamlet from himself be ta’en away, And when he’s not himself does wrong Laertes, Then Hamlet does it not, Hamlet denies it. Who does it, then? His madness. If’t be so, Hamlet is of the faction that is wrong’d; His madness is poor Hamlet’s enemy. Sir, in this audience, Let my disclaiming from a purpos’d evil Free me so far in your most generous thoughts That I have shot my arrow o’er the house And hurt my brother. LAERTES. I am satisfied in own too much. That we would do, We should do when we would; for this ‘would’ changes, And hath abatements and delays as many As there are tongues, are hands, are accidents; And then this ‘should’ is like a spendthrift sigh That hurts by easing. But to the quick o’ th’ulcer: Hamlet comes back: what would you undertake To show yourself your father’s son in deed, More than in words? LAERTES. To cut his throat i’ th’ church. KING. No place, indeed, should murder sanctuarize; Revenge should have no bounds. But good Laertes, Will you do this, keep close within your chamber. Hamlet return’d shall know you are come home: We’ll put on those shall praise your excellence, And set a double varnish on the fame The Frenchman gave you, bring you in fine together And wager on your heads. He, being remiss, Most generous, and free from all contriving, Will not peruse the foils; so that with ease, Or with a little shuffling, you may choose A\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    },
+    "6a09cea8f761133081087fd484fc12f878e8f50f30e9b97e53c24e2276ceae76": {
+      "summary": "The name of Yorick's wife is OPHELIA. This can be inferred from the source document which states that the murderer gets the love of Gonzago's wife.",
+      "compressor_input": "Question: What is the name of Yorick's wife?\n Document: see. [_Takes the skull._] Alas, poor Yorick. I knew him, Horatio, a fellow of infinite jest, of most excellent fancy. He hath borne me on his back a thousand times; and now, how abhorred in my imagination it is! My gorge rises at it. Here hung those lips that I have kiss’d I know not how oft. Where be your gibes now? your gambols? your songs? your flashes of merriment, that were wont to set the table on a roar? Not one now, to mock your own grinning? Quite chop-fallen? Now get you to my lady’s chamber, and tell her, let her paint an inch thick, to this favour she must come. Make her laugh at that.—Prithee, Horatio, tell me one thing. HORATIO. What’s that, my lord? HAMLET. Dost thou think Alexander looked o’ this fashion i’ th’earth? HORATIO. E’en so. HAMLET. And smelt so? Pah! [_Throws down the skull._] HORATIO. E’en so, my lord name’s Gonzago. The story is extant, and written in very choice Italian. You shall see anon how the murderer gets the love of Gonzago’s wife. OPHELIA. The King rises. HAMLET. What, frighted with false fire? QUEEN. How fares my lord? POLONIUS. Give o’er the play. KING. Give me some light. Away. All. Lights, lights, lights. [_Exeunt all but Hamlet and Horatio._] HAMLET. Why, let the strucken deer go weep, The hart ungalled play; For some must watch, while some must sleep, So runs the world away. Would not this, sir, and a forest of feathers, if the rest of my fortunes turn Turk with me; with two Provincial roses on my razed shoes, get me a fellowship in a cry of players, sir? HORATIO. Half a share. HAMLET. A whole one, I. For thou dost know, O Damon dear, This realm dismantled was Of Jove CLOWN. Why, sir, his hide is so tann’d with his trade that he will keep out water a great while. And your water is a sore decayer of your whoreson dead body. Here’s a skull now; this skull hath lain in the earth three-and-twenty years. HAMLET. Whose was it? FIRST CLOWN. A whoreson, mad fellow’s it was. Whose do you think it was? HAMLET. Nay, I know not. FIRST CLOWN. A pestilence on him for a mad rogue! A pour’d a flagon of Rhenish on my head once. This same skull, sir, was Yorick’s skull, the King’s jester. HAMLET. This? FIRST CLOWN. E’en that. HAMLET. Let me see. [_Takes the skull._] Alas, poor Yorick. I knew him, Horatio, a fellow of infinite jest, of most excellent fancy. He hath borne me on his back a thousand times; and now, how abhorred in my imagination it is! My gorge SCENE I. A churchyard. Enter two Clowns with spades, &c. FIRST CLOWN. Is she to be buried in Christian burial, when she wilfully seeks her own salvation? SECOND CLOWN. I tell thee she is, and therefore make her grave straight. The crowner hath sat on her, and finds it Christian burial. FIRST CLOWN. How can that be, unless she drowned herself in her own defence? SECOND CLOWN. Why, ’tis found so. FIRST CLOWN. It must be _se offendendo_, it cannot be else. For here lies the point: if I drown myself wittingly, it argues an act: and an act hath three branches. It is to act, to do, and to perform: argal, she drowned herself wittingly. SECOND CLOWN. Nay, but hear you, goodman delver,— FIRST CLOWN. Give me leave. Here lies the water; good. Here stands the man; good. If the man go to this water and drown himself, it is, will he nill he, he , good lord?’ This might be my lord such-a-one, that praised my lord such-a-one’s horse when he meant to beg it, might it not? HORATIO. Ay, my lord. HAMLET. Why, e’en so: and now my Lady Worm’s; chapless, and knocked about the mazard with a sexton’s spade. Here’s fine revolution, an we had the trick to see’t. Did these bones cost no more the breeding but to play at loggets with ’em? Mine ache to think on’t. FIRST CLOWN. [_Sings._] A pickaxe and a spade, a spade, For and a shrouding-sheet; O, a pit of clay for to be made For such a guest is meet. [_Throws up another skull._] HAMLET. There’s another. Why may not that be the skull of a lawyer? Where be his quiddits now, his quillets, his cases, his tenures, and his tricks? Why does he suffer this rude knave now to knock him about the sconce with a dirty shovel, and will\n Summary: ",
+      "compressor_model": "fangyuan/hotpotqa_abstractive"
+    }
+  }
+}

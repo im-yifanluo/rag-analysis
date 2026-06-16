@@ -28,4 +28,6 @@ Thumbs.db
 third_party/*
 !third_party/README.md
 
-./Miniforge3-Linux-x86_64.shMiniforge3-Linux-x86_64.sh
+./Miniforge3*.sh
+./Miniforge*.sh
+Miniforge3-Linux-x86_64.sh

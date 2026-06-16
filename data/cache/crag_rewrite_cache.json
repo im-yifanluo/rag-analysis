@@ -1,0 +1,24 @@
+{
+  "crag_rewrites": {
+    "8e904ac72f503e35bd8c477a6737baeead37af5f94f365b1989490d12168d1c9": {
+      "rewritten_query": "Claudius, Rosencrantz, Guildenstern, summon, England, fate",
+      "raw_output": "Claudius, Rosencrantz, Guildenstern, summon, England, fate",
+      "rewriter_model": "Qwen/Qwen3.5-9B"
+    },
+    "de5df3d50f54f9c9196680a6d26e20ab1574736635919ec1c24a99fbddf57a79": {
+      "rewritten_query": "Hamlet, Ghost, Claudius, test accusation",
+      "raw_output": "Hamlet, Ghost, Claudius, test accusation",
+      "rewriter_model": "Qwen/Qwen3.5-9B"
+    },
+    "aacae30243e7bc731db1d827f6101305a5ef834f47534bb559f9fefa5e9279fc": {
+      "rewritten_query": "final scene, characters die onstage, cause of death",
+      "raw_output": "final scene, characters die onstage, cause of death",
+      "rewriter_model": "Qwen/Qwen3.5-9B"
+    },
+    "bcebcf02ef0b1acf3d053318fb2a0fd09ba099239effb9088cc32a4aec6374bd": {
+      "rewritten_query": "name, Yorick, wife",
+      "raw_output": "name, Yorick, wife",
+      "rewriter_model": "Qwen/Qwen3.5-9B"
+    }
+  }
+}
