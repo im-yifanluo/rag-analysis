@@ -274,6 +274,39 @@ class SetRSelectorTests(unittest.TestCase):
         self.assertIn("[25] candidate 25", str(selector.calls[0]["user_prompt"]))
         self.assertEqual(setr["context_assembly_trace"]["max_passages"], 50)
 
+    def test_setr_allows_empty_selection_for_no_evidence_question(self):
+        chunks = role_chunks()
+        lookup = chunks_by_id(chunks)
+        trace = [
+            {"rank": 1, "chunk_id": "c_setup_1", "score": 1.0},
+            {"rank": 2, "chunk_id": "c_confirmation", "score": 0.8},
+        ]
+        selector = FakeSetRSelector("### Final Selection: []")
+        question = Question(
+            id="q_unanswerable",
+            question="What is not stated?",
+            expected_answer="The text does not state it.",
+            evidence_scope="synthetic",
+            reasoning_skill="unanswerable",
+            required_evidence_quotes=[],
+            derived_gold_chunk_ids=[],
+            notes="synthetic",
+        )
+
+        setr = select_setr(
+            question,
+            [row["chunk_id"] for row in trace],
+            lookup,
+            context_budget=6,
+            selector_model=selector,
+            retrieval_trace=trace,
+        )
+
+        self.assertEqual(setr["selected_chunk_ids"], [])
+        self.assertEqual(setr["context_tokens"], 0)
+        self.assertTrue(setr["context_assembly_trace"]["empty_selection_allowed"])
+        self.assertEqual(setr["context_assembly_trace"]["raw_selected_numbers"], [])
+
 
 class DomainKGLiteTests(unittest.TestCase):
     def setUp(self):

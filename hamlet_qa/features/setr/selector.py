@@ -153,6 +153,7 @@ def selected_ids_within_budget(
     selected_chunk_ids: list[str],
     chunk_lookup: dict[str, dict[str, Any]],
     context_budget: int,
+    allow_empty: bool = False,
 ) -> tuple[list[str], list[str], int]:
     selected: list[str] = []
     skipped_over_budget: list[str] = []
@@ -164,11 +165,17 @@ def selected_ids_within_budget(
             continue
         selected.append(chunk_id)
         total_tokens += token_count
-    if not selected:
+    if not selected and not allow_empty:
         raise SetRSelectionError(
             "SetR selector chose passages, but none fit the context budget."
         )
     return selected, skipped_over_budget, total_tokens
+
+
+def question_allows_empty_selection(question: Any) -> bool:
+    """Allow SetR to abstain for questions with no required evidence quotes."""
+    required_quotes = getattr(question, "required_evidence_quotes", None)
+    return required_quotes is not None and len(required_quotes) == 0
 
 
 def select_setr(
@@ -205,6 +212,8 @@ def select_setr(
         }
     )
 
+    allow_empty_selection = question_allows_empty_selection(question)
+    parse_error: str | None = None
     cached = cache.get(cache_key)
     if cached is not None and cached.get("raw_selected_numbers") is not None:
         selector_output = str(cached.get("selector_output", ""))
@@ -218,13 +227,30 @@ def select_setr(
             user_prompt,
             max_tokens=selector_max_tokens,
         )
-        raw_selected_numbers = parse_setr_final_selection(selector_output)
+        try:
+            raw_selected_numbers = parse_setr_final_selection(selector_output)
+        except SetRSelectionError as error:
+            if not allow_empty_selection:
+                raise
+            parse_error = str(error)
+            raw_selected_numbers = []
         cache_hit = False
 
-    mapping = map_positions_to_chunk_positions(
-        raw_selected_numbers,
-        num_candidates=len(candidates),
-    )
+    if raw_selected_numbers:
+        mapping = map_positions_to_chunk_positions(
+            raw_selected_numbers,
+            num_candidates=len(candidates),
+        )
+    elif allow_empty_selection:
+        mapping = {
+            "selected_positions": [],
+            "dropped_out_of_range": [],
+            "dropped_duplicates": [],
+        }
+    else:
+        raise SetRSelectionError(
+            "SetR selector output did not contain any valid passage numbers."
+        )
     selected_positions = mapping["selected_positions"]
     if not cache_hit:
         cache.set(
@@ -235,6 +261,8 @@ def select_setr(
                 "selector_user_prompt": user_prompt,
                 "selector_output": selector_output,
                 "raw_selected_numbers": raw_selected_numbers,
+                "parse_error": parse_error,
+                "empty_selection_allowed": allow_empty_selection,
                 "selected_positions": selected_positions,
                 "selected_chunk_ids": [
                     candidates[position - 1] for position in selected_positions
@@ -247,6 +275,7 @@ def select_setr(
         selected_by_model,
         chunk_lookup,
         context_budget,
+        allow_empty=allow_empty_selection,
     )
     return {
         "selected_chunk_ids": selected_ids,
@@ -265,6 +294,8 @@ def select_setr(
             "selector_max_tokens": selector_max_tokens,
             "max_passages": max_passages,
             "cache_hit": cache_hit,
+            "empty_selection_allowed": allow_empty_selection,
+            "parse_error": parse_error,
             "selector_system_prompt": SETR_SELECTION_SYS_PROMPT,
             "selector_user_prompt": user_prompt,
             "selector_output": selector_output,
