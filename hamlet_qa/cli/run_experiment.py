@@ -32,6 +32,24 @@ from hamlet_qa.core.config import (
     DEFAULT_RANDOM_SEED,
     DEFAULT_SETR_MAX_PASSAGES,
     DEFAULT_SETR_SELECTOR_MAX_TOKENS,
+    DEFAULT_SUPPORT_CANDIDATE_CHUNKS,
+    DEFAULT_SUPPORT_INCLUDE_NEIGHBORS,
+    DEFAULT_SUPPORT_MAX_NODES,
+    DEFAULT_SUPPORT_MAX_SELECTED_UNITS,
+    DEFAULT_SUPPORT_MAX_UNIT_TOKENS,
+    DEFAULT_SUPPORT_MAX_UNITS_TOTAL,
+    DEFAULT_SUPPORT_MIN_UNIT_SCORE,
+    DEFAULT_SUPPORT_NEIGHBOR_HOPS,
+    DEFAULT_SUPPORT_NODE_CANDIDATE_CATALOG_K,
+    DEFAULT_SUPPORT_NODE_COVERAGE_THRESHOLD,
+    DEFAULT_SUPPORT_NODE_INDUCTION_MAX_TOKENS,
+    DEFAULT_SUPPORT_PROMPT_ORDER,
+    DEFAULT_SUPPORT_REDUNDANCY_BETA,
+    DEFAULT_SUPPORT_SCORE_CACHE_PATH,
+    DEFAULT_SUPPORT_TEACHER_MAX_TOKENS,
+    DEFAULT_SUPPORT_TEACHER_UNITS_PER_NODE,
+    DEFAULT_SUPPORT_TOKEN_EXPONENT_TAU,
+    DEFAULT_SUPPORT_UNIT_TYPES,
     DEFAULT_TEMPERATURE,
     DEFAULT_TOP_K,
     DEFAULT_TREATMENTS,
@@ -215,6 +233,86 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_RECOMP_TOP_SENTENCES,
         help="Sentences kept by the extractive compressor.",
     )
+    # reader_support (our method)
+    parser.add_argument(
+        "--support-candidate-chunks",
+        type=int,
+        default=DEFAULT_SUPPORT_CANDIDATE_CHUNKS,
+        help="Top dense candidates that seed reader_support evidence units.",
+    )
+    parser.add_argument(
+        "--support-node-candidate-catalog-k",
+        type=int,
+        default=DEFAULT_SUPPORT_NODE_CANDIDATE_CATALOG_K,
+    )
+    parser.add_argument(
+        "--support-max-nodes", type=int, default=DEFAULT_SUPPORT_MAX_NODES
+    )
+    parser.add_argument(
+        "--support-teacher-units-per-node",
+        type=int,
+        default=DEFAULT_SUPPORT_TEACHER_UNITS_PER_NODE,
+        help="Units prefiltered per node before reader-teacher scoring.",
+    )
+    parser.add_argument(
+        "--support-unit-types", default=DEFAULT_SUPPORT_UNIT_TYPES,
+        help="Comma-separated unit types to construct.",
+    )
+    parser.add_argument(
+        "--support-include-neighbors",
+        type=lambda v: str(v).lower() not in {"0", "false", "no", "off"},
+        default=DEFAULT_SUPPORT_INCLUDE_NEIGHBORS,
+    )
+    parser.add_argument(
+        "--support-neighbor-hops", type=int, default=DEFAULT_SUPPORT_NEIGHBOR_HOPS
+    )
+    parser.add_argument(
+        "--support-max-units-total", type=int, default=DEFAULT_SUPPORT_MAX_UNITS_TOTAL
+    )
+    parser.add_argument(
+        "--support-max-unit-tokens", type=int, default=DEFAULT_SUPPORT_MAX_UNIT_TOKENS
+    )
+    parser.add_argument(
+        "--support-node-coverage-threshold",
+        type=float,
+        default=DEFAULT_SUPPORT_NODE_COVERAGE_THRESHOLD,
+    )
+    parser.add_argument(
+        "--support-redundancy-beta",
+        type=float,
+        default=DEFAULT_SUPPORT_REDUNDANCY_BETA,
+    )
+    parser.add_argument(
+        "--support-token-exponent-tau",
+        type=float,
+        default=DEFAULT_SUPPORT_TOKEN_EXPONENT_TAU,
+    )
+    parser.add_argument(
+        "--support-min-unit-score", type=float, default=DEFAULT_SUPPORT_MIN_UNIT_SCORE
+    )
+    parser.add_argument(
+        "--support-max-selected-units",
+        type=int,
+        default=DEFAULT_SUPPORT_MAX_SELECTED_UNITS,
+    )
+    parser.add_argument(
+        "--support-node-induction-max-tokens",
+        type=int,
+        default=DEFAULT_SUPPORT_NODE_INDUCTION_MAX_TOKENS,
+    )
+    parser.add_argument(
+        "--support-teacher-max-tokens",
+        type=int,
+        default=DEFAULT_SUPPORT_TEACHER_MAX_TOKENS,
+    )
+    parser.add_argument(
+        "--support-prompt-order",
+        choices=["anchor_then_node_doc_order", "node_doc_order", "document_order"],
+        default=DEFAULT_SUPPORT_PROMPT_ORDER,
+    )
+    parser.add_argument(
+        "--support-score-cache-path", default=DEFAULT_SUPPORT_SCORE_CACHE_PATH
+    )
     parser.add_argument("--tensor-parallel-size", type=int, default=1)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.90)
     parser.add_argument("--prepare-only", action="store_true")
@@ -272,6 +370,24 @@ def config_from_args(args: argparse.Namespace) -> RunConfig:
         recomp_abstractive_mode=args.recomp_abstractive_mode,
         recomp_input_docs=args.recomp_input_docs,
         recomp_top_sentences=args.recomp_top_sentences,
+        support_candidate_chunks=args.support_candidate_chunks,
+        support_node_candidate_catalog_k=args.support_node_candidate_catalog_k,
+        support_max_nodes=args.support_max_nodes,
+        support_teacher_units_per_node=args.support_teacher_units_per_node,
+        support_unit_types=args.support_unit_types,
+        support_include_neighbors=args.support_include_neighbors,
+        support_neighbor_hops=args.support_neighbor_hops,
+        support_max_units_total=args.support_max_units_total,
+        support_max_unit_tokens=args.support_max_unit_tokens,
+        support_node_coverage_threshold=args.support_node_coverage_threshold,
+        support_redundancy_beta=args.support_redundancy_beta,
+        support_token_exponent_tau=args.support_token_exponent_tau,
+        support_min_unit_score=args.support_min_unit_score,
+        support_max_selected_units=args.support_max_selected_units,
+        support_node_induction_max_tokens=args.support_node_induction_max_tokens,
+        support_teacher_max_tokens=args.support_teacher_max_tokens,
+        support_prompt_order=args.support_prompt_order,
+        support_score_cache_path=args.support_score_cache_path,
         tensor_parallel_size=args.tensor_parallel_size,
         gpu_memory_utilization=args.gpu_memory_utilization,
         prepare_only=args.prepare_only,

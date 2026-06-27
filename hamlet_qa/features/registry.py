@@ -16,6 +16,7 @@ from hamlet_qa.features.ordering.assembly import (
     assemble_dense_document_order,
     assemble_dense_random_order,
 )
+from hamlet_qa.features.reader_support.assembly import assemble_reader_support
 from hamlet_qa.features.recomp.assembly import (
     assemble_recomp_abstractive,
     assemble_recomp_extractive,
@@ -78,6 +79,12 @@ TREATMENT_REGISTRY: dict[str, TreatmentSpec] = {
         "macrag",
         assemble_macrag,
         retrieval_source="macrag",
+    ),
+    "reader_support": TreatmentSpec(
+        "reader_support",
+        assemble_reader_support,
+        retrieval_source="dense",
+        uses_llm_assembly=True,
     ),
 }
 

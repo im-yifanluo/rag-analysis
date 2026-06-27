@@ -137,8 +137,10 @@ hamlet_qa/
     llm_cache.py     JSON KV cache reused by SetR/CRAG/MacRAG/RECOMP
   features/      context-assembly methods (one folder each)
     baseline/  ordering/  setr/  domain/  crag/  macrag/  recomp/
+    reader_support/  (ours: nodes, units, teacher, assembly, schema)
     registry.py      maps treatment name → adapter + retrieval needs
-  metrics/       post-hoc per-row metrics (CI value, sufficient context)
+  metrics/       post-hoc per-row metrics (CI value, sufficient context,
+                 evidence-role recall)
   cli/           build_chunks, run_experiment, build_macrag_index,
                  calibrate_crag, annotate_metrics, inspect_results
   inspection/    Markdown report + standalone HTML viewer
@@ -198,11 +200,13 @@ Gold chunk IDs are derived automatically from each question's
 | `macrag` | hierarchical | summary-slice retrieval + neighbor merge |
 | `recomp_extractive` | compression | sentence selection by a Contriever encoder |
 | `recomp_abstractive` | compression | T5 (or prompted reader) summary |
+| `reader_support` | **ours** | reader-teacher evidence-support selection of source units |
 
 The four SOTA methods (`crag`, `macrag`, `recomp_*`) are ports of the official
 code cloned under `third_party/`, with every divergence logged per-row in
 `context_assembly_trace.deviations`. Each was reviewed line-by-line against its
 upstream source; the deviations below are intentional and documented.
+`reader_support` is our own prototype (not a paper reproduction).
 
 ### 4.2 Method details
 
@@ -279,6 +283,44 @@ builder → paper few-shot QA prompt; 256-token chunks → 100-word Wikipedia
 passages; NLTK sentence splitting on newline-collapsed verse; summaries
 word-truncated to budget.
 
+**`reader_support` — Reader-Supervised Evidence Support Assembler (ours).** Our
+own prototype, not a paper reproduction (`hamlet_qa/features/reader_support/`).
+Instead of hand-blending reranker/BM25/entity scores, it uses the reader model
+as a *teacher* to judge how well each candidate source unit supports each
+specific evidence need, then reconstructs a compact, non-redundant,
+source-faithful, ordered sub-document under the token budget. Four stages:
+
+1. **Evidence-node induction** (`nodes.py`): the reader decomposes the question
+   into ≤`support_max_nodes` information needs, conditioned on the question plus
+   a compact candidate catalog (chunk id + act/scene + excerpt — no answers/gold).
+   Node text states the *need*, never the answer. JSON-only with a repair retry
+   and a single-node fallback.
+2. **Candidate units** (`units.py`): source-faithful units per top candidate —
+   whole `chunk`, `sentence`, speaker-turn `line_span`, and `neighbor_*` blocks
+   (neighbor expansion never crosses a scene; merged via the MacRAG overlap
+   dedupe). Deduplicated, token-capped. No abstractive text.
+3. **Reader-teacher support scoring** (`teacher.py`): for each (node, unit) pair
+   the reader returns a JSON support judgement (score 0–1, type, a verbatim
+   supporting span). Scores are validated and capped — empty-span "complete"
+   claims cap at 0.7, non-substring spans cap at 0.5 with a warning,
+   "contradictory" → 0. A lexical prior only *prefilters* which pairs are scored
+   (`support_teacher_units_per_node`). All teacher labels are logged in the trace
+   (training signal for a future learned scorer; `SupportScorer` is the drop-in
+   interface, `TrainedSupportScorer` the stub).
+4. **Budgeted assembly + ordering** (`assembly.py`): greedy maximization of node
+   coverage `1 − Π(1 − support)` minus a redundancy penalty, per-step
+   token-normalized (`gain / tokens^τ`); stops on budget, coverage threshold, or
+   no positive gain. Whole-chunk picks keep their real chunk id (so they count
+   toward chunk recall); sub-units become source-extractive pseudo-chunks.
+   Ordering is anchor-first then evidence-node order then document order. If no
+   unit clears `support_min_unit_score`, it returns **empty** context
+   (`reader_support_empty`) rather than forcing in noise.
+
+All reader calls are cached (`data/cache/reader_support_cache.json`). Constraints
+honored: assembly never reads `expected_answer`/`required_evidence_quotes`/gold;
+the final context is source-extractive only. Knobs are the `--support-*` flags
+(see `--help`).
+
 ### 4.3 Post-hoc metrics
 
 Computed after a run with a single reader-model load, written to a sidecar
@@ -299,6 +341,11 @@ and `ci+` badges, summary columns, per-chunk φ details).
   replaces Gemini 1.5 Pro; the timestamp sentence is dropped. Combined with
   answer correctness, this separates assembly failures (insufficient context)
   from reader failures (sufficient context, wrong answer).
+- **Evidence-role recall** (reader-free) — fraction of the question's evidence
+  *roles* covered by the assembled context (a role is covered when any of its
+  required quotes is present by chunk id or verbatim text). Unanswerable
+  questions return null. Computed from the row alone, so `--metrics evidence_role`
+  runs without loading the reader.
 
 ---
 
@@ -412,18 +459,28 @@ python -m hamlet_qa.cli.run_experiment --run-name dry_prompts --prepare-only
 ```
 
 Prepare-only still does dense retrieval for grounded treatments, BM25 for
-`sparse_bm25`, and (for `setr` and `recomp_abstractive --recomp-abstractive-mode
-prompted_qwen`) loads the reader for selection/compression — it only skips final
-answer generation. Pass `--reranker-model none` to disable reranking. For a
-model-, embedder-, reranker-, and BM25-free smoke test, restrict treatments to
-`closed_book`; tests inject cached/stub retrievers.
+`sparse_bm25`, and (for `setr`, `reader_support`, and `recomp_abstractive
+--recomp-abstractive-mode prompted_qwen`) loads the reader for
+selection/scoring/compression — it only skips final answer generation. Pass
+`--reranker-model none` to disable reranking. For a model-, embedder-,
+reranker-, and BM25-free smoke test, restrict treatments to `closed_book`; tests
+inject cached/stub retrievers.
+
+To benchmark our method against the others (the `--support-*` flags tune it):
+
+```bash
+python -m hamlet_qa.cli.run_experiment --run-name probe_reader_support \
+  --gpu-layout a40-2gpu \
+  --treatments closed_book gold_evidence dense_reranked sparse_bm25 setr \
+    crag macrag recomp_extractive recomp_abstractive reader_support
+```
 
 ### 6.4 Annotate post-hoc metrics
 
 ```bash
 python -m hamlet_qa.cli.annotate_metrics \
-  --results runs/qwen_hamlet_probe/results.jsonl \
-  --metrics ci sufficient_context
+  --results runs/probe_reader_support/results.jsonl \
+  --metrics ci sufficient_context evidence_role
 ```
 
 ### 6.5 Inspect results

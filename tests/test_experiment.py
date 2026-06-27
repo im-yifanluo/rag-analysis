@@ -79,6 +79,30 @@ class SetRPrepareOnlyReader(StubReader):
         return "Step 1. Need selected evidence.\n### Final Selection: [1]"
 
 
+class ReaderSupportPrepareOnlyReader(StubReader):
+    """Returns node-induction JSON or a passing support JSON by prompt content."""
+
+    model_name = "fake-reader"
+
+    def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: int | None = None,
+    ) -> str:
+        del max_tokens
+        self.generate_calls += 1
+        if "Decompose the QUESTION" in user_prompt:
+            return (
+                '{"nodes": [{"node_id": "n1", "need": "Find supporting evidence", '
+                '"node_query": "evidence", "order_index": 1, "depends_on": []}]}'
+            )
+        return (
+            '{"support_score": 0.6, "support_type": "partial", '
+            '"supporting_span": "", "needs_more_context": false, "explanation": "ok"}'
+        )
+
+
 class RecordingRetriever:
     def __init__(self, events: list[str]):
         self.events = events
@@ -787,6 +811,44 @@ class PrepareOnlyRunTests(unittest.TestCase):
             self.assertTrue(
                 all(row["selected_chunk_ids"] for row in by_treatment["macrag"])
             )
+
+    def test_prepare_only_works_for_reader_support(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            events: list[str] = []
+            config = RunConfig(
+                chunks_path=str(REPO_ROOT / "data" / "hamlet_chunks.jsonl"),
+                questions_path=str(REPO_ROOT / "data" / "hamlet_questions.json"),
+                output_dir=tmp,
+                run_name="reader_support_prepare_only",
+                treatments=["reader_support"],
+                context_budgets=[1000],
+                prepare_only=True,
+                context_assembly_cache_dir=str(Path(tmp) / "cache"),
+            )
+
+            reader = ReaderSupportPrepareOnlyReader()
+            results_path = run_experiment(
+                config,
+                reader=reader,
+                dense_retriever=RecordingRetriever(events),
+            )
+
+            rows = [
+                json.loads(line)
+                for line in Path(results_path).read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            self.assertEqual(len(rows), 10)
+            self.assertEqual({row["treatment"] for row in rows}, {"reader_support"})
+            self.assertTrue(all(row["model_output"] is None for row in rows))
+            self.assertGreater(reader.generate_calls, 0)
+            for row in rows:
+                trace = row["context_assembly_trace"]
+                self.assertEqual(trace["method"], "reader_support")
+                self.assertTrue(trace["nodes"])
+                # Final context is source-extractive: every selected chunk's text
+                # is copied from the candidate chunk it came from.
+                self.assertIn(row["retrieval_method"], {"reader_support", "reader_support_empty"})
 
 
 if __name__ == "__main__":

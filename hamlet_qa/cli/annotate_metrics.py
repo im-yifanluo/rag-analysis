@@ -19,7 +19,11 @@ from pathlib import Path
 
 from hamlet_qa.metrics.annotate import KNOWN_METRICS, annotate_results
 from hamlet_qa.metrics.ci import compute_ci_for_row
+from hamlet_qa.metrics.evidence_role import compute_evidence_role_recall_for_row
 from hamlet_qa.metrics.sufficient_context import compute_sufficient_context_for_row
+
+# Metrics that need the reader model loaded onto the GPU.
+_READER_METRICS = {"ci", "sufficient_context"}
 
 
 def parse_args() -> argparse.Namespace:
@@ -73,27 +77,31 @@ def resolve_reader_model(args: argparse.Namespace) -> str:
 
 def main() -> None:
     args = parse_args()
-    model_name = resolve_reader_model(args)
-    print(f"Loading reader model {model_name} for metric annotation...")
-
-    from hamlet_qa.core.generation import VLLMReader
-
-    reader = VLLMReader(
-        model_name,
-        temperature=args.temperature,
-        max_new_tokens=args.max_new_tokens,
-        tensor_parallel_size=args.tensor_parallel_size,
-        gpu_memory_utilization=args.gpu_memory_utilization,
-        device=args.device,
-    )
 
     metric_fns = {}
-    if "ci" in args.metrics:
-        metric_fns["ci"] = lambda row: compute_ci_for_row(row, reader)
-    if "sufficient_context" in args.metrics:
-        metric_fns["sufficient_context"] = lambda row: (
-            compute_sufficient_context_for_row(row, reader)
+    if "evidence_role" in args.metrics:
+        metric_fns["evidence_role"] = compute_evidence_role_recall_for_row
+
+    if any(metric in _READER_METRICS for metric in args.metrics):
+        model_name = resolve_reader_model(args)
+        print(f"Loading reader model {model_name} for metric annotation...")
+
+        from hamlet_qa.core.generation import VLLMReader
+
+        reader = VLLMReader(
+            model_name,
+            temperature=args.temperature,
+            max_new_tokens=args.max_new_tokens,
+            tensor_parallel_size=args.tensor_parallel_size,
+            gpu_memory_utilization=args.gpu_memory_utilization,
+            device=args.device,
         )
+        if "ci" in args.metrics:
+            metric_fns["ci"] = lambda row: compute_ci_for_row(row, reader)
+        if "sufficient_context" in args.metrics:
+            metric_fns["sufficient_context"] = lambda row: (
+                compute_sufficient_context_for_row(row, reader)
+            )
 
     path = annotate_results(
         args.results,

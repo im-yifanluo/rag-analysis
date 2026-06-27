@@ -36,11 +36,15 @@ METHOD_TREATMENTS = [
     "recomp_extractive",
     "recomp_abstractive",
 ]
+OUR_METHOD_TREATMENTS = [
+    "reader_support",
+]
 DEFAULT_TREATMENTS = (
     BASELINE_TREATMENTS
     + ORDERING_TREATMENTS
     + NEW_CONTEXT_ASSEMBLY_TREATMENTS
     + METHOD_TREATMENTS
+    + OUR_METHOD_TREATMENTS
 )
 DEFAULT_TOP_K = 50
 DEFAULT_SETR_MAX_PASSAGES = DEFAULT_TOP_K
@@ -77,6 +81,28 @@ DEFAULT_RECOMP_ABSTRACTIVE_MODEL = "fangyuan/hotpotqa_abstractive"
 DEFAULT_RECOMP_ABSTRACTIVE_MODE = "t5"
 DEFAULT_RECOMP_INPUT_DOCS = 5
 DEFAULT_RECOMP_TOP_SENTENCES = 5
+
+# reader_support: our Reader-Supervised Evidence Support Assembler. The reader
+# model judges how well each source unit supports each evidence need; a budgeted
+# greedy coverage objective then selects a compact, source-faithful context.
+DEFAULT_SUPPORT_CANDIDATE_CHUNKS = 30
+DEFAULT_SUPPORT_NODE_CANDIDATE_CATALOG_K = 20
+DEFAULT_SUPPORT_MAX_NODES = 5
+DEFAULT_SUPPORT_TEACHER_UNITS_PER_NODE = 12
+DEFAULT_SUPPORT_UNIT_TYPES = "chunk,sentence,line_span,neighbor_left,neighbor_right"
+DEFAULT_SUPPORT_INCLUDE_NEIGHBORS = True
+DEFAULT_SUPPORT_NEIGHBOR_HOPS = 1
+DEFAULT_SUPPORT_MAX_UNITS_TOTAL = 200
+DEFAULT_SUPPORT_MAX_UNIT_TOKENS = 512
+DEFAULT_SUPPORT_NODE_COVERAGE_THRESHOLD = 0.85
+DEFAULT_SUPPORT_REDUNDANCY_BETA = 0.15
+DEFAULT_SUPPORT_TOKEN_EXPONENT_TAU = 0.7
+DEFAULT_SUPPORT_MIN_UNIT_SCORE = 0.45
+DEFAULT_SUPPORT_MAX_SELECTED_UNITS = 8
+DEFAULT_SUPPORT_NODE_INDUCTION_MAX_TOKENS = 1024
+DEFAULT_SUPPORT_TEACHER_MAX_TOKENS = 384
+DEFAULT_SUPPORT_PROMPT_ORDER = "anchor_then_node_doc_order"
+DEFAULT_SUPPORT_SCORE_CACHE_PATH = "data/cache/reader_support_cache.json"
 
 GPU_LAYOUTS = {
     "single": {
@@ -165,6 +191,24 @@ class RunConfig:
     recomp_abstractive_mode: str = DEFAULT_RECOMP_ABSTRACTIVE_MODE
     recomp_input_docs: int = DEFAULT_RECOMP_INPUT_DOCS
     recomp_top_sentences: int = DEFAULT_RECOMP_TOP_SENTENCES
+    support_candidate_chunks: int = DEFAULT_SUPPORT_CANDIDATE_CHUNKS
+    support_node_candidate_catalog_k: int = DEFAULT_SUPPORT_NODE_CANDIDATE_CATALOG_K
+    support_max_nodes: int = DEFAULT_SUPPORT_MAX_NODES
+    support_teacher_units_per_node: int = DEFAULT_SUPPORT_TEACHER_UNITS_PER_NODE
+    support_unit_types: str = DEFAULT_SUPPORT_UNIT_TYPES
+    support_include_neighbors: bool = DEFAULT_SUPPORT_INCLUDE_NEIGHBORS
+    support_neighbor_hops: int = DEFAULT_SUPPORT_NEIGHBOR_HOPS
+    support_max_units_total: int = DEFAULT_SUPPORT_MAX_UNITS_TOTAL
+    support_max_unit_tokens: int = DEFAULT_SUPPORT_MAX_UNIT_TOKENS
+    support_node_coverage_threshold: float = DEFAULT_SUPPORT_NODE_COVERAGE_THRESHOLD
+    support_redundancy_beta: float = DEFAULT_SUPPORT_REDUNDANCY_BETA
+    support_token_exponent_tau: float = DEFAULT_SUPPORT_TOKEN_EXPONENT_TAU
+    support_min_unit_score: float = DEFAULT_SUPPORT_MIN_UNIT_SCORE
+    support_max_selected_units: int = DEFAULT_SUPPORT_MAX_SELECTED_UNITS
+    support_node_induction_max_tokens: int = DEFAULT_SUPPORT_NODE_INDUCTION_MAX_TOKENS
+    support_teacher_max_tokens: int = DEFAULT_SUPPORT_TEACHER_MAX_TOKENS
+    support_prompt_order: str = DEFAULT_SUPPORT_PROMPT_ORDER
+    support_score_cache_path: str = DEFAULT_SUPPORT_SCORE_CACHE_PATH
     tensor_parallel_size: int = 1
     gpu_memory_utilization: float = 0.90
     prepare_only: bool = False

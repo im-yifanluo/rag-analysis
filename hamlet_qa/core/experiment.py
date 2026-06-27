@@ -523,6 +523,26 @@ def feature_params_from_config(config: RunConfig) -> dict[str, Any]:
         "recomp_top_sentences": config.recomp_top_sentences,
         "recomp_abstractive_mode": config.recomp_abstractive_mode,
         "recomp_cache_path": cache_dir / "recomp_cache.json",
+        "support_candidate_chunks": config.support_candidate_chunks,
+        "support_node_candidate_catalog_k": config.support_node_candidate_catalog_k,
+        "support_max_nodes": config.support_max_nodes,
+        "support_teacher_units_per_node": config.support_teacher_units_per_node,
+        "support_unit_types": config.support_unit_types,
+        "support_include_neighbors": config.support_include_neighbors,
+        "support_neighbor_hops": config.support_neighbor_hops,
+        "support_max_units_total": config.support_max_units_total,
+        "support_max_unit_tokens": config.support_max_unit_tokens,
+        "support_node_coverage_threshold": config.support_node_coverage_threshold,
+        "support_redundancy_beta": config.support_redundancy_beta,
+        "support_token_exponent_tau": config.support_token_exponent_tau,
+        "support_min_unit_score": config.support_min_unit_score,
+        "support_max_selected_units": config.support_max_selected_units,
+        "support_node_induction_max_tokens": config.support_node_induction_max_tokens,
+        "support_teacher_max_tokens": config.support_teacher_max_tokens,
+        "support_prompt_order": config.support_prompt_order,
+        "support_score_cache_path": str(
+            cache_dir / Path(config.support_score_cache_path).name
+        ),
     }
 
 

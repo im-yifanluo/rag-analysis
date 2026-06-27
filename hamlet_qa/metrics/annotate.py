@@ -15,7 +15,15 @@ from typing import Any, Callable
 from hamlet_qa.core.io import load_jsonl
 
 ANNOTATIONS_FILENAME = "metrics_annotations.jsonl"
-KNOWN_METRICS = ("ci", "sufficient_context")
+KNOWN_METRICS = ("ci", "sufficient_context", "evidence_role")
+
+# Field whose presence in an annotation marks a metric as already computed for a
+# row (used to skip recomputation unless overwrite is set).
+METRIC_MARKER_FIELD = {
+    "ci": "ci_base_loss",
+    "sufficient_context": "sufficient_context",
+    "evidence_role": "evidence_role_recall",
+}
 
 
 def row_key(row: dict[str, Any]) -> tuple[str, str, int]:
@@ -98,9 +106,7 @@ def annotate_results(
             },
         )
         for metric_name, metric_fn in metric_fns.items():
-            marker_field = (
-                "ci_base_loss" if metric_name == "ci" else "sufficient_context"
-            )
+            marker_field = METRIC_MARKER_FIELD.get(metric_name, metric_name)
             if not overwrite and marker_field in record:
                 continue
             record.update(metric_fn(row))
