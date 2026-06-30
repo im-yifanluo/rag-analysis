@@ -11,6 +11,10 @@ from hamlet_qa.features.baseline.assembly import (
     assemble_sparse_bm25,
 )
 from hamlet_qa.features.domain.assembly import assemble_domain_kg_lite
+from hamlet_qa.features.evidence_plan.assembly import (
+    assemble_plan_dynamic,
+    assemble_plan_fixed,
+)
 from hamlet_qa.features.macrag.assembly import assemble_macrag
 from hamlet_qa.features.ordering.assembly import (
     assemble_dense_document_order,
@@ -83,6 +87,18 @@ TREATMENT_REGISTRY: dict[str, TreatmentSpec] = {
     "reader_support": TreatmentSpec(
         "reader_support",
         assemble_reader_support,
+        retrieval_source="dense",
+        uses_llm_assembly=True,
+    ),
+    "plan_fixed": TreatmentSpec(
+        "plan_fixed",
+        assemble_plan_fixed,
+        retrieval_source="dense",
+        uses_llm_assembly=True,
+    ),
+    "plan_dynamic": TreatmentSpec(
+        "plan_dynamic",
+        assemble_plan_dynamic,
         retrieval_source="dense",
         uses_llm_assembly=True,
     ),

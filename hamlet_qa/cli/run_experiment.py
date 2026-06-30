@@ -22,6 +22,19 @@ from hamlet_qa.core.config import (
     DEFAULT_MACRAG_MERGE_VERSION,
     DEFAULT_MACRAG_TOP_K1,
     DEFAULT_MACRAG_TOP_K2,
+    DEFAULT_PLAN_CACHE_PATH,
+    DEFAULT_PLAN_DECOMP_PROMPT,
+    DEFAULT_PLAN_FOLLOWUP_PROMPT,
+    DEFAULT_PLAN_MAX_NODES,
+    DEFAULT_PLAN_MAX_SELECTED_UNITS,
+    DEFAULT_PLAN_MIN_SUPPORT,
+    DEFAULT_PLAN_NODE_TOP_K,
+    DEFAULT_PLAN_ORDERING_POLICY,
+    DEFAULT_PLAN_PLANNER_PROMPT,
+    DEFAULT_PLAN_RETRIEVAL_MODE,
+    DEFAULT_PLAN_SELECTION_POLICY,
+    DEFAULT_PLAN_SUPPORT_POLICY,
+    DEFAULT_PLAN_SUPPORT_TEMP,
     DEFAULT_READER_MODEL,
     DEFAULT_RECOMP_ABSTRACTIVE_MODE,
     DEFAULT_RECOMP_ABSTRACTIVE_MODEL,
@@ -313,6 +326,49 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--support-score-cache-path", default=DEFAULT_SUPPORT_SCORE_CACHE_PATH
     )
+    # evidence-planning experiment (plan_fixed / plan_dynamic). The prompt flags
+    # are the primary experimental knobs; see evidence_plan/prompts.py for variants.
+    parser.add_argument(
+        "--decomp-prompt", default=DEFAULT_PLAN_DECOMP_PROMPT,
+        help="plan_fixed decomposition prompt variant "
+        "(subquestions | info_requirements | strategy).",
+    )
+    parser.add_argument(
+        "--planner-prompt", default=DEFAULT_PLAN_PLANNER_PROMPT,
+        help="plan_dynamic planner prompt variant "
+        "(contract_v1 | strategy_contract).",
+    )
+    parser.add_argument(
+        "--followup-prompt", default=DEFAULT_PLAN_FOLLOWUP_PROMPT,
+        help="Sequential follow-up query prompt (rewrite_with_evidence).",
+    )
+    parser.add_argument(
+        "--plan-retrieval-mode", choices=["parallel", "sequential"],
+        default=DEFAULT_PLAN_RETRIEVAL_MODE,
+        help="plan_fixed retrieval mode; plan_dynamic lets the planner choose.",
+    )
+    parser.add_argument(
+        "--plan-support-policy", choices=["reranker", "teacher"],
+        default=DEFAULT_PLAN_SUPPORT_POLICY,
+        help="How each (node, chunk) is scored for coverage: reranker score or reader-teacher.",
+    )
+    parser.add_argument(
+        "--plan-selection-policy", choices=["greedy_coverage", "top_per_node"],
+        default=DEFAULT_PLAN_SELECTION_POLICY,
+    )
+    parser.add_argument(
+        "--plan-ordering-policy",
+        choices=["document_order", "node_order", "anchor_first"],
+        default=DEFAULT_PLAN_ORDERING_POLICY,
+    )
+    parser.add_argument("--plan-node-top-k", type=int, default=DEFAULT_PLAN_NODE_TOP_K)
+    parser.add_argument("--plan-max-nodes", type=int, default=DEFAULT_PLAN_MAX_NODES)
+    parser.add_argument("--plan-min-support", type=float, default=DEFAULT_PLAN_MIN_SUPPORT)
+    parser.add_argument("--plan-support-temp", type=float, default=DEFAULT_PLAN_SUPPORT_TEMP)
+    parser.add_argument(
+        "--plan-max-selected-units", type=int, default=DEFAULT_PLAN_MAX_SELECTED_UNITS
+    )
+    parser.add_argument("--plan-cache-path", default=DEFAULT_PLAN_CACHE_PATH)
     parser.add_argument("--tensor-parallel-size", type=int, default=1)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.90)
     parser.add_argument("--prepare-only", action="store_true")
@@ -388,6 +444,19 @@ def config_from_args(args: argparse.Namespace) -> RunConfig:
         support_teacher_max_tokens=args.support_teacher_max_tokens,
         support_prompt_order=args.support_prompt_order,
         support_score_cache_path=args.support_score_cache_path,
+        plan_decomp_prompt=args.decomp_prompt,
+        plan_planner_prompt=args.planner_prompt,
+        plan_followup_prompt=args.followup_prompt,
+        plan_retrieval_mode=args.plan_retrieval_mode,
+        plan_support_policy=args.plan_support_policy,
+        plan_selection_policy=args.plan_selection_policy,
+        plan_ordering_policy=args.plan_ordering_policy,
+        plan_node_top_k=args.plan_node_top_k,
+        plan_max_nodes=args.plan_max_nodes,
+        plan_min_support=args.plan_min_support,
+        plan_support_temp=args.plan_support_temp,
+        plan_max_selected_units=args.plan_max_selected_units,
+        plan_cache_path=args.plan_cache_path,
         tensor_parallel_size=args.tensor_parallel_size,
         gpu_memory_utilization=args.gpu_memory_utilization,
         prepare_only=args.prepare_only,

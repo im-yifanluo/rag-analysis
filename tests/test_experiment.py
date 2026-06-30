@@ -103,6 +103,44 @@ class ReaderSupportPrepareOnlyReader(StubReader):
         )
 
 
+class PlanPrepareOnlyReader(StubReader):
+    """Returns a one-node decomposition JSON for the evidence_plan treatments."""
+
+    model_name = "fake-reader"
+
+    def generate(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        max_tokens: int | None = None,
+    ) -> str:
+        del max_tokens
+        self.generate_calls += 1
+        if '"nodes"' in user_prompt or "question_type" in user_prompt:
+            return (
+                '{"question_type": "single", "retrieval_policy": "dense", '
+                '"retrieval_mode": "parallel", "selection_policy": "greedy_coverage", '
+                '"ordering_policy": "document_order", "support_policy": "reranker", '
+                '"nodes": [{"node_id": "n1", "need": "evidence for the question", '
+                '"node_query": "evidence", "order_index": 1, "depends_on": []}]}'
+            )
+        return "{}"
+
+
+class StubPlanNodeRetriever:
+    """Returns two real chunks with a high reranker logit for any node query."""
+
+    def retrieve(self, query: str, top_k: int) -> list[dict]:
+        del query
+        rows = [
+            {"chunk_id": "act01_scene01_chunk001", "rerank_score": 5.0, "score": 5.0,
+             "global_index": 0, "act": 1, "scene": 1, "scene_title": "First."},
+            {"chunk_id": "act01_scene01_chunk002", "rerank_score": 5.0, "score": 5.0,
+             "global_index": 1, "act": 1, "scene": 1, "scene_title": "First."},
+        ]
+        return rows[:top_k]
+
+
 class RecordingRetriever:
     def __init__(self, events: list[str]):
         self.events = events
@@ -849,6 +887,45 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 # Final context is source-extractive: every selected chunk's text
                 # is copied from the candidate chunk it came from.
                 self.assertIn(row["retrieval_method"], {"reader_support", "reader_support_empty"})
+
+    def test_prepare_only_works_for_evidence_plan(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            events: list[str] = []
+            config = RunConfig(
+                chunks_path=str(REPO_ROOT / "data" / "hamlet_chunks.jsonl"),
+                questions_path=str(REPO_ROOT / "data" / "hamlet_questions.json"),
+                output_dir=tmp,
+                run_name="evidence_plan_prepare_only",
+                treatments=["plan_fixed", "plan_dynamic"],
+                context_budgets=[1000],
+                prepare_only=True,
+                context_assembly_cache_dir=str(Path(tmp) / "cache"),
+            )
+
+            reader = PlanPrepareOnlyReader()
+            results_path = run_experiment(
+                config,
+                reader=reader,
+                dense_retriever=RecordingRetriever(events),
+                feature_handles={"node_retriever": StubPlanNodeRetriever()},
+            )
+
+            rows = [
+                json.loads(line)
+                for line in Path(results_path).read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            self.assertEqual(len(rows), 20)
+            self.assertEqual({row["treatment"] for row in rows}, {"plan_fixed", "plan_dynamic"})
+            self.assertTrue(all(row["model_output"] is None for row in rows))
+            for row in rows:
+                trace = row["context_assembly_trace"]
+                self.assertEqual(trace["method"], row["treatment"])
+                self.assertIn("execution", trace)
+                # whole real chunks selected (chunk-id recall preserved)
+                self.assertTrue(
+                    all(cid.startswith("act01_scene01_chunk") for cid in row["selected_chunk_ids"])
+                )
 
 
 if __name__ == "__main__":

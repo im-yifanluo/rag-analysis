@@ -5,22 +5,21 @@ import unittest
 from pathlib import Path
 
 from hamlet_qa.core.context import ContextAssemblyRequest
+from hamlet_qa.core.evidence.coverage import greedy_select, lexical_prior
+from hamlet_qa.core.evidence.schema import EvidenceNode, EvidenceUnit
+from hamlet_qa.core.evidence.support_teacher import (
+    SUPPORT_TEACHER_SYSTEM,
+    parse_support_output,
+    validate_and_cap,
+)
 from hamlet_qa.features.reader_support.assembly import (
     assemble_reader_support,
-    greedy_select,
-    lexical_prior,
     _order_units,
 )
 from hamlet_qa.features.reader_support.nodes import (
     NODE_INDUCTION_SYSTEM,
     induce_nodes,
     parse_nodes,
-)
-from hamlet_qa.features.reader_support.schema import EvidenceNode, EvidenceUnit
-from hamlet_qa.features.reader_support.teacher import (
-    SUPPORT_TEACHER_SYSTEM,
-    parse_support_output,
-    validate_and_cap,
 )
 from hamlet_qa.features.reader_support.units import build_units
 from hamlet_qa.core.llm_cache import JsonKVCache

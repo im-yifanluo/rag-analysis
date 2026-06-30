@@ -5,7 +5,10 @@ document is the exact specification of what the code does: every step, the
 models and libraries it uses, and the verbatim prompts.
 
 Code: `hamlet_qa/features/reader_support/` — `nodes.py`, `units.py`,
-`teacher.py`, `assembly.py`, `schema.py`. Treatment name: **`reader_support`**.
+`assembly.py`. Treatment name: **`reader_support`**. The general-purpose
+primitives it shares with other features live in `hamlet_qa/core/evidence/`
+(`schema.py`, `coverage.py` = `greedy_select`/`lexical_prior`, `catalog.py`,
+`support_teacher.py`) so features never import each other.
 
 ---
 
@@ -28,7 +31,7 @@ context contains only verbatim source text (no abstractive summaries).
 | **Support-teacher model** | the **same reader model** (the resident reader is the teacher) | `request.selector_model` |
 | Sentence splitter | `nltk.sent_tokenize` with a regex fallback | reused from `recomp/compressor.py::split_sentences` |
 | Overlap-safe chunk merge | longest suffix/prefix dedupe | reused from `macrag/assembly.py::combine_without_overlap` |
-| Prefilter | **pure-Python lexical token overlap** (no model) | `assembly.py::lexical_prior` |
+| Prefilter | **pure-Python lexical token overlap** (no model) | `core/evidence/coverage.py::lexical_prior` |
 | Greedy selection / coverage / redundancy | **pure Python** (`math`, `re`) | `assembly.py` |
 | Caching | `JsonKVCache` (sha256 `stable_hash`) | `core/llm_cache.py` |
 
@@ -227,13 +230,13 @@ Respond with JSON ONLY in exactly this shape:
 Your previous response could not be parsed as JSON. Respond again with valid JSON ONLY, no prose, matching the required shape exactly.
 ```
 
-### 4.3 Support teacher — system prompt (`teacher.py::SUPPORT_TEACHER_SYSTEM`)
+### 4.3 Support teacher — system prompt (`core/evidence/support_teacher.py::SUPPORT_TEACHER_SYSTEM`)
 
 ```
 You are a strict evidence adjudicator. You judge ONLY from the candidate text shown to you. You do not use any outside knowledge, you do not answer the question, and you never invent text that is not present.
 ```
 
-### 4.3 Support teacher — user prompt (`teacher.py::SUPPORT_TEACHER_TEMPLATE`)
+### 4.3 Support teacher — user prompt (`core/evidence/support_teacher.py::SUPPORT_TEACHER_TEMPLATE`)
 
 ```
 Judge how well the CANDIDATE TEXT supports the EVIDENCE NEED.

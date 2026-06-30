@@ -20,6 +20,7 @@ from pathlib import Path
 from hamlet_qa.metrics.annotate import KNOWN_METRICS, annotate_results
 from hamlet_qa.metrics.ci import compute_ci_for_row
 from hamlet_qa.metrics.evidence_role import compute_evidence_role_recall_for_row
+from hamlet_qa.metrics.plan_eval import compute_plan_eval_for_row
 from hamlet_qa.metrics.sufficient_context import compute_sufficient_context_for_row
 
 # Metrics that need the reader model loaded onto the GPU.
@@ -81,6 +82,8 @@ def main() -> None:
     metric_fns = {}
     if "evidence_role" in args.metrics:
         metric_fns["evidence_role"] = compute_evidence_role_recall_for_row
+    if "plan_eval" in args.metrics:
+        metric_fns["plan_eval"] = compute_plan_eval_for_row
 
     if any(metric in _READER_METRICS for metric in args.metrics):
         model_name = resolve_reader_model(args)

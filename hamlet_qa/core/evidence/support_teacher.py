@@ -1,10 +1,13 @@
-"""Stage 3: reader-teacher support scoring (the core of the method).
+"""Reader-as-judge support scoring (shared).
 
 For each (evidence node, candidate unit) pair the reader model judges, from the
 candidate text alone, how well that text supports the information need. The
 judgement is parsed, validated against the claimed supporting span, capped, and
-cached. These labels are also the training signal for a future learned scorer,
-so the interface (`SupportScorer.score`) is model-agnostic.
+cached. The labels double as the training signal for a future learned scorer, so
+the interface (`SupportScorer.score`) is model-agnostic.
+
+Shared in `core/` so multiple features can use it without depending on each
+other. The prompt version string is kept stable so existing caches stay valid.
 """
 
 from __future__ import annotations
@@ -14,8 +17,8 @@ import json
 import re
 from typing import Any, Protocol
 
+from hamlet_qa.core.evidence.schema import EvidenceNode, EvidenceUnit, SupportScore
 from hamlet_qa.core.llm_cache import JsonKVCache, stable_hash
-from hamlet_qa.features.reader_support.schema import EvidenceNode, EvidenceUnit, SupportScore
 
 TEACHER_PROMPT_VERSION = "reader_support.teacher.v1"
 

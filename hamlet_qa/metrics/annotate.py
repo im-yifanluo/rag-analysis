@@ -15,7 +15,7 @@ from typing import Any, Callable
 from hamlet_qa.core.io import load_jsonl
 
 ANNOTATIONS_FILENAME = "metrics_annotations.jsonl"
-KNOWN_METRICS = ("ci", "sufficient_context", "evidence_role")
+KNOWN_METRICS = ("ci", "sufficient_context", "evidence_role", "plan_eval")
 
 # Field whose presence in an annotation marks a metric as already computed for a
 # row (used to skip recomputation unless overwrite is set).
@@ -23,6 +23,7 @@ METRIC_MARKER_FIELD = {
     "ci": "ci_base_loss",
     "sufficient_context": "sufficient_context",
     "evidence_role": "evidence_role_recall",
+    "plan_eval": "plan_eval_applicable",
 }
 
 

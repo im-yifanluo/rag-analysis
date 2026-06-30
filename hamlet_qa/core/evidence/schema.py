@@ -1,8 +1,8 @@
-"""Dataclasses for the Reader-Supervised Evidence Support Assembler.
+"""Shared evidence dataclasses.
 
-These are plain, JSON-serializable records shared by node induction, unit
-construction, support scoring, and assembly. They are kept deliberately simple
-so the full pipeline can be dumped into `context_assembly_trace` for analysis.
+Plain, JSON-serializable records used by any context-assembly feature that
+reasons in terms of evidence needs, source units, and support judgements. Lives
+in `core/` so features depend on it, never on each other.
 """
 
 from __future__ import annotations
@@ -63,7 +63,7 @@ class EvidenceUnit:
 
 @dataclass
 class SupportScore:
-    """Reader-teacher judgement of how well a unit supports a node."""
+    """A judgement of how well a unit supports a node."""
 
     node_id: str
     unit_id: str

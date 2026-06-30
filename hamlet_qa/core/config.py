@@ -104,6 +104,30 @@ DEFAULT_SUPPORT_TEACHER_MAX_TOKENS = 384
 DEFAULT_SUPPORT_PROMPT_ORDER = "anchor_then_node_doc_order"
 DEFAULT_SUPPORT_SCORE_CACHE_PATH = "data/cache/reader_support_cache.json"
 
+# evidence-planning experiment (plan_fixed / plan_dynamic). Opt-in treatments
+# that isolate "how the LLM breaks down + plans the retrieval procedure". Prompt
+# variants are selected by name (see hamlet_qa/features/evidence_plan/prompts.py).
+DEFAULT_PLAN_DECOMP_PROMPT = "info_requirements"
+DEFAULT_PLAN_PLANNER_PROMPT = "contract_v1"
+DEFAULT_PLAN_FOLLOWUP_PROMPT = "rewrite_with_evidence"
+DEFAULT_PLAN_RETRIEVAL_MODE = "parallel"
+DEFAULT_PLAN_SUPPORT_POLICY = "reranker"
+DEFAULT_PLAN_SELECTION_POLICY = "greedy_coverage"
+DEFAULT_PLAN_ORDERING_POLICY = "document_order"
+DEFAULT_PLAN_NODE_TOP_K = 10
+DEFAULT_PLAN_MAX_NODES = 5
+DEFAULT_PLAN_CATALOG_K = 20
+DEFAULT_PLAN_MIN_SUPPORT = 0.5
+DEFAULT_PLAN_SUPPORT_TEMP = 1.0
+DEFAULT_PLAN_COVERAGE_THRESHOLD = 0.85
+DEFAULT_PLAN_REDUNDANCY_BETA = 0.15
+DEFAULT_PLAN_TOKEN_EXPONENT_TAU = 0.7
+DEFAULT_PLAN_MAX_SELECTED_UNITS = 8
+DEFAULT_PLAN_LLM_MAX_TOKENS = 1024
+DEFAULT_PLAN_FOLLOWUP_MAX_TOKENS = 256
+DEFAULT_PLAN_TEACHER_MAX_TOKENS = 384
+DEFAULT_PLAN_CACHE_PATH = "data/cache/evidence_plan_cache.json"
+
 GPU_LAYOUTS = {
     "single": {
         "embedding_device": "cuda",
@@ -209,6 +233,26 @@ class RunConfig:
     support_teacher_max_tokens: int = DEFAULT_SUPPORT_TEACHER_MAX_TOKENS
     support_prompt_order: str = DEFAULT_SUPPORT_PROMPT_ORDER
     support_score_cache_path: str = DEFAULT_SUPPORT_SCORE_CACHE_PATH
+    plan_decomp_prompt: str = DEFAULT_PLAN_DECOMP_PROMPT
+    plan_planner_prompt: str = DEFAULT_PLAN_PLANNER_PROMPT
+    plan_followup_prompt: str = DEFAULT_PLAN_FOLLOWUP_PROMPT
+    plan_retrieval_mode: str = DEFAULT_PLAN_RETRIEVAL_MODE
+    plan_support_policy: str = DEFAULT_PLAN_SUPPORT_POLICY
+    plan_selection_policy: str = DEFAULT_PLAN_SELECTION_POLICY
+    plan_ordering_policy: str = DEFAULT_PLAN_ORDERING_POLICY
+    plan_node_top_k: int = DEFAULT_PLAN_NODE_TOP_K
+    plan_max_nodes: int = DEFAULT_PLAN_MAX_NODES
+    plan_catalog_k: int = DEFAULT_PLAN_CATALOG_K
+    plan_min_support: float = DEFAULT_PLAN_MIN_SUPPORT
+    plan_support_temp: float = DEFAULT_PLAN_SUPPORT_TEMP
+    plan_coverage_threshold: float = DEFAULT_PLAN_COVERAGE_THRESHOLD
+    plan_redundancy_beta: float = DEFAULT_PLAN_REDUNDANCY_BETA
+    plan_token_exponent_tau: float = DEFAULT_PLAN_TOKEN_EXPONENT_TAU
+    plan_max_selected_units: int = DEFAULT_PLAN_MAX_SELECTED_UNITS
+    plan_llm_max_tokens: int = DEFAULT_PLAN_LLM_MAX_TOKENS
+    plan_followup_max_tokens: int = DEFAULT_PLAN_FOLLOWUP_MAX_TOKENS
+    plan_teacher_max_tokens: int = DEFAULT_PLAN_TEACHER_MAX_TOKENS
+    plan_cache_path: str = DEFAULT_PLAN_CACHE_PATH
     tensor_parallel_size: int = 1
     gpu_memory_utilization: float = 0.90
     prepare_only: bool = False

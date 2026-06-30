@@ -543,6 +543,26 @@ def feature_params_from_config(config: RunConfig) -> dict[str, Any]:
         "support_score_cache_path": str(
             cache_dir / Path(config.support_score_cache_path).name
         ),
+        "plan_decomp_prompt": config.plan_decomp_prompt,
+        "plan_planner_prompt": config.plan_planner_prompt,
+        "plan_followup_prompt": config.plan_followup_prompt,
+        "plan_retrieval_mode": config.plan_retrieval_mode,
+        "plan_support_policy": config.plan_support_policy,
+        "plan_selection_policy": config.plan_selection_policy,
+        "plan_ordering_policy": config.plan_ordering_policy,
+        "plan_node_top_k": config.plan_node_top_k,
+        "plan_max_nodes": config.plan_max_nodes,
+        "plan_catalog_k": config.plan_catalog_k,
+        "plan_min_support": config.plan_min_support,
+        "plan_support_temp": config.plan_support_temp,
+        "plan_coverage_threshold": config.plan_coverage_threshold,
+        "plan_redundancy_beta": config.plan_redundancy_beta,
+        "plan_token_exponent_tau": config.plan_token_exponent_tau,
+        "plan_max_selected_units": config.plan_max_selected_units,
+        "plan_llm_max_tokens": config.plan_llm_max_tokens,
+        "plan_followup_max_tokens": config.plan_followup_max_tokens,
+        "plan_teacher_max_tokens": config.plan_teacher_max_tokens,
+        "plan_cache_path": str(cache_dir / Path(config.plan_cache_path).name),
     }
 
 
@@ -710,16 +730,30 @@ def run_experiment(
 
     run_dir = prepare_run_dir(config, questions)
     results_path = run_dir / "results.jsonl"
+
+    active_handles = dict(feature_handles or {})
+    # The evidence_plan treatments issue fresh per-sub-question retrieval at
+    # assembly time, so the dense embedder+reranker must stay resident. Build it
+    # once and reuse it for the up-front question trace too (multi-GPU layout
+    # recommended: it lives next to the reader).
+    if ({"plan_fixed", "plan_dynamic"} & set(config.treatments)) and (
+        "node_retriever" not in active_handles
+    ):
+        active_handles["node_retriever"] = make_dense_retriever(
+            config, chunks, include_reranker=True
+        )
+        if dense_retriever is None:
+            dense_retriever = active_handles["node_retriever"]
+
     retrieval_traces = build_retrieval_traces(
         config,
         chunks,
         questions,
         dense_retriever=dense_retriever,
         sparse_retriever=sparse_retriever,
-        feature_handles=feature_handles,
+        feature_handles=active_handles,
     )
 
-    active_handles = dict(feature_handles or {})
     if "recomp_summaries" not in active_handles:
         active_handles["recomp_summaries"] = precompute_recomp_summaries(
             config,

@@ -13,7 +13,7 @@ from typing import Any
 
 from hamlet_qa.features.macrag.assembly import combine_without_overlap
 from hamlet_qa.features.recomp.compressor import split_sentences
-from hamlet_qa.features.reader_support.schema import EvidenceUnit
+from hamlet_qa.core.evidence.schema import EvidenceUnit
 
 DEFAULT_UNIT_TYPES = ["chunk", "sentence", "line_span", "neighbor_left", "neighbor_right"]
 _MIN_UNIT_WORDS = 3

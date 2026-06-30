@@ -13,8 +13,8 @@ import json
 import re
 from typing import Any
 
+from hamlet_qa.core.evidence.schema import EvidenceNode
 from hamlet_qa.core.llm_cache import JsonKVCache, stable_hash
-from hamlet_qa.features.reader_support.schema import EvidenceNode
 
 NODE_PROMPT_VERSION = "reader_support.nodes.v1"
 
@@ -56,31 +56,6 @@ NODE_REPAIR_SUFFIX = (
 )
 
 _JSON_OBJECT = re.compile(r"\{.*\}", re.DOTALL)
-
-
-def build_candidate_catalog(
-    retrieval_trace: list[dict[str, Any]],
-    chunk_lookup: dict[str, dict[str, Any]],
-    catalog_k: int,
-    excerpt_chars: int = 200,
-) -> str:
-    """Compact catalog of top candidates: id, location, short excerpt.
-
-    Deliberately excludes any answer/gold information — only retrieved source
-    metadata and a leading excerpt.
-    """
-    lines: list[str] = []
-    for row in retrieval_trace[:catalog_k]:
-        chunk_id = str(row.get("chunk_id"))
-        chunk = chunk_lookup.get(chunk_id)
-        if chunk is None:
-            continue
-        act = chunk.get("act")
-        scene = chunk.get("scene")
-        title = str(chunk.get("scene_title", "")).strip()
-        excerpt = re.sub(r"\s+", " ", str(chunk.get("text", "")).strip())[:excerpt_chars]
-        lines.append(f"- [{chunk_id}] Act {act} Scene {scene} ({title}): {excerpt}")
-    return "\n".join(lines) if lines else "(no candidates)"
 
 
 def build_node_prompt(question_text: str, catalog: str, max_nodes: int) -> str:

@@ -126,6 +126,9 @@ answer quality are attributable to the method, not to incidental pipeline drift.
 ```
 hamlet_qa/
   core/          stable pipeline shared by every method
+    evidence/        shared evidence primitives (schema, greedy coverage,
+                     candidate catalog, reader-as-judge support teacher) — so
+                     features depend on core, never on each other
     config.py        run configuration + CLI defaults + GPU layouts
     chunking.py      act/scene token chunker
     questions.py     question loading + quote→gold-chunk resolution
@@ -138,6 +141,7 @@ hamlet_qa/
   features/      context-assembly methods (one folder each)
     baseline/  ordering/  setr/  domain/  crag/  macrag/  recomp/
     reader_support/  (ours: nodes, units, teacher, assembly, schema)
+    evidence_plan/   (ours: decomposition/planner prompts, contract, executor)
     registry.py      maps treatment name → adapter + retrieval needs
   metrics/       post-hoc per-row metrics (CI value, sufficient context,
                  evidence-role recall)
@@ -201,6 +205,8 @@ Gold chunk IDs are derived automatically from each question's
 | `recomp_extractive` | compression | sentence selection by a Contriever encoder |
 | `recomp_abstractive` | compression | T5 (or prompted reader) summary |
 | `reader_support` | **ours** | reader-teacher evidence-support selection of source units |
+| `plan_fixed` | **ours (experiment)** | swappable decomposition → per-node retrieve+rerank → greedy coverage |
+| `plan_dynamic` | **ours (experiment)** | LLM emits a procedure contract; executor runs the planned procedure |
 
 The four SOTA methods (`crag`, `macrag`, `recomp_*`) are ports of the official
 code cloned under `third_party/`, with every divergence logged per-row in
@@ -321,6 +327,51 @@ honored: assembly never reads `expected_answer`/`required_evidence_quotes`/gold;
 the final context is source-extractive only. Knobs are the `--support-*` flags
 (see `--help`).
 
+**`plan_fixed` / `plan_dynamic` — the evidence-planning experiment (ours).**
+`reader_support` entangles several innovations; these two treatments
+(`hamlet_qa/features/evidence_plan/`) deliberately **isolate one variable: how
+the LLM breaks the question down and plans the retrieval procedure.** Everything
+downstream is a shared, simple executor (`executor.py`): per-node dense
+retrieval → support scoring → budgeted **greedy coverage** (reusing
+`reader_support.greedy_select`) → ordering. Selected context is whole source
+chunks (real chunk ids).
+
+- **`plan_fixed`** — a swappable **decomposition prompt** splits the question
+  into evidence nodes; the procedure is then **fixed by flags**: dense-retrieve
+  per node, rerank per node, greedy-cover. The retrieval mode can be `parallel`
+  (independent multi-part questions) or `sequential` (`--plan-retrieval-mode
+  sequential`), where a dependent node's query is rewritten from gathered
+  evidence via a follow-up prompt (true bridge multi-hop). This isolates *which
+  decomposition prompt is best*.
+- **`plan_dynamic`** — a **planner prompt** emits a JSON **procedure contract**
+  (`contract.py`): question type, retrieval mode (parallel/sequential),
+  selection policy, ordering policy, support policy, and the nodes. The executor
+  validates/normalizes the contract (logging every fallback) and runs exactly
+  it. This tests *whether the LLM can also plan the procedure*.
+
+The per-(node, chunk) **support signal** is selectable (`--plan-support-policy`):
+`reranker` (the reranker logit squashed through a sigmoid into [0,1]) or
+`teacher` (the `reader_support` reader-teacher), giving a reranker-vs-teacher
+ablation too. Selection is `greedy_coverage` or `top_per_node`.
+
+**Swapping prompts is the experiment.** Three named registries
+(`prompts.py`), each chosen by one flag; every variant's version is in the cache
+key so swaps never reuse a stale cache:
+
+| Slot | Flag | Variants |
+|---|---|---|
+| Decomposition (`plan_fixed`) | `--decomp-prompt` | `subquestions` · `info_requirements` · `strategy` |
+| Planner (`plan_dynamic`) | `--planner-prompt` | `contract_v1` · `strategy_contract` |
+| Follow-up (sequential) | `--followup-prompt` | `rewrite_with_evidence` |
+
+The `strategy` / `strategy_contract` variants make the LLM write a **step-wise
+solving strategy** (subquestions + information to cover + order) before acting.
+The full plan — nodes, contract, per-node retrieval, support, coverage,
+ordering — is logged in `context_assembly_trace`, and `evidence_role_recall`
+(§4.3) measures whether the plan covered the gold roles. New infra:
+`feature_handles["node_retriever"]` keeps the embedder+reranker resident for
+per-sub-question retrieval (multi-GPU layout recommended).
+
 ### 4.3 Post-hoc metrics
 
 Computed after a run with a single reader-model load, written to a sidecar
@@ -346,6 +397,16 @@ and `ci+` badges, summary columns, per-chunk φ details).
   required quotes is present by chunk id or verbatim text). Unanswerable
   questions return null. Computed from the row alone, so `--metrics evidence_role`
   runs without loading the reader.
+- **Plan evaluation** (`plan_eval`, reader-free) — stage-wise evaluation for the
+  `plan_fixed` / `plan_dynamic` treatments, scoring the two stages that need no
+  LLM: **(1) after the plan is generated** — `plan_num_nodes`,
+  `plan_node_fallback`, `plan_num_gold_roles` (were the evidence slots produced;
+  *which* slots is left to the LLM judge); **(2) after retrieval** —
+  `plan_slot_retrieval_recall` = fraction of required evidence roles whose gold
+  chunk was surfaced by the per-node retrieval (plus `plan_gold_chunk_retrieval`
+  and per-role `plan_slot_detail`). **Stage 3 (final-answer quality)** is left to
+  a stronger-model LLM judge, which attaches to the row's `model_output`. Returns
+  `plan_eval_applicable=False` for non-plan treatments.
 
 ---
 
@@ -474,6 +535,71 @@ python -m hamlet_qa.cli.run_experiment --run-name probe_reader_support \
   --treatments closed_book gold_evidence dense_reranked sparse_bm25 setr \
     crag macrag recomp_extractive recomp_abstractive reader_support
 ```
+
+### 6.3.1 Evidence-planning experiment — what to run
+
+The `plan_fixed` / `plan_dynamic` study is **opt-in** (not in the default
+treatments). The experimental variable is the **decomposition / planner prompt**;
+everything downstream is held constant. Each run varies exactly one prompt flag.
+
+**Requirements:** a **multi-GPU layout** — `plan_*` keeps the embedder+reranker
+resident for per-sub-question retrieval, next to the reader. Set `LAYOUT` once.
+(If GPU 0 is busy, replace `--gpu-layout $LAYOUT` with explicit device flags:
+`--embedding-device cuda:1 --reranker-device cuda:1 --reader-device cuda:2`.)
+
+```bash
+# Activate the env on the GPU server (see §5), then:
+LAYOUT=a40-2gpu
+
+# 1. Baselines — run once, for reference.
+python -m hamlet_qa.cli.run_experiment --run-name plan_baselines --gpu-layout $LAYOUT \
+  --treatments closed_book gold_evidence dense_reranked setr
+
+# 2. plan_fixed — one run per decomposition prompt (parallel retrieval).
+for P in subquestions info_requirements strategy; do
+  python -m hamlet_qa.cli.run_experiment --run-name plan_fixed_$P --gpu-layout $LAYOUT \
+    --treatments plan_fixed --decomp-prompt $P --plan-retrieval-mode parallel
+done
+
+# 3. plan_fixed — sequential retrieval (bridge/multi-hop), strongest decomposition.
+python -m hamlet_qa.cli.run_experiment --run-name plan_fixed_strategy_seq --gpu-layout $LAYOUT \
+  --treatments plan_fixed --decomp-prompt strategy --plan-retrieval-mode sequential
+
+# 4. plan_dynamic — one run per planner prompt (the LLM plans the procedure).
+for P in contract_v1 strategy_contract; do
+  python -m hamlet_qa.cli.run_experiment --run-name plan_dynamic_$P --gpu-layout $LAYOUT \
+    --treatments plan_dynamic --planner-prompt $P
+done
+
+# 5. Evaluate every run — reader-free, NO CI (no model load at all).
+for R in plan_baselines plan_fixed_subquestions plan_fixed_info_requirements \
+         plan_fixed_strategy plan_fixed_strategy_seq \
+         plan_dynamic_contract_v1 plan_dynamic_strategy_contract; do
+  python -m hamlet_qa.cli.annotate_metrics --results runs/$R/results.jsonl \
+    --metrics evidence_role plan_eval
+done
+
+# 6. Inspect a run (nodes/contracts + per-node retrieval + answers).
+python -m hamlet_qa.inspection.results_html runs/plan_fixed_strategy/results.jsonl \
+  --output runs/plan_fixed_strategy/results_viewer.html
+```
+
+That's **7 runs** + their annotations. Optional extra ablation: append
+`--plan-support-policy teacher` to any `plan_*` run to score (node, chunk) with
+the reader-teacher instead of the reranker.
+
+**What each stage measures** (`evidence_role` + `plan_eval`, both reader-free):
+
+| Stage | When | Fields to compare across runs |
+|---|---|---|
+| 1 — plan generated | after decomposition/planning | `plan_num_nodes`, `plan_node_fallback`, `plan_num_gold_roles` (slots produced; *which* slots → LLM judge later) |
+| 2 — retrieval | after per-node retrieval | **`plan_slot_retrieval_recall`** (did retrieval find each slot's gold chunk), `plan_gold_chunk_retrieval`, `plan_slot_detail` |
+| — context | after assembly | `evidence_role_recall`, `evidence_quote_recall`, `context_tokens` |
+| 3 — final answer | after generation | left to the stronger-model **LLM judge** later — reads `model_output` |
+
+CI is deliberately omitted. When the LLM judge is ready, add it as a 4th metric
+that reads `model_output` (stage 3) plus the logged nodes (stage 1) — no rerun
+needed, the artifacts are already in each row.
 
 ### 6.4 Annotate post-hoc metrics
 
