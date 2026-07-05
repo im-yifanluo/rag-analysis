@@ -187,6 +187,7 @@ def prepare_treatment(
     feature_handles: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     trace = [dict(row) for row in retrieval_trace] if retrieval_trace else []
+    spec = get_treatment(treatment)
     request = ContextAssemblyRequest(
         question=question,
         treatment=treatment,
@@ -200,10 +201,12 @@ def prepare_treatment(
         setr_cache_path=Path(setr_cache_path) if setr_cache_path else None,
         setr_max_passages=setr_max_passages,
         setr_selector_max_tokens=setr_selector_max_tokens,
-        feature_params=dict(feature_params or {}),
+        # Arm-specific overrides (e.g. one decomposition prompt of a sweep) win
+        # over the run-wide feature_params; base treatments carry no overrides.
+        feature_params={**dict(feature_params or {}), **spec.param_overrides},
         feature_handles=dict(feature_handles or {}),
     )
-    assembly = get_treatment(treatment).assemble(request)
+    assembly = spec.assemble(request)
     return prepared_context_from_assembly(question, context_budget, assembly)
 
 
@@ -736,9 +739,9 @@ def run_experiment(
     # assembly time, so the dense embedder+reranker must stay resident. Build it
     # once and reuse it for the up-front question trace too (multi-GPU layout
     # recommended: it lives next to the reader).
-    if ({"plan_fixed", "plan_dynamic"} & set(config.treatments)) and (
-        "node_retriever" not in active_handles
-    ):
+    if any(
+        get_treatment(treatment).needs_node_retriever for treatment in config.treatments
+    ) and ("node_retriever" not in active_handles):
         active_handles["node_retriever"] = make_dense_retriever(
             config, chunks, include_reranker=True
         )

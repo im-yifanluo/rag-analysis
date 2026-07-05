@@ -927,6 +927,130 @@ class PrepareOnlyRunTests(unittest.TestCase):
                     all(cid.startswith("act01_scene01_chunk") for cid in row["selected_chunk_ids"])
                 )
 
+    def test_prepare_only_runs_plan_arms_in_one_pass(self):
+        # The point of the arm design: several decomposition/planner
+        # configurations run under ONE model load into ONE results.jsonl, each
+        # row tagged by its arm, and each arm's param_overrides reach its
+        # assembly (proved via the logged prompt variant / retrieval mode).
+        with tempfile.TemporaryDirectory() as tmp:
+            arms = [
+                "plan_fixed_strategy_par",
+                "plan_fixed_subq_seq",
+                "plan_dynamic_strategy",
+            ]
+            config = RunConfig(
+                chunks_path=str(REPO_ROOT / "data" / "hamlet_chunks.jsonl"),
+                questions_path=str(REPO_ROOT / "data" / "hamlet_questions.json"),
+                output_dir=tmp,
+                run_name="plan_arms_prepare_only",
+                treatments=arms,
+                context_budgets=[1000],
+                prepare_only=True,
+                context_assembly_cache_dir=str(Path(tmp) / "cache"),
+            )
+
+            results_path = run_experiment(
+                config,
+                reader=PlanPrepareOnlyReader(),
+                dense_retriever=RecordingRetriever([]),
+                feature_handles={"node_retriever": StubPlanNodeRetriever()},
+            )
+
+            rows = [
+                json.loads(line)
+                for line in Path(results_path).read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            # 3 arms x 10 questions, one file.
+            self.assertEqual(len(rows), 30)
+            self.assertEqual({row["treatment"] for row in rows}, set(arms))
+
+            by_arm: dict[str, dict] = {}
+            for row in rows:
+                by_arm.setdefault(row["treatment"], row)
+
+            # Fixed arms keep the base method name (so the plan_eval metric still
+            # recognises them) yet each used the decomposition prompt and
+            # retrieval mode from its own param_overrides.
+            strat = by_arm["plan_fixed_strategy_par"]["context_assembly_trace"]
+            self.assertEqual(strat["method"], "plan_fixed")
+            self.assertEqual(strat["decomposition"]["prompt_variant"], "strategy")
+            self.assertEqual(strat["policies"]["retrieval_mode"], "parallel")
+
+            subq = by_arm["plan_fixed_subq_seq"]["context_assembly_trace"]
+            self.assertEqual(subq["decomposition"]["prompt_variant"], "subquestions")
+            self.assertEqual(subq["policies"]["retrieval_mode"], "sequential")
+
+            # Dynamic arm used its planner-prompt override.
+            dyn = by_arm["plan_dynamic_strategy"]["context_assembly_trace"]
+            self.assertEqual(dyn["method"], "plan_dynamic")
+            self.assertEqual(dyn["planner_prompt_variant"], "strategy_contract")
+
+
+class PlanArmRegistryTests(unittest.TestCase):
+    """The evidence-planning sweep arms inherit their base treatment's
+    capabilities and only overlay feature_params."""
+
+    def test_eight_arms_inherit_base_capabilities(self):
+        from hamlet_qa.features.registry import (
+            DENSE_TREATMENTS,
+            PLAN_SWEEP_ARMS,
+            get_treatment,
+        )
+
+        self.assertEqual(len(PLAN_SWEEP_ARMS), 8)
+        for name in PLAN_SWEEP_ARMS:
+            spec = get_treatment(name)
+            self.assertIn(spec.base_treatment, {"plan_fixed", "plan_dynamic"})
+            base = get_treatment(spec.base_treatment)
+            # Inherit every capability from the base assembly...
+            self.assertIs(spec.assemble, base.assemble)
+            self.assertEqual(spec.retrieval_source, "dense")
+            self.assertTrue(spec.uses_llm_assembly)
+            self.assertTrue(spec.needs_node_retriever)
+            # ...so dense-trace routing and the resident retriever pick them up
+            # with no name-based special-casing.
+            self.assertIn(name, DENSE_TREATMENTS)
+            # ...while carrying a non-empty, arm-specific override set.
+            self.assertTrue(spec.param_overrides)
+
+    def test_arm_overrides_cover_the_full_matrix(self):
+        from hamlet_qa.features.registry import get_treatment
+
+        fixed_cells = {
+            (
+                get_treatment(name).param_overrides["plan_decomp_prompt"],
+                get_treatment(name).param_overrides["plan_retrieval_mode"],
+            )
+            for name in (
+                "plan_fixed_subq_par",
+                "plan_fixed_subq_seq",
+                "plan_fixed_inforeq_par",
+                "plan_fixed_inforeq_seq",
+                "plan_fixed_strategy_par",
+                "plan_fixed_strategy_seq",
+            )
+        }
+        self.assertEqual(
+            fixed_cells,
+            {
+                ("subquestions", "parallel"),
+                ("subquestions", "sequential"),
+                ("info_requirements", "parallel"),
+                ("info_requirements", "sequential"),
+                ("strategy", "parallel"),
+                ("strategy", "sequential"),
+            },
+        )
+        self.assertEqual(
+            get_treatment("plan_dynamic_contract").param_overrides,
+            {"plan_planner_prompt": "contract_v1"},
+        )
+        self.assertEqual(
+            get_treatment("plan_dynamic_strategy").param_overrides,
+            {"plan_planner_prompt": "strategy_contract"},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

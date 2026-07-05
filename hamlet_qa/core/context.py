@@ -56,13 +56,23 @@ AssemblyFn = Callable[[ContextAssemblyRequest], ContextAssemblyResult]
 
 @dataclass(frozen=True)
 class TreatmentSpec:
-    """Registry metadata for one experiment treatment."""
+    """Registry metadata for one experiment treatment.
+
+    An *arm* is a treatment that shares another treatment's assembly function but
+    overlays a few `feature_params` (e.g. one decomposition prompt of an
+    experiment sweep). It records its `base_treatment` for grouping and carries
+    `param_overrides` that win over the run-wide feature_params. `param_overrides`
+    is applied in `prepare_treatment`; nothing else special-cases arm names.
+    """
 
     name: str
     assemble: AssemblyFn
     retrieval_source: RetrievalSource = "none"
     uses_domain_kg: bool = False
     uses_llm_assembly: bool = False
+    needs_node_retriever: bool = False
+    base_treatment: str | None = None
+    param_overrides: dict[str, Any] = field(default_factory=dict)
 
 
 def chunks_by_id(chunks: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
