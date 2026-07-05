@@ -1,0 +1,1942 @@
+{
+  "plan_planner": {
+    "3608d89f9887e31ac193bd97c7f7ddc5f9de13c90ccc19804a885e57ef944622": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "top_per_node",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Identify the specific poison poured into King Hamlet's ear according to the Ghost.",
+            "node_query": "Ghost account murder orchard poison poured into King Hamlet ear name",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct retrieval of the poison name from the Ghost's testimony."
+          },
+          {
+            "node_id": "n2",
+            "need": "Identify the effect of the poison on King Hamlet's blood.",
+            "node_query": "Ghost account poison effect on blood King Hamlet",
+            "order_index": 2,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct retrieval of the physiological effect described by the Ghost."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"top_per_node\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific poison poured into King Hamlet's ear according to the Ghost.\",\n      \"node_query\": \"Ghost account murder orchard poison poured into King Hamlet ear name\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Direct retrieval of the poison name from the Ghost's testimony.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the effect of the poison on King Hamlet's blood.\",\n      \"node_query\": \"Ghost account poison effect on blood King Hamlet\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"Direct retrieval of the physiological effect described by the Ghost.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "32ffeca29835fb510c28f92991d20c20f3f2456d80eb792800a7013d832b186d": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "top_per_node",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Identify the specific scene where the Ghost reveals the murder details (Act 1, Scene 5). 2. Formulate a query targeting the Ghost's account of the poison name and its effect on the blood. 3. Retrieve relevant chunks from Act 1 Scene 5 in parallel since the answer is contained within that specific scene context.",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Find the Ghost's description of the poison poured into the King's ear and its effect on his blood.",
+            "node_query": "Ghost account murder orchard poison poured into ear effect on blood",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "The question asks for specific details from the Ghost's testimony in Act 1 Scene 5. A direct query for these details will retrieve the necessary evidence in a single step."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify the specific scene where the Ghost reveals the murder details (Act 1, Scene 5). 2. Formulate a query targeting the Ghost's account of the poison name and its effect on the blood. 3. Retrieve relevant chunks from Act 1 Scene 5 in parallel since the answer is contained within that specific scene context.\",\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"top_per_node\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Find the Ghost's description of the poison poured into the King's ear and its effect on his blood.\",\n      \"node_query\": \"Ghost account murder orchard poison poured into ear effect on blood\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks for specific details from the Ghost's testimony in Act 1 Scene 5. A direct query for these details will retrieve the necessary evidence in a single step.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "f126dde4c102c5f59d0f452d92974991bfc01931bafa28857747a3c84f39d296": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "top_per_node",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Identify the speaker of the quote 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart' and the context in which it is said.",
+            "node_query": "quote \"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\" speaker",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct retrieval of the specific quote to identify the speaker and scene context."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"top_per_node\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the speaker of the quote 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart' and the context in which it is said.\",\n      \"node_query\": \"quote \\\"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\\\" speaker\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Direct retrieval of the specific quote to identify the speaker and scene context.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "1a3c7ab308020466561b9803ba7d201c556916247ad544aa8c244e22e42eca37": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "top_per_node",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Identify the specific quote 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart' as the target evidence. 2. Recognize that this quote is spoken by Ophelia in Act 4, Scene 5 of Hamlet, immediately following the news of her father's death. 3. Construct a search query targeting the specific phrase or the context of Ophelia's grief in Act 4 Scene 5 to retrieve the exact lines and speaker.",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Find the speaker of the quote 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart' and the context of Act 4 Scene 5.",
+            "node_query": "Hamlet Act 4 Scene 5 Ophelia quote \"For this relief much thanks\" \"bitter cold\" \"sick at heart\"",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct retrieval of the specific quote and its speaker to answer the question."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify the specific quote 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart' as the target evidence. 2. Recognize that this quote is spoken by Ophelia in Act 4, Scene 5 of Hamlet, immediately following the news of her father's death. 3. Construct a search query targeting the specific phrase or the context of Ophelia's grief in Act 4 Scene 5 to retrieve the exact lines and speaker.\",\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"top_per_node\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Find the speaker of the quote 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart' and the context of Act 4 Scene 5.\",\n      \"node_query\": \"Hamlet Act 4 Scene 5 Ophelia quote \\\"For this relief much thanks\\\" \\\"bitter cold\\\" \\\"sick at heart\\\"\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Direct retrieval of the specific quote and its speaker to answer the question.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "ea335a206c2d48f1e4398fc7e6aed21d672157a28c161515c12b24a8940d6989": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Why does Claudius summon Rosencrantz and Guildenstern to court?",
+            "node_query": "Claudius summon Rosencrantz Guildenstern reason purpose Act 2 Scene 2",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Identifies the initial motivation for the characters' arrival at court."
+          },
+          {
+            "node_id": "n2",
+            "need": "What task involving England are Rosencrantz and Guildenstern later given?",
+            "node_query": "Rosencrantz Guildenstern England task commission letter Act 4",
+            "order_index": 2,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Retrieves the specific mission assigned to them regarding Hamlet's departure to England."
+          },
+          {
+            "node_id": "n3",
+            "need": "What finally happens to Rosencrantz and Guildenstern?",
+            "node_query": "Rosencrantz Guildenstern fate death Act 5 Scene 2",
+            "order_index": 3,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Finds the outcome of their mission and their ultimate fate."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Why does Claudius summon Rosencrantz and Guildenstern to court?\",\n      \"node_query\": \"Claudius summon Rosencrantz Guildenstern reason purpose Act 2 Scene 2\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Identifies the initial motivation for the characters' arrival at court.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"What task involving England are Rosencrantz and Guildenstern later given?\",\n      \"node_query\": \"Rosencrantz Guildenstern England task commission letter Act 4\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"Retrieves the specific mission assigned to them regarding Hamlet's departure to England.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"What finally happens to Rosencrantz and Guildenstern?\",\n      \"node_query\": \"Rosencrantz Guildenstern fate death Act 5 Scene 2\",\n      \"order_index\": 3,\n      \"depends_on\": [],\n      \"reason\": \"Finds the outcome of their mission and their ultimate fate.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "ec01c74c8cf9ea04eb0edb5793ce2f2baa40b010d419ab67278cea0ffc7c1603": {
+      "contract": {
+        "question_type": "bridge_multihop",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "sequential",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Retrieve the initial summons: Find Act 2 Scene 2 where Claudius explicitly states the reason for calling Rosencrantz and Guildenstern (to spy on Hamlet). 2. Retrieve the England mission: Find Act 4 Scene 1 where the King gives them the specific task of escorting Hamlet to England and the nature of the commission. 3. Retrieve the outcome: Find Act 5 Scene 2 where Hamlet reveals the contents of the commission and describes the fate of the two men.",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Why Claudius summons Rosencrantz and Guildenstern",
+            "node_query": "Claudius summon Rosencrantz Guildenstern reason spy Hamlet Act 2 Scene 2",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Establishes the motivation for the characters' presence at court."
+          },
+          {
+            "node_id": "n2",
+            "need": "Task involving England given to them",
+            "node_query": "Claudius Rosencrantz Guildenstern England commission letter Hamlet Act 4 Scene 1",
+            "order_index": 2,
+            "depends_on": [
+              "n1"
+            ],
+            "confidence": null,
+            "raw_reason": "Identifies the specific mission assigned after they have been summoned."
+          },
+          {
+            "node_id": "n3",
+            "need": "What finally happens to them",
+            "node_query": "Hamlet Rosencrantz Guildenstern death England commission Act 5 Scene 2",
+            "order_index": 3,
+            "depends_on": [
+              "n2"
+            ],
+            "confidence": null,
+            "raw_reason": "Reveals the consequence of the mission found in the previous step."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Retrieve the initial summons: Find Act 2 Scene 2 where Claudius explicitly states the reason for calling Rosencrantz and Guildenstern (to spy on Hamlet). 2. Retrieve the England mission: Find Act 4 Scene 1 where the King gives them the specific task of escorting Hamlet to England and the nature of the commission. 3. Retrieve the outcome: Find Act 5 Scene 2 where Hamlet reveals the contents of the commission and describes the fate of the two men.\",\n  \"question_type\": \"bridge_multihop\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"sequential\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Why Claudius summons Rosencrantz and Guildenstern\",\n      \"node_query\": \"Claudius summon Rosencrantz Guildenstern reason spy Hamlet Act 2 Scene 2\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Establishes the motivation for the characters' presence at court.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Task involving England given to them\",\n      \"node_query\": \"Claudius Rosencrantz Guildenstern England commission letter Hamlet Act 4 Scene 1\",\n      \"order_index\": 2,\n      \"depends_on\": [\"n1\"],\n      \"reason\": \"Identifies the specific mission assigned after they have been summoned.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"What finally happens to them\",\n      \"node_query\": \"Hamlet Rosencrantz Guildenstern death England commission Act 5 Scene 2\",\n      \"order_index\": 3,\n      \"depends_on\": [\"n2\"],\n      \"reason\": \"Reveals the consequence of the mission found in the previous step.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "ad3a4f5eb9a00bdc9ab57ea64cf58ac6b34a9d3151e8923e3ba1311c6a7eecb9": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "top_per_node",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Identify the specific method Hamlet uses to verify the Ghost's accusation against Claudius.",
+            "node_query": "How does Hamlet test if the Ghost's accusation against Claudius is true? What play does he have performed?",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Directly addresses the core of the question by searching for the specific test (the play) Hamlet devises."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"top_per_node\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific method Hamlet uses to verify the Ghost's accusation against Claudius.\",\n      \"node_query\": \"How does Hamlet test if the Ghost's accusation against Claudius is true? What play does he have performed?\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Directly addresses the core of the question by searching for the specific test (the play) Hamlet devises.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "de19a1eeb09af6681a2f2ac69c6f2b024946c325578d4731b359ae7792059be4": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Identify the specific method Hamlet uses to verify the Ghost's story. 2. Retrieve the scene where Hamlet stages a play ('The Mousetrap') that mirrors the murder described by the Ghost. 3. Confirm the reaction of King Claudius during this performance as the proof of guilt.",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Find the scene where Hamlet decides to use a play to test the Ghost's accusation.",
+            "node_query": "Hamlet test Ghost accusation play The Mousetrap Claudius murder",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This node retrieves the core event (the play) and the specific name ('The Mousetrap') used as the test."
+          },
+          {
+            "node_id": "n2",
+            "need": "Find the specific details of the play's plot and how it mirrors the Ghost's story of murder.",
+            "node_query": "The Mousetrap play plot Gonzago Duke murder wife poison",
+            "order_index": 2,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This node provides the evidence of how the play is constructed to reflect the specific crime (murder of a king by his brother) mentioned by the Ghost."
+          },
+          {
+            "node_id": "n3",
+            "need": "Find King Claudius's reaction to the play that proves his guilt.",
+            "node_query": "Claudius reaction The Mousetrap play rises up stops",
+            "order_index": 3,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This node captures the outcome of the test, showing Claudius's guilty conscience revealed through his behavior during the performance."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify the specific method Hamlet uses to verify the Ghost's story. 2. Retrieve the scene where Hamlet stages a play ('The Mousetrap') that mirrors the murder described by the Ghost. 3. Confirm the reaction of King Claudius during this performance as the proof of guilt.\",\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Find the scene where Hamlet decides to use a play to test the Ghost's accusation.\",\n      \"node_query\": \"Hamlet test Ghost accusation play The Mousetrap Claudius murder\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"This node retrieves the core event (the play) and the specific name ('The Mousetrap') used as the test.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Find the specific details of the play's plot and how it mirrors the Ghost's story of murder.\",\n      \"node_query\": \"The Mousetrap play plot Gonzago Duke murder wife poison\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"This node provides the evidence of how the play is constructed to reflect the specific crime (murder of a king by his brother) mentioned by the Ghost.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"Find King Claudius's reaction to the play that proves his guilt.\",\n      \"node_query\": \"Claudius reaction The Mousetrap play rises up stops\",\n      \"order_index\": 3,\n      \"depends_on\": [],\n      \"reason\": \"This node captures the outcome of the test, showing Claudius's guilty conscience revealed through his behavior during the performance.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "7c01083b7a951011be62bbcdad14fbf419ed2c22911805ef054170b45e7d2273": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "What was young Fortinbras's original aim before it was redirected?",
+            "node_query": "young Fortinbras original aim military campaign Norway Poland",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Retrieving the initial motivation (conquest of Poland) is the first step in the chronological narrative requested."
+          },
+          {
+            "node_id": "n2",
+            "need": "How did old Norway redirect Fortinbras's campaign?",
+            "node_query": "old Norway redirect Fortinbras commission three thousand crowns annual fee",
+            "order_index": 2,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This sub-question addresses the specific intervention by Norway that changed the target of the army, independent of the final destination."
+          },
+          {
+            "node_id": "n3",
+            "need": "What is Fortinbras's army doing when it crosses Denmark?",
+            "node_query": "Fortinbras army crosses Denmark plain what doing marching against Poland",
+            "order_index": 3,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This addresses the final state of the army at the specific location mentioned in the question (crossing Denmark), completing the chronological trace."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"What was young Fortinbras's original aim before it was redirected?\",\n      \"node_query\": \"young Fortinbras original aim military campaign Norway Poland\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Retrieving the initial motivation (conquest of Poland) is the first step in the chronological narrative requested.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"How did old Norway redirect Fortinbras's campaign?\",\n      \"node_query\": \"old Norway redirect Fortinbras commission three thousand crowns annual fee\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"This sub-question addresses the specific intervention by Norway that changed the target of the army, independent of the final destination.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"What is Fortinbras's army doing when it crosses Denmark?\",\n      \"node_query\": \"Fortinbras army crosses Denmark plain what doing marching against Poland\",\n      \"order_index\": 3,\n      \"depends_on\": [],\n      \"reason\": \"This addresses the final state of the army at the specific location mentioned in the question (crossing Denmark), completing the chronological trace.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "95248f837fa5899af24bc573961c8447b0ee95652b534231f1af9277cb88ac81": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Identify Fortinbras's original aim: Retrieve Act 1 Scene 1 to find the Ghost's account of the conflict over the 'empty' Norwegian fort and the death of old Fortinbras. 2. Identify Norway's redirection: Retrieve Act 2 Scene 2 to find the King of Norway's decision to pay his nephew and commission him against Poland instead of Denmark. 3. Identify the army's current action: Retrieve Act 4 Scene 4 to find the Captain's report that the army is marching against a part of Poland, not the main.",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "What was young Fortinbras's original aim and the cause of the conflict?",
+            "node_query": "Fortinbras original aim Norway fort conflict father death Act 1 Scene 1",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This is the starting point of the narrative chain; the original grievance explains why he needed a new target."
+          },
+          {
+            "node_id": "n2",
+            "need": "How did old Norway redirect Fortinbras's campaign?",
+            "node_query": "Norway redirect Fortinbras commission Poland three thousand crowns Act 2 Scene 2",
+            "order_index": 2,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This step explains the change in objective from Denmark to Poland, which is the middle link in the sequence."
+          },
+          {
+            "node_id": "n3",
+            "need": "What is Fortinbras's army doing when it crosses Denmark?",
+            "node_query": "Fortinbras army crossing Denmark marching against Poland Act 4 Scene 4",
+            "order_index": 3,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This is the final state of the campaign described in the question, occurring after the redirection."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify Fortinbras's original aim: Retrieve Act 1 Scene 1 to find the Ghost's account of the conflict over the 'empty' Norwegian fort and the death of old Fortinbras. 2. Identify Norway's redirection: Retrieve Act 2 Scene 2 to find the King of Norway's decision to pay his nephew and commission him against Poland instead of Denmark. 3. Identify the army's current action: Retrieve Act 4 Scene 4 to find the Captain's report that the army is marching against a part of Poland, not the main.\",\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"What was young Fortinbras's original aim and the cause of the conflict?\",\n      \"node_query\": \"Fortinbras original aim Norway fort conflict father death Act 1 Scene 1\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"This is the starting point of the narrative chain; the original grievance explains why he needed a new target.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"How did old Norway redirect Fortinbras's campaign?\",\n      \"node_query\": \"Norway redirect Fortinbras commission Poland three thousand crowns Act 2 Scene 2\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"This step explains the change in objective from Denmark to Poland, which is the middle link in the sequence.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"What is Fortinbras's army doing when it crosses Denmark?\",\n      \"node_query\": \"Fortinbras army crossing Denmark marching against Poland Act 4 Scene 4\",\n      \"order_index\": 3,\n      \"depends_on\": [],\n      \"reason\": \"This is the final state of the campaign described in the question, occurring after the redirection.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "9ccbf02ef8b32a6bf1c207b5e754712324f2a7c66f63842ede10f11dcabdee9a": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "document_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Identify who drinks the poisoned cup intended for Hamlet during the duel.",
+            "node_query": "Who drinks the poisoned cup intended for Hamlet during the duel Act 5 Scene 2",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Directly addresses the first part of the question regarding the identity of the drinker."
+          },
+          {
+            "node_id": "n2",
+            "need": "Determine the immediate consequence or fate of the person who drank the poisoned cup.",
+            "node_query": "What happens to the person who drinks the poisoned cup Act 5 Scene 2",
+            "order_index": 2,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Directly addresses the second part of the question regarding the outcome for the drinker."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"document_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify who drinks the poisoned cup intended for Hamlet during the duel.\",\n      \"node_query\": \"Who drinks the poisoned cup intended for Hamlet during the duel Act 5 Scene 2\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Directly addresses the first part of the question regarding the identity of the drinker.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Determine the immediate consequence or fate of the person who drank the poisoned cup.\",\n      \"node_query\": \"What happens to the person who drinks the poisoned cup Act 5 Scene 2\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"Directly addresses the second part of the question regarding the outcome for the drinker.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "eb6ccf4cd8637f6fb6975223e35d6876648df9de00e918efb6c740ae1648f2ea": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Identify the specific moment in Act 5 Scene 2 where the poisoned cup is offered and consumed. 2. Retrieve the text describing the King offering the cup, Gertrude drinking, and her subsequent death. 3. Retrieve the text describing Laertes' attempt to drink and his death. 4. Synthesize the events to answer who drank and the outcome.",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Who drinks the poisoned cup intended for Hamlet and what happens to them?",
+            "node_query": "Act 5 Scene 2 poisoned cup Gertrude Laertes drink death",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct retrieval of the scene where the poison is administered and the characters' reactions."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify the specific moment in Act 5 Scene 2 where the poisoned cup is offered and consumed. 2. Retrieve the text describing the King offering the cup, Gertrude drinking, and her subsequent death. 3. Retrieve the text describing Laertes' attempt to drink and his death. 4. Synthesize the events to answer who drank and the outcome.\",\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Who drinks the poisoned cup intended for Hamlet and what happens to them?\",\n      \"node_query\": \"Act 5 Scene 2 poisoned cup Gertrude Laertes drink death\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Direct retrieval of the scene where the poison is administered and the characters' reactions.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "52b1e55530f85354e25e875a373e1cbafc71e69bf40ff3f298e9c7f72dab8da7": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Identify the four characters who die in the final scene of the play.",
+            "node_query": "Act 5 Scene 2 characters die onstage list",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "First, we must identify the specific characters who die in the final scene to know who to look for in subsequent nodes."
+          },
+          {
+            "node_id": "n2",
+            "need": "Determine the cause of death for Gertrude.",
+            "node_query": "Act 5 Scene 2 Gertrude cause of death poison cup",
+            "order_index": 2,
+            "depends_on": [
+              "n1"
+            ],
+            "confidence": null,
+            "raw_reason": "Once Gertrude is identified as a victim, we need to find the specific mechanism (the poisoned cup) that killed her."
+          },
+          {
+            "node_id": "n3",
+            "need": "Determine the cause of death for the King (Claudius).",
+            "node_query": "Act 5 Scene 2 King Claudius cause of death poisoned drink",
+            "order_index": 3,
+            "depends_on": [
+              "n1"
+            ],
+            "confidence": null,
+            "raw_reason": "Once the King is identified as a victim, we need to find the specific mechanism (the poisoned drink) that killed him."
+          },
+          {
+            "node_id": "n4",
+            "need": "Determine the cause of death for Laertes.",
+            "node_query": "Act 5 Scene 2 Laertes cause of death wounds poison rapier",
+            "order_index": 4,
+            "depends_on": [
+              "n1"
+            ],
+            "confidence": null,
+            "raw_reason": "Once Laertes is identified as a victim, we need to find the specific mechanism (the poisoned rapier wound) that killed him."
+          },
+          {
+            "node_id": "n5",
+            "need": "Determine the cause of death for Hamlet.",
+            "node_query": "Act 5 Scene 2 Hamlet cause of death wounds poison rapier",
+            "order_index": 5,
+            "depends_on": [
+              "n1"
+            ],
+            "confidence": null,
+            "raw_reason": "Once Hamlet is identified as a victim, we need to find the specific mechanism (the poisoned rapier wound) that killed him."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the four characters who die in the final scene of the play.\",\n      \"node_query\": \"Act 5 Scene 2 characters die onstage list\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"First, we must identify the specific characters who die in the final scene to know who to look for in subsequent nodes.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Determine the cause of death for Gertrude.\",\n      \"node_query\": \"Act 5 Scene 2 Gertrude cause of death poison cup\",\n      \"order_index\": 2,\n      \"depends_on\": [\"n1\"],\n      \"reason\": \"Once Gertrude is identified as a victim, we need to find the specific mechanism (the poisoned cup) that killed her.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"Determine the cause of death for the King (Claudius).\",\n      \"node_query\": \"Act 5 Scene 2 King Claudius cause of death poisoned drink\",\n      \"order_index\": 3,\n      \"depends_on\": [\"n1\"],\n      \"reason\": \"Once the King is identified as a victim, we need to find the specific mechanism (the poisoned drink) that killed him.\"\n    },\n    {\n      \"node_id\": \"n4\",\n      \"need\": \"Determine the cause of death for Laertes.\",\n      \"node_query\": \"Act 5 Scene 2 Laertes cause of death wounds poison rapier\",\n      \"order_index\": 4,\n      \"depends_on\": [\"n1\"],\n      \"reason\": \"Once Laertes is identified as a victim, we need to find the specific mechanism (the poisoned rapier wound) that killed him.\"\n    },\n    {\n      \"node_id\": \"n5\",\n      \"need\": \"Determine the cause of death for Hamlet.\",\n      \"node_query\": \"Act 5 Scene 2 Hamlet cause of death wounds poison rapier\",\n      \"order_index\": 5,\n      \"depends_on\": [\"n1\"],\n      \"reason\": \"Once Hamlet is identified as a victim, we need to find the specific mechanism (the poisoned rapier wound) that killed him.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "fef4449a58585562fe786dea00eda176587968d730a60b2a678327b2ec13e10f": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Identify the specific scene (Act 5, Scene 2) where the final deaths occur. 2. Retrieve all chunks from Act 5 Scene 2 in parallel to capture the full sequence of events. 3. Scan the retrieved text to identify the four characters who die onstage (Gertrude, Laertes, Hamlet, and the King) and the specific cause of death for each (poisoned cup, poisoned rapier, poisoned rapier, poisoned cup).",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Retrieve the full text of Act 5 Scene 2 to find the deaths of Gertrude, Laertes, Hamlet, and the King.",
+            "node_query": "Hamlet Act 5 Scene 2 deaths Gertrude Laertes King Hamlet poison",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "The question asks for specific details about the final scene; retrieving the entire relevant scene in parallel ensures all four deaths and their causes are captured without needing intermediate steps."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify the specific scene (Act 5, Scene 2) where the final deaths occur. 2. Retrieve all chunks from Act 5 Scene 2 in parallel to capture the full sequence of events. 3. Scan the retrieved text to identify the four characters who die onstage (Gertrude, Laertes, Hamlet, and the King) and the specific cause of death for each (poisoned cup, poisoned rapier, poisoned rapier, poisoned cup).\",\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Retrieve the full text of Act 5 Scene 2 to find the deaths of Gertrude, Laertes, Hamlet, and the King.\",\n      \"node_query\": \"Hamlet Act 5 Scene 2 deaths Gertrude Laertes King Hamlet poison\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks for specific details about the final scene; retrieving the entire relevant scene in parallel ensures all four deaths and their causes are captured without needing intermediate steps.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "0145464918e2a1519c1c837ee5dbf8d776086aac00f13c0359d6a6a583e47236": {
+      "contract": {
+        "question_type": "independent_multipart",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Identify the character Hamlet believes he is stabbing through the arras.",
+            "node_query": "Hamlet stabs arras thinks he kills who",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct retrieval to find Hamlet's perception of the person behind the curtain."
+          },
+          {
+            "node_id": "n2",
+            "need": "Identify the character who is actually killed by Hamlet's thrust through the arras.",
+            "node_query": "Hamlet kills who behind arras Act 3 Scene 4",
+            "order_index": 2,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct retrieval to confirm the actual victim of the action."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"independent_multipart\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the character Hamlet believes he is stabbing through the arras.\",\n      \"node_query\": \"Hamlet stabs arras thinks he kills who\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Direct retrieval to find Hamlet's perception of the person behind the curtain.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the character who is actually killed by Hamlet's thrust through the arras.\",\n      \"node_query\": \"Hamlet kills who behind arras Act 3 Scene 4\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"Direct retrieval to confirm the actual victim of the action.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "3e305a5e36f065ea04eeacfafaa760c255e7052e183aa9aa8b52248bf2c94abe": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "top_per_node",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Identify the specific scene (Act 3, Scene 4) where Hamlet stabs through the arras. 2. Retrieve the text of that scene to find the dialogue immediately preceding the stab (Hamlet's assumption) and the immediate reaction (Polonius's death). 3. No sequential bridging is required as the answer is contained within a single scene context.",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Find the passage in Act 3 Scene 4 where Hamlet stabs through the arras and the subsequent dialogue revealing his target and the victim.",
+            "node_query": "Hamlet Act 3 Scene 4 stabs arras Polonius dead",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This single retrieval covers the entire event described in the question, including Hamlet's mistaken belief and the actual casualty."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify the specific scene (Act 3, Scene 4) where Hamlet stabs through the arras. 2. Retrieve the text of that scene to find the dialogue immediately preceding the stab (Hamlet's assumption) and the immediate reaction (Polonius's death). 3. No sequential bridging is required as the answer is contained within a single scene context.\",\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"top_per_node\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Find the passage in Act 3 Scene 4 where Hamlet stabs through the arras and the subsequent dialogue revealing his target and the victim.\",\n      \"node_query\": \"Hamlet Act 3 Scene 4 stabs arras Polonius dead\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"This single retrieval covers the entire event described in the question, including Hamlet's mistaken belief and the actual casualty.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "2e8328b2199b18abf6edc2d3e8e804cc4804ab0e9137e536bc6789546c9589db": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Identify the specific reasons Claudius gives Laertes for avoiding public punishment of Hamlet.",
+            "node_query": "Claudius reasons for not publicly punishing Hamlet Laertes Act 4 Scene 7",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "The question asks for specific reasons given in a specific scene (Act 4, Scene 7). A single parallel retrieval with a targeted query covering the scene and the specific topic (reasons for not punishing) is sufficient to gather the evidence without needing sequential steps or bridging."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific reasons Claudius gives Laertes for avoiding public punishment of Hamlet.\",\n      \"node_query\": \"Claudius reasons for not publicly punishing Hamlet Laertes Act 4 Scene 7\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks for specific reasons given in a specific scene (Act 4, Scene 7). A single parallel retrieval with a targeted query covering the scene and the specific topic (reasons for not punishing) is sufficient to gather the evidence without needing sequential steps or bridging.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "3c975ae5e3ca181e17eabcf7e1285280d2990c5461dfc52be6f984da2f06666a": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "greedy_coverage",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "1. Identify the specific scene where Claudius and Laertes discuss Hamlet's return and the King's hesitation to execute him publicly. 2. Formulate a query targeting 'Claudius reasons not punish Hamlet publicly' within Act 4 Scene 7. 3. Retrieve the relevant chunk(s) containing the dialogue where Claudius explicitly lists his motives (fear of public opinion vs. private action).",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Find the specific passage in Act 4 Scene 7 where Claudius explains to Laertes why he cannot publicly punish Hamlet.",
+            "node_query": "Claudius Laertes reasons not publicly punish Hamlet Act 4 Scene 7 motives",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "This is the direct source of the answer; the question asks for two specific reasons given in this specific conversation."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify the specific scene where Claudius and Laertes discuss Hamlet's return and the King's hesitation to execute him publicly. 2. Formulate a query targeting 'Claudius reasons not punish Hamlet publicly' within Act 4 Scene 7. 3. Retrieve the relevant chunk(s) containing the dialogue where Claudius explicitly lists his motives (fear of public opinion vs. private action).\",\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"greedy_coverage\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Find the specific passage in Act 4 Scene 7 where Claudius explains to Laertes why he cannot publicly punish Hamlet.\",\n      \"node_query\": \"Claudius Laertes reasons not publicly punish Hamlet Act 4 Scene 7 motives\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"This is the direct source of the answer; the question asks for two specific reasons given in this specific conversation.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    },
+    "638a6a3299362603803d1a7e7e4369a7cb3b056d34120a9ed2d083853fc53662": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "top_per_node",
+        "ordering_policy": "node_order",
+        "support_policy": "reranker",
+        "strategy": "",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Identify the name of Yorick's wife from the provided text chunks.",
+            "node_query": "Yorick wife name",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct retrieval of the specific fact requested in the question."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"top_per_node\",\n  \"ordering_policy\": \"node_order\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the name of Yorick's wife from the provided text chunks.\",\n      \"node_query\": \"Yorick wife name\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Direct retrieval of the specific fact requested in the question.\"\n    }\n  ]\n}",
+      "version": "planner.contract_v1.v1"
+    },
+    "15d948ee60d51f1bd0dfc214e40701dc2e9a06397d9a6f5ea33576c618df9c81": {
+      "contract": {
+        "question_type": "single",
+        "retrieval_policy": "dense",
+        "retrieval_mode": "parallel",
+        "selection_policy": "top_per_node",
+        "ordering_policy": "anchor_first",
+        "support_policy": "reranker",
+        "strategy": "1. Identify the specific character 'Yorick' mentioned in the text. 2. Search for the name 'Yorick' in the provided chunks to locate the specific scene and context where he is discussed. 3. Analyze the surrounding text in that specific chunk to determine if his wife's name is explicitly mentioned or if the text only refers to him as a former acquaintance of Hamlet without mentioning a spouse.",
+        "nodes": [
+          {
+            "node_id": "n1",
+            "need": "Locate the section discussing Yorick and check for any mention of his wife's name.",
+            "node_query": "Yorick wife name",
+            "order_index": 1,
+            "depends_on": [],
+            "confidence": null,
+            "raw_reason": "Direct search for the answer to the specific question."
+          }
+        ],
+        "deviations": [],
+        "parse_error": null
+      },
+      "raw_output": "{\n  \"strategy\": \"1. Identify the specific character 'Yorick' mentioned in the text. 2. Search for the name 'Yorick' in the provided chunks to locate the specific scene and context where he is discussed. 3. Analyze the surrounding text in that specific chunk to determine if his wife's name is explicitly mentioned or if the text only refers to him as a former acquaintance of Hamlet without mentioning a spouse.\",\n  \"question_type\": \"single\",\n  \"retrieval_policy\": \"dense\",\n  \"retrieval_mode\": \"parallel\",\n  \"selection_policy\": \"top_per_node\",\n  \"ordering_policy\": \"anchor_first\",\n  \"support_policy\": \"reranker\",\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Locate the section discussing Yorick and check for any mention of his wife's name.\",\n      \"node_query\": \"Yorick wife name\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"Direct search for the answer to the specific question.\"\n    }\n  ]\n}",
+      "version": "planner.strategy_contract.v1"
+    }
+  },
+  "plan_followup": {
+    "8ba9c68f654bab7231ae4861a888fa6323f18cfab5441b500bac8485d7b38a39": {
+      "query": "what poison was poured into King Hamlet's ear according to the Ghost's account",
+      "raw_output": "{\"retrieval_query\": \"what poison was poured into King Hamlet's ear according to the Ghost's account\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "97504a96798becd9f00f28b866c16a200a99be23c2bc470c79db6d69fbcac593": {
+      "query": "what did the poison poured into King Hamlet's ear do to his blood",
+      "raw_output": "{\"retrieval_query\": \"what did the poison poured into King Hamlet's ear do to his blood\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "b5aa88120e2edb62503b6dffd504633b2a6b3381ddcdfc8ce1dbdf4be80e11bd": {
+      "query": "Who says the quote 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart' in Hamlet?",
+      "raw_output": "{\"retrieval_query\": \"Who says the quote 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart' in Hamlet?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "e1667d97d33658519e0fc7bfd4e8ce18e26c90a6de8ee1503afedf385eb870d2": {
+      "query": "task involving England assigned to Rosencrantz and Guildenstern",
+      "raw_output": "{\"retrieval_query\": \"task involving England assigned to Rosencrantz and Guildenstern\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "4e8c3c0a952f8b68cbdf9263005a51153320669b4034087e06ee943a763c3ce2": {
+      "query": "what finally happens to Rosencrantz and Guildenstern",
+      "raw_output": "{\"retrieval_query\": \"what finally happens to Rosencrantz and Guildenstern\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "bd67935ba1b2520e92dedf4d8c5cd9caac2c676a1e96236f2edf9ff078d572e7": {
+      "query": "task involving England given to Rosencrantz and Guildenstern",
+      "raw_output": "{\"retrieval_query\": \"task involving England given to Rosencrantz and Guildenstern\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "6951d45d60f1de392e6bf5a9f5e110ada77e1178bc50ac1f19bb067ea7fd268c": {
+      "query": "what finally happens to Rosencrantz and Guildenstern",
+      "raw_output": "{\"retrieval_query\": \"what finally happens to Rosencrantz and Guildenstern\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "3d940c8f4c4888d81842a54a89f3561779b2f1dad012bb76a291d593eb893bce": {
+      "query": "Hamlet commissioning players to perform a play depicting the murder of his father to test Claudius's reaction",
+      "raw_output": "{\"retrieval_query\": \"Hamlet commissioning players to perform a play depicting the murder of his father to test Claudius's reaction\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "0a4d48c99da819f3b57b0b94e145d095abf88cb05335ef1dc85597cf2968c705": {
+      "query": "Claudius reaction during play performance murder of his father guilt confirmation",
+      "raw_output": "{\"retrieval_query\": \"Claudius reaction during play performance murder of his father guilt confirmation\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "c8c0736aa482d4fd37a73466f268e6dc40f4058e6c89b4522e13a9c7827d96b8": {
+      "query": "Hamlet commissioning players to perform a play about the murder of his father to test Claudius",
+      "raw_output": "{\"retrieval_query\": \"Hamlet commissioning players to perform a play about the murder of his father to test Claudius\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "7ef3b71daa43c04192aa01daf3b544854aeef2f492c0dd623dcba4bba6964176": {
+      "query": "How does Hamlet plan to test Claudius's guilt using the players and a play about his father's murder?",
+      "raw_output": "{\"retrieval_query\": \"How does Hamlet plan to test Claudius's guilt using the players and a play about his father's murder?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "858d24d96425f3d44ea5c30f8a36608c99a0eb843d354e052315d0f5eca93a8e": {
+      "query": "Claudius reaction during the play about his father's murder",
+      "raw_output": "{\"retrieval_query\": \"Claudius reaction during the play about his father's murder\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "91e7c65891e906bcd6880c2dc3e2fce08c806f435df44b0ab2372264a366147d": {
+      "query": "Hamlet interpretation of Claudius reaction to play within a scene proof of Ghost's accusation",
+      "raw_output": "{\"retrieval_query\": \"Hamlet interpretation of Claudius reaction to play within a scene proof of Ghost's accusation\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "6150f45bb677d8a1143df52289d15fefe4d7bd6e526b9554c51e9f7f75c66666": {
+      "query": "What is the title of the play Hamlet has the players perform to test Claudius and what is its plot?",
+      "raw_output": "{\"retrieval_query\": \"What is the title of the play Hamlet has the players perform to test Claudius and what is its plot?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "52c7f355eddca24853cbb40e0c7e47b8db1e0e0ed7aa05df7ec69f6e41c52196": {
+      "query": "How does Hamlet instruct the players to perform the murder of his father to observe Claudius's reaction",
+      "raw_output": "{\"retrieval_query\": \"How does Hamlet instruct the players to perform the murder of his father to observe Claudius's reaction\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "7ac16331dd7c1e9d1b0278931b9356dda3d1101f6fb3d398d4db6df627f66d6f": {
+      "query": "how did old Norway redirect Fortinbras's campaign from Poland to Denmark",
+      "raw_output": "{\n  \"retrieval_query\": \"how did old Norway redirect Fortinbras's campaign from Poland to Denmark\"\n}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "a92a63b5f641b588fb851f15ba0a78d36a444057c13dda8bd59d527a6582fa80": {
+      "query": "What is the specific destination or target of Fortinbras's army when it crosses into Denmark?",
+      "raw_output": "{\n  \"retrieval_query\": \"What is the specific destination or target of Fortinbras's army when it crosses into Denmark?\"\n}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "68f5edabdd299d1238cba5e404e26b8ee66280783e29f543413fa98f47545061": {
+      "query": "What is the specific target or destination of Fortinbras's army when it crosses Denmark in Hamlet?",
+      "raw_output": "{\"retrieval_query\": \"What is the specific target or destination of Fortinbras's army when it crosses Denmark in Hamlet?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "68540728b121073aa34052dabeded5b88d5cee764974c0c44e7ee29648a9ed32": {
+      "query": "How did Old Norway redirect Fortinbras's campaign from invading Poland to attacking Denmark",
+      "raw_output": "{\"retrieval_query\": \"How did Old Norway redirect Fortinbras's campaign from invading Poland to attacking Denmark\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "a6afea6405ab68b087178d7063c2762229df64c0fe18568f46b68148e4140f04": {
+      "query": "What is Fortinbras's army doing when it crosses Denmark in Act 4 Scene 4 of Hamlet?",
+      "raw_output": "{\"retrieval_query\": \"What is Fortinbras's army doing when it crosses Denmark in Act 4 Scene 4 of Hamlet?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "d9963b7828973f838a54f0e356ae571d9fbb8fefcb014c71a3bf792b1fc69368": {
+      "query": "Who drinks the poisoned cup intended for Hamlet during the duel and what happens to them immediately after drinking",
+      "raw_output": "{\"retrieval_query\": \"Who drinks the poisoned cup intended for Hamlet during the duel and what happens to them immediately after drinking\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "3683b6e6b4d9a79b028d93858b14894677741527328203532f07862ce57a2e09": {
+      "query": "who is the second character to die onstage in the final scene of Hamlet and what causes their death",
+      "raw_output": "{\"retrieval_query\": \"who is the second character to die onstage in the final scene of Hamlet and what causes their death\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "0317af4082e13acbb4dacbea1a2c127ef13fa1ac57215ddb89e1dbf6f5bc3403": {
+      "query": "Laertes cause of death final scene Hamlet",
+      "raw_output": "{\"retrieval_query\": \"Laertes cause of death final scene Hamlet\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "aa75074910ada322e4f7bf9a1d5e4cf599d4f4500e100c35346a493c6fde6639": {
+      "query": "Laertes cause of death final scene Hamlet",
+      "raw_output": "{\"retrieval_query\": \"Laertes cause of death final scene Hamlet\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "b844f8aafc984f8dc35ff455c2e5b99282326b4e31e821ea16b53a1ee44de00f": {
+      "query": "Laertes cause of death final scene Hamlet",
+      "raw_output": "{\"retrieval_query\": \"Laertes cause of death final scene Hamlet\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "c1ddb836f5fe2a8ed357d6d407362dc2aad99cea402e06881a0acd2c019d759f": {
+      "query": "Laertes cause of death final scene Hamlet",
+      "raw_output": "{\"retrieval_query\": \"Laertes cause of death final scene Hamlet\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "35b0a51ff1f84b4c0248257a1050646cabe14ac09a775582a88e7d4e2a579d32": {
+      "query": "Laertes cause of death final scene Hamlet",
+      "raw_output": "{\"retrieval_query\": \"Laertes cause of death final scene Hamlet\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "54a015b897b171e5f005f12a67208ba86bb0aec3650c6e7c73004bf51b821f7f": {
+      "query": "Laertes death cause poisoned weapon",
+      "raw_output": "{\"retrieval_query\": \"Laertes death cause poisoned weapon\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "494147e09231349a023ff26914a37a879837d8e3034fa908f2292f116eeb7ffc": {
+      "query": "Hamlet death cause poisoned weapon Laertes",
+      "raw_output": "{\"retrieval_query\": \"Hamlet death cause poisoned weapon Laertes\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "8882316bddb512e3fca5a52b9d36b9aef9fadaa258396ad6a26ff68e4c4b9e26": {
+      "query": "King Hamlet death cause poisoned wine",
+      "raw_output": "{\"retrieval_query\": \"King Hamlet death cause poisoned wine\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "407d3eaaf59325b0d77fd42e187a69fd03d5f77d2726bf7d51df0d806cb51629": {
+      "query": "verify that Gertrude, Laertes, and Hamlet are the only characters who die onstage in Act 5 Scene 2 of Hamlet",
+      "raw_output": "{\"retrieval_query\": \"verify that Gertrude, Laertes, and Hamlet are the only characters who die onstage in Act 5 Scene 2 of Hamlet\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "b2ac6627b3ba02fb2eb9b1192632f79906576144caaf2779913fe9390ec0b535": {
+      "query": "Who is actually killed when Hamlet stabs through the arras in Act 3 Scene 4?",
+      "raw_output": "{\"retrieval_query\": \"Who is actually killed when Hamlet stabs through the arras in Act 3 Scene 4?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "7e449f15d4b9e654feca30e877766836cf8e2b411dde2efed31ce373fee714eb": {
+      "query": "Claudius second reason for not publicly punishing Hamlet great love general gender bear him",
+      "raw_output": "{\"retrieval_query\": \"Claudius second reason for not publicly punishing Hamlet great love general gender bear him\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "7af6ced8fb0d2d7deb32bc7e3ef86f487b994843ebb1c86e47e5a67d7ea83ae5": {
+      "query": "Claudius second reason for not publicly punishing Hamlet great love general gender bear him",
+      "raw_output": "{\"retrieval_query\": \"Claudius second reason for not publicly punishing Hamlet great love general gender bear him\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "756af2b6e651eaaee0b66fadb066b1564a7757def21612c8ef8f792c20d572c8": {
+      "query": "What is the first reason Claudius gives Laertes for not publicly punishing Hamlet in Act 4 Scene 7?",
+      "raw_output": "{\"retrieval_query\": \"What is the first reason Claudius gives Laertes for not publicly punishing Hamlet in Act 4 Scene 7?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "7cbb54e825c4d0f30a2493abb422405f45d7ff46ee8c395f7ec63686fd0c8ddd": {
+      "query": "What is the second reason Claudius gives Laertes for not going to a public count against Hamlet?",
+      "raw_output": "{\"retrieval_query\": \"What is the second reason Claudius gives Laertes for not going to a public count against Hamlet?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "38c65b9ec58e60e7bef4271a059b3b4946ce6dbcef1ab2db48e276fbb7d9773d": {
+      "query": "Yorick wife name Hamlet",
+      "raw_output": "{\"retrieval_query\": \"Yorick wife name Hamlet\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "088b7b284408fa4cf27085f0bfd3e840ec6fa4b4b7b6888098f1eca4c8dfe47f": {
+      "query": "Who is Yorick's wife in Hamlet?",
+      "raw_output": "{\"retrieval_query\": \"Who is Yorick's wife in Hamlet?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    },
+    "2f2984ca66f729fb691b258e990a5c7a71a2bb80e15f09ebf70b6ec09ad61347": {
+      "query": "Who is Yorick's wife in Hamlet?",
+      "raw_output": "{\"retrieval_query\": \"Who is Yorick's wife in Hamlet?\"}",
+      "version": "followup.rewrite_with_evidence.v1"
+    }
+  },
+  "plan_decomposition": {
+    "4e3916f57219b4b07acd96d653408b6a40ecc27ee3f1fd12df2d817ceb642ed7": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific name of the poison mentioned by the Ghost as being poured into the King's ear.",
+          "node_query": "Ghost account poison name poured into King's ear",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question explicitly asks 'what poison' was used; this requires locating the specific noun phrase identifying the substance in the Ghost's narrative."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the specific effect the poison had on the King's blood according to the Ghost's description.",
+          "node_query": "Ghost account poison effect on blood",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question explicitly asks 'what did it do to his blood'; this requires locating the description of the poison's interaction with or movement through the blood."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific name of the poison mentioned by the Ghost as being poured into the King's ear.\",\n      \"node_query\": \"Ghost account poison name poured into King's ear\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question explicitly asks 'what poison' was used; this requires locating the specific noun phrase identifying the substance in the Ghost's narrative.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the specific effect the poison had on the King's blood according to the Ghost's description.\",\n      \"node_query\": \"Ghost account poison effect on blood\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"The question explicitly asks 'what did it do to his blood'; this requires locating the description of the poison's interaction with or movement through the blood.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "0c7d06d48fc345616a490d47aec991bcb981bf3e2c306e1265e4ac979ed621df": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific character who utters the line 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart'.",
+          "node_query": "\"For this relief much thanks\" \"'Tis bitter cold\" \"sick at heart\"",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks for the speaker of a specific quote; finding the character associated with this exact text is the primary and only information need."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific character who utters the line 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart'.\",\n      \"node_query\": \"\\\"For this relief much thanks\\\" \\\"'Tis bitter cold\\\" \\\"sick at heart\\\"\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks for the speaker of a specific quote; finding the character associated with this exact text is the primary and only information need.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "5772b26dfdc761a2f8cf5371c16d3723927f4d7ff98194da3b9dc8006739bce4": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify Claudius's stated reason for summoning Rosencrantz and Guildenstern to court.",
+          "node_query": "Claudius Rosencrantz Guildenstern reason summon visit Hamlet",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'Why does Claudius summon...'; this requires finding the specific motivation or pretext Claudius gives when they arrive."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the specific task involving England that Claudius assigns to Rosencrantz and Guildenstern.",
+          "node_query": "Claudius Rosencrantz Guildenstern England task commission letter",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'what task involving England are they later given'; this requires locating the instructions regarding their mission to England."
+        },
+        {
+          "node_id": "n3",
+          "need": "Determine the final fate of Rosencrantz and Guildenstern.",
+          "node_query": "Rosencrantz Guildenstern fate death England Hamlet",
+          "order_index": 3,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'what finally happens to them'; this requires finding the outcome of their journey or the result of the commission."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify Claudius's stated reason for summoning Rosencrantz and Guildenstern to court.\",\n      \"node_query\": \"Claudius Rosencrantz Guildenstern reason summon visit Hamlet\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'Why does Claudius summon...'; this requires finding the specific motivation or pretext Claudius gives when they arrive.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the specific task involving England that Claudius assigns to Rosencrantz and Guildenstern.\",\n      \"node_query\": \"Claudius Rosencrantz Guildenstern England task commission letter\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'what task involving England are they later given'; this requires locating the instructions regarding their mission to England.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"Determine the final fate of Rosencrantz and Guildenstern.\",\n      \"node_query\": \"Rosencrantz Guildenstern fate death England Hamlet\",\n      \"order_index\": 3,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'what finally happens to them'; this requires finding the outcome of their journey or the result of the commission.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "4f36e756abda8e6ececb7796e628a3a4403928f79edf89f6197e752dc4c719b0": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific method Hamlet devises to verify the Ghost's claim that Claudius murdered his father.",
+          "node_query": "Hamlet plan test Ghost accusation Claudius murder method",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "This establishes the core mechanism (the play) Hamlet uses to test the truth of the accusation."
+        },
+        {
+          "node_id": "n2",
+          "need": "Determine the specific plot details of the play Hamlet commissions, particularly regarding the murder and the king's reaction.",
+          "node_query": "The Mousetrap play plot Gonzago murder king wife",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The test relies on the play mirroring the alleged crime; knowing the specific plot points (murder of a king by his brother) is necessary to understand how the test functions."
+        },
+        {
+          "node_id": "n3",
+          "need": "Find evidence of Claudius's reaction during the performance of the play that confirms his guilt.",
+          "node_query": "Claudius reaction play The Mousetrap interrupt leave",
+          "order_index": 3,
+          "depends_on": [
+            "n1",
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "The success of the test depends on observing Claudius's specific behavioral response (e.g., rising, leaving) to the staged murder."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific method Hamlet devises to verify the Ghost's claim that Claudius murdered his father.\",\n      \"node_query\": \"Hamlet plan test Ghost accusation Claudius murder method\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"This establishes the core mechanism (the play) Hamlet uses to test the truth of the accusation.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Determine the specific plot details of the play Hamlet commissions, particularly regarding the murder and the king's reaction.\",\n      \"node_query\": \"The Mousetrap play plot Gonzago murder king wife\",\n      \"order_index\": 2,\n      \"depends_on\": [\n      \"n1\"\n      ],\n      \"reason\": \"The test relies on the play mirroring the alleged crime; knowing the specific plot points (murder of a king by his brother) is necessary to understand how the test functions.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"Find evidence of Claudius's reaction during the performance of the play that confirms his guilt.\",\n      \"node_query\": \"Claudius reaction play The Mousetrap interrupt leave\",\n      \"order_index\": 3,\n      \"depends_on\": [\n      \"n1\",\n      \"n2\"\n      ],\n      \"reason\": \"The success of the test depends on observing Claudius's specific behavioral response (e.g., rising, leaving) to the staged murder.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "3346ee2b53bf0bd67435732ce891f3c798143bea04dcb1e2c9bb2b9a7f502ad4": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify Fortinbras's original military aim before any redirection.",
+          "node_query": "Fortinbras original aim military campaign Poland",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks for the 'original aim,' which requires establishing the initial target of the campaign before Norway's intervention."
+        },
+        {
+          "node_id": "n2",
+          "need": "Determine how old Norway redirected Fortinbras's campaign.",
+          "node_query": "Norway redirect Fortinbras campaign terms",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The question asks 'how' the redirection occurred, implying a need to find the specific conditions (e.g., payment, treaty) set by Norway that changed the campaign's direction."
+        },
+        {
+          "node_id": "n3",
+          "need": "Identify the specific destination or target of Fortinbras's army when it crosses into Denmark.",
+          "node_query": "Fortinbras army destination Poland frontier Denmark",
+          "order_index": 3,
+          "depends_on": [
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "The question asks 'what is his army doing' upon crossing, which requires identifying the new target (e.g., a specific part of Poland) established after the redirection."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify Fortinbras's original military aim before any redirection.\",\n      \"node_query\": \"Fortinbras original aim military campaign Poland\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks for the 'original aim,' which requires establishing the initial target of the campaign before Norway's intervention.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Determine how old Norway redirected Fortinbras's campaign.\",\n      \"node_query\": \"Norway redirect Fortinbras campaign terms\",\n      \"order_index\": 2,\n      \"depends_on\": [\n        \"n1\"\n      ],\n      \"reason\": \"The question asks 'how' the redirection occurred, implying a need to find the specific conditions (e.g., payment, treaty) set by Norway that changed the campaign's direction.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"Identify the specific destination or target of Fortinbras's army when it crosses into Denmark.\",\n      \"node_query\": \"Fortinbras army destination Poland frontier Denmark\",\n      \"order_index\": 3,\n      \"depends_on\": [\n        \"n2\"\n      ],\n      \"reason\": \"The question asks 'what is his army doing' upon crossing, which requires identifying the new target (e.g., a specific part of Poland) established after the redirection.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "e4c367c40929f0537006c926240f4eccd6a6bc30b844e87b2ec2fd7114c37ce7": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific person who drinks from the poisoned cup during the duel.",
+          "node_query": "Who drinks the poisoned cup in Act 5 Scene 2?",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'Who drinks...', requiring the identification of the character who performs the action of drinking the specific poisoned cup."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the immediate physical consequence or fate of the person who drank the poisoned cup.",
+          "node_query": "What happens to the person who drinks the poisoned cup?",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'what happens to that person?', requiring the description of the result (e.g., death, injury) for the identified drinker."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific person who drinks from the poisoned cup during the duel.\",\n      \"node_query\": \"Who drinks the poisoned cup in Act 5 Scene 2?\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'Who drinks...', requiring the identification of the character who performs the action of drinking the specific poisoned cup.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the immediate physical consequence or fate of the person who drank the poisoned cup.\",\n      \"node_query\": \"What happens to the person who drinks the poisoned cup?\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'what happens to that person?', requiring the description of the result (e.g., death, injury) for the identified drinker.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "a69df8d21e71e78551fb27e39459b82a0ae7b6dbf27b3dfd4bce0f4f0257d810": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the first character who dies onstage in the final scene and the specific cause of death.",
+          "node_query": "Act 5 Scene 2 character dies poison drink cup",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks for the four characters and their causes; the first death (Queen Gertrude) must be identified and its cause (drinking the poisoned wine) established before listing the others."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the second character who dies onstage in the final scene and the specific cause of death.",
+          "node_query": "Act 5 Scene 2 Laertes dies wound rapier",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "After Gertrude, Laertes is the next to die; the cause must be determined (wounded by Hamlet's poisoned rapier during the scuffle)."
+        },
+        {
+          "node_id": "n3",
+          "need": "Identify the third character who dies onstage in the final scene and the specific cause of death.",
+          "node_query": "Act 5 Scene 2 Hamlet dies poison wound",
+          "order_index": 3,
+          "depends_on": [
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "Hamlet is the third to die; the cause involves both the poison from Laertes' wound and the poison from the cup he drinks, which must be specified."
+        },
+        {
+          "node_id": "n4",
+          "need": "Identify the fourth character who dies onstage in the final scene and the specific cause of death.",
+          "node_query": "Act 5 Scene 2 King Claudius dies poison drink",
+          "order_index": 4,
+          "depends_on": [
+            "n3"
+          ],
+          "confidence": null,
+          "raw_reason": "King Claudius is the final character to die onstage; the cause must be identified (drinking the poisoned cup intended for Hamlet)."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the first character who dies onstage in the final scene and the specific cause of death.\",\n      \"node_query\": \"Act 5 Scene 2 character dies poison drink cup\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks for the four characters and their causes; the first death (Queen Gertrude) must be identified and its cause (drinking the poisoned wine) established before listing the others.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the second character who dies onstage in the final scene and the specific cause of death.\",\n      \"node_query\": \"Act 5 Scene 2 Laertes dies wound rapier\",\n      \"order_index\": 2,\n      \"depends_on\": [\"n1\"],\n      \"reason\": \"After Gertrude, Laertes is the next to die; the cause must be determined (wounded by Hamlet's poisoned rapier during the scuffle).\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"Identify the third character who dies onstage in the final scene and the specific cause of death.\",\n      \"node_query\": \"Act 5 Scene 2 Hamlet dies poison wound\",\n      \"order_index\": 3,\n      \"depends_on\": [\"n2\"],\n      \"reason\": \"Hamlet is the third to die; the cause involves both the poison from Laertes' wound and the poison from the cup he drinks, which must be specified.\"\n    },\n    {\n      \"node_id\": \"n4\",\n      \"need\": \"Identify the fourth character who dies onstage in the final scene and the specific cause of death.\",\n      \"node_query\": \"Act 5 Scene 2 King Claudius dies poison drink\",\n      \"order_index\": 4,\n      \"depends_on\": [\"n3\"],\n      \"reason\": \"King Claudius is the final character to die onstage; the cause must be identified (drinking the poisoned cup intended for Hamlet).\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "fc62e901279aecaee3142a6eb456a88865beb4e100929588b421dcb3b283d8fa": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific person Hamlet believes he is attacking or killing when he thrusts his weapon through the arras.",
+          "node_query": "Hamlet stabbing arras Polonius behind curtain",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'whom does he think he may have killed'; this requires finding Hamlet's internal assumption or target identification at the moment of the action."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the actual person who dies as a result of Hamlet's action through the arras.",
+          "node_query": "Polonius dies behind arras Hamlet stab",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'who is actually killed'; this requires finding the identity of the victim who falls dead after the thrust."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific person Hamlet believes he is attacking or killing when he thrusts his weapon through the arras.\",\n      \"node_query\": \"Hamlet stabbing arras Polonius behind curtain\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'whom does he think he may have killed'; this requires finding Hamlet's internal assumption or target identification at the moment of the action.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the actual person who dies as a result of Hamlet's action through the arras.\",\n      \"node_query\": \"Polonius dies behind arras Hamlet stab\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'who is actually killed'; this requires finding the identity of the victim who falls dead after the thrust.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "c8f8c9ef2a11e932ea2b3606e8eb3f3608261addab8a575d886a09558e3731ee": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the first reason Claudius gives Laertes for avoiding a public trial for Hamlet.",
+          "node_query": "Claudius Laertes public count motive reason",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks for two specific reasons; the first must be isolated from the text."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the second reason Claudius gives Laertes for avoiding a public trial for Hamlet.",
+          "node_query": "Claudius Laertes public count other motive reason",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The question asks for two specific reasons; the second must be isolated from the text, distinct from the first."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\"nodes\": [{\"node_id\": \"n1\", \"need\": \"Identify the first reason Claudius gives Laertes for avoiding a public trial for Hamlet.\", \"node_query\": \"Claudius Laertes public count motive reason\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"The question asks for two specific reasons; the first must be isolated from the text.\"}, {\"node_id\": \"n2\", \"need\": \"Identify the second reason Claudius gives Laertes for avoiding a public trial for Hamlet.\", \"node_query\": \"Claudius Laertes public count other motive reason\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"The question asks for two specific reasons; the second must be isolated from the text, distinct from the first.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "c91646de62b328768ddb8d33b2218a070609835fdeac8f0eca4be73f34918f69": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the character named Yorick in the provided text.",
+          "node_query": "Yorick character name",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The text must first establish who Yorick is to determine if he has a wife mentioned in the document."
+        },
+        {
+          "node_id": "n2",
+          "need": "Determine if the text mentions a wife for the character identified as Yorick.",
+          "node_query": "Yorick wife",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "Only if Yorick is confirmed as a character with a wife in the text can the name be retrieved."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\"nodes\": [{\"node_id\": \"n1\", \"need\": \"Identify the character named Yorick in the provided text.\", \"node_query\": \"Yorick character name\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"The text must first establish who Yorick is to determine if he has a wife mentioned in the document.\"}, {\"node_id\": \"n2\", \"need\": \"Determine if the text mentions a wife for the character identified as Yorick.\", \"node_query\": \"Yorick wife\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"Only if Yorick is confirmed as a character with a wife in the text can the name be retrieved.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.subquestions.v1"
+    },
+    "a7fd04fe03216be2e764a32989e8b089c194611188741e8279b92037f52d27ac": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific name of the poison mentioned by the Ghost as being poured into the King's ear.",
+          "node_query": "Ghost account poison poured into King Hamlet ear name",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question explicitly asks 'what poison' was used; this requires extracting the specific substance name from the Ghost's narrative."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the specific effect the poison had on the King's blood according to the Ghost's description.",
+          "node_query": "Ghost account poison effect on King Hamlet blood",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question explicitly asks 'what did it do to his blood'; this requires extracting the description of the poison's interaction with the blood from the Ghost's narrative."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\"nodes\": [{\"node_id\": \"n1\", \"need\": \"Identify the specific name of the poison mentioned by the Ghost as being poured into the King's ear.\", \"node_query\": \"Ghost account poison poured into King Hamlet ear name\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"The question explicitly asks 'what poison' was used; this requires extracting the specific substance name from the Ghost's narrative.\"}, {\"node_id\": \"n2\", \"need\": \"Identify the specific effect the poison had on the King's blood according to the Ghost's description.\", \"node_query\": \"Ghost account poison effect on King Hamlet blood\", \"order_index\": 2, \"depends_on\": [], \"reason\": \"The question explicitly asks 'what did it do to his blood'; this requires extracting the description of the poison's interaction with the blood from the Ghost's narrative.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "20d43a62906f06caaef47b652e475abd73d8a01789e8773c2924561762369038": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific character who utters the line 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart'.",
+          "node_query": "\"For this relief much thanks\" \"'Tis bitter cold\" \"sick at heart\" speaker",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks for the speaker of a specific quote; finding the character associated with these exact words is the primary requirement."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\"nodes\": [{\"node_id\": \"n1\", \"need\": \"Identify the specific character who utters the line 'For this relief much thanks. 'Tis bitter cold, And I am sick at heart'.\", \"node_query\": \"\\\"For this relief much thanks\\\" \\\"'Tis bitter cold\\\" \\\"sick at heart\\\" speaker\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"The question asks for the speaker of a specific quote; finding the character associated with these exact words is the primary requirement.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "5ec416150d48305b9e4124d25ccd5074d9396a6c498b2c7f1ec30deed422a094": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "The specific reason Claudius summons Rosencrantz and Guildenstern to court (to investigate Hamlet's madness).",
+          "node_query": "Claudius summons Rosencrantz Guildenstern reason task",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'Why' they were summoned; the answer requires the explicit motivation stated by Claudius in Act 2."
+        },
+        {
+          "node_id": "n2",
+          "need": "The specific task involving England that Rosencrantz and Guildenstern are given.",
+          "node_query": "Rosencrantz Guildenstern task England commission",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'what task involving England' they are given; the answer requires the details of the commission to deliver letters to the King of England."
+        },
+        {
+          "node_id": "n3",
+          "need": "The final fate or outcome of Rosencrantz and Guildenstern.",
+          "node_query": "Rosencrantz Guildenstern fate death England",
+          "order_index": 3,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'what finally happens to them'; the answer requires the description of their execution or death."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"The specific reason Claudius summons Rosencrantz and Guildenstern to court (to investigate Hamlet's madness).\",\n      \"node_query\": \"Claudius summons Rosencrantz Guildenstern reason task\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'Why' they were summoned; the answer requires the explicit motivation stated by Claudius in Act 2.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"The specific task involving England that Rosencrantz and Guildenstern are given.\",\n      \"node_query\": \"Rosencrantz Guildenstern task England commission\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'what task involving England' they are given; the answer requires the details of the commission to deliver letters to the King of England.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"The final fate or outcome of Rosencrantz and Guildenstern.\",\n      \"node_query\": \"Rosencrantz Guildenstern fate death England\",\n      \"order_index\": 3,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'what finally happens to them'; the answer requires the description of their execution or death.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "fafb26d34535670e550b5547a65235596a6ab8b12b7ceea1a22a78d8ce31c156": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific method or device Hamlet proposes to use to verify the Ghost's claims.",
+          "node_query": "Hamlet test Ghost accusation Claudius method play",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The answer requires knowing the specific mechanism (e.g., a play) Hamlet decides to employ as a test."
+        },
+        {
+          "node_id": "n2",
+          "need": "Determine the content or plot of the play Hamlet commissions to serve as the test.",
+          "node_query": "Hamlet play plot murder Gonzago",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "To understand how the test works, one must know what story is being enacted to mirror the alleged crime."
+        },
+        {
+          "node_id": "n3",
+          "need": "Identify the specific action within the play that is intended to trigger a reaction from Claudius.",
+          "node_query": "Hamlet play scene King reaction guilt",
+          "order_index": 3,
+          "depends_on": [
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "The validity of the test depends on the specific moment in the play designed to expose the King's guilt."
+        },
+        {
+          "node_id": "n4",
+          "need": "Describe the observed reaction of Claudius during the performance of the play.",
+          "node_query": "Claudius reaction play Mousetrap scene",
+          "order_index": 4,
+          "depends_on": [
+            "n3"
+          ],
+          "confidence": null,
+          "raw_reason": "The confirmation of the Ghost's accusation relies on the factual observation of Claudius's behavior during the test."
+        },
+        {
+          "node_id": "n5",
+          "need": "Explain Hamlet's interpretation of Claudius's reaction as proof of the Ghost's truth.",
+          "node_query": "Hamlet concludes Ghost accusation true play reaction",
+          "order_index": 5,
+          "depends_on": [
+            "n4"
+          ],
+          "confidence": null,
+          "raw_reason": "The final answer requires linking the observed reaction to Hamlet's conclusion that the Ghost's story was true."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\"nodes\": [{\"node_id\": \"n1\", \"need\": \"Identify the specific method or device Hamlet proposes to use to verify the Ghost's claims.\", \"node_query\": \"Hamlet test Ghost accusation Claudius method play\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"The answer requires knowing the specific mechanism (e.g., a play) Hamlet decides to employ as a test.\"}, {\"node_id\": \"n2\", \"need\": \"Determine the content or plot of the play Hamlet commissions to serve as the test.\", \"node_query\": \"Hamlet play plot murder Gonzago\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"To understand how the test works, one must know what story is being enacted to mirror the alleged crime.\"}, {\"node_id\": \"n3\", \"need\": \"Identify the specific action within the play that is intended to trigger a reaction from Claudius.\", \"node_query\": \"Hamlet play scene King reaction guilt\", \"order_index\": 3, \"depends_on\": [\"n2\"], \"reason\": \"The validity of the test depends on the specific moment in the play designed to expose the King's guilt.\"}, {\"node_id\": \"n4\", \"need\": \"Describe the observed reaction of Claudius during the performance of the play.\", \"node_query\": \"Claudius reaction play Mousetrap scene\", \"order_index\": 4, \"depends_on\": [\"n3\"], \"reason\": \"The confirmation of the Ghost's accusation relies on the factual observation of Claudius's behavior during the test.\"}, {\"node_id\": \"n5\", \"need\": \"Explain Hamlet's interpretation of Claudius's reaction as proof of the Ghost's truth.\", \"node_query\": \"Hamlet concludes Ghost accusation true play reaction\", \"order_index\": 5, \"depends_on\": [\"n4\"], \"reason\": \"The final answer requires linking the observed reaction to Hamlet's conclusion that the Ghost's story was true.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "a8e95f40ae784bfd3db357931f11d4a905672b9e7b41590e2cf47632db068725": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the original military aim of young Fortinbras before any intervention.",
+          "node_query": "young Fortinbras original aim military campaign Poland",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks for the 'original aim,' which requires establishing the initial target (e.g., Poland) before the redirection occurred."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the specific action taken by old Norway to redirect Fortinbras's campaign.",
+          "node_query": "old Norway redirect Fortinbras commission soldiers",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'how did old Norway redirect it,' requiring the specific mechanism of redirection (e.g., giving a commission or money)."
+        },
+        {
+          "node_id": "n3",
+          "need": "Identify the specific target or destination of Fortinbras's army at the moment it crosses Denmark.",
+          "node_query": "Fortinbras army crosses Denmark target destination",
+          "order_index": 3,
+          "depends_on": [
+            "n1",
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "The question asks 'what is his army doing when it crosses Denmark,' which requires knowing the new objective established after the redirection."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the original military aim of young Fortinbras before any intervention.\",\n      \"node_query\": \"young Fortinbras original aim military campaign Poland\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks for the 'original aim,' which requires establishing the initial target (e.g., Poland) before the redirection occurred.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the specific action taken by old Norway to redirect Fortinbras's campaign.\",\n      \"node_query\": \"old Norway redirect Fortinbras commission soldiers\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'how did old Norway redirect it,' requiring the specific mechanism of redirection (e.g., giving a commission or money).\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"Identify the specific target or destination of Fortinbras's army at the moment it crosses Denmark.\",\n      \"node_query\": \"Fortinbras army crosses Denmark target destination\",\n      \"order_index\": 3,\n      \"depends_on\": [\"n1\", \"n2\"],\n      \"reason\": \"The question asks 'what is his army doing when it crosses Denmark,' which requires knowing the new objective established after the redirection.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "5b8d3221c19ef6744beac62a5bb9bdc25b339cb57204655aa4650f0b78ceba6e": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific character who drinks from the poisoned cup during the duel scene.",
+          "node_query": "Act 5 Scene 2 character drinks poisoned cup",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'Who drinks...', so the identity of the drinker is the primary fact required."
+        },
+        {
+          "node_id": "n2",
+          "need": "Determine the immediate physical consequence or fate of the person who drank the poison.",
+          "node_query": "Act 5 Scene 2 character dies poison cup",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'what happens to that person?', requiring the specific outcome (e.g., death, injury) for the identified drinker."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific character who drinks from the poisoned cup during the duel scene.\",\n      \"node_query\": \"Act 5 Scene 2 character drinks poisoned cup\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'Who drinks...', so the identity of the drinker is the primary fact required.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Determine the immediate physical consequence or fate of the person who drank the poison.\",\n      \"node_query\": \"Act 5 Scene 2 character dies poison cup\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'what happens to that person?', requiring the specific outcome (e.g., death, injury) for the identified drinker.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "0a77125a0652f7b36f4bdbddd5aef4b8664380d4de449cbc52a90b48eb142205": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the first character who dies onstage in the final scene and the specific cause of death.",
+          "node_query": "Act 5 Scene 2 character dies poison cup drink",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks for four specific deaths; the first death (Queen Gertrude) must be identified and its cause (drinking poisoned wine) established to begin the list."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the second character who dies onstage in the final scene and the specific cause of death.",
+          "node_query": "Act 5 Scene 2 Laertes wounds Hamlet poison rapier",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The second death (Laertes) occurs during the fight; the cause involves the poisoned rapier, which must be distinguished from the initial wound."
+        },
+        {
+          "node_id": "n3",
+          "need": "Identify the third character who dies onstage in the final scene and the specific cause of death.",
+          "node_query": "Act 5 Scene 2 Hamlet dies Laertes poison wound",
+          "order_index": 3,
+          "depends_on": [
+            "n1",
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "The third death (Hamlet) results from the poisoned wound inflicted by Laertes; the cause must be linked to the earlier poisoning of the weapon."
+        },
+        {
+          "node_id": "n4",
+          "need": "Identify the fourth character who dies onstage in the final scene and the specific cause of death.",
+          "node_query": "Act 5 Scene 2 King dies poisoned cup drink",
+          "order_index": 4,
+          "depends_on": [
+            "n1",
+            "n2",
+            "n3"
+          ],
+          "confidence": null,
+          "raw_reason": "The fourth death (King Claudius) occurs when he drinks the poisoned cup intended for Hamlet; the cause must be confirmed as the poison."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the first character who dies onstage in the final scene and the specific cause of death.\",\n      \"node_query\": \"Act 5 Scene 2 character dies poison cup drink\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks for four specific deaths; the first death (Queen Gertrude) must be identified and its cause (drinking poisoned wine) established to begin the list.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the second character who dies onstage in the final scene and the specific cause of death.\",\n      \"node_query\": \"Act 5 Scene 2 Laertes wounds Hamlet poison rapier\",\n      \"order_index\": 2,\n      \"depends_on\": [\"n1\"],\n      \"reason\": \"The second death (Laertes) occurs during the fight; the cause involves the poisoned rapier, which must be distinguished from the initial wound.\"\n    },\n    {\n      \"node_id\": \"n3\",\n      \"need\": \"Identify the third character who dies onstage in the final scene and the specific cause of death.\",\n      \"node_query\": \"Act 5 Scene 2 Hamlet dies Laertes poison wound\",\n      \"order_index\": 3,\n      \"depends_on\": [\"n1\", \"n2\"],\n      \"reason\": \"The third death (Hamlet) results from the poisoned wound inflicted by Laertes; the cause must be linked to the earlier poisoning of the weapon.\"\n    },\n    {\n      \"node_id\": \"n4\",\n      \"need\": \"Identify the fourth character who dies onstage in the final scene and the specific cause of death.\",\n      \"node_query\": \"Act 5 Scene 2 King dies poisoned cup drink\",\n      \"order_index\": 4,\n      \"depends_on\": [\"n1\", \"n2\", \"n3\"],\n      \"reason\": \"The fourth death (King Claudius) occurs when he drinks the poisoned cup intended for Hamlet; the cause must be confirmed as the poison.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "cc84a1b264063bdb4331d7039ed528444424e49282326c1b6d34c4a7647d68a7": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific target Hamlet believes he is attacking or killing when he stabs through the arras.",
+          "node_query": "Hamlet stabs arras thinks he kills",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'whom does he think he may have killed'; this requires finding Hamlet's internal assumption or verbal statement regarding the identity of the person behind the curtain."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the actual person who dies as a result of Hamlet's action through the arras.",
+          "node_query": "Hamlet stabs arras who actually dies",
+          "order_index": 2,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks 'who is actually killed'; this requires finding the factual outcome of the stabbing event, distinguishing the intended target from the actual victim."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\n  \"nodes\": [\n    {\n      \"node_id\": \"n1\",\n      \"need\": \"Identify the specific target Hamlet believes he is attacking or killing when he stabs through the arras.\",\n      \"node_query\": \"Hamlet stabs arras thinks he kills\",\n      \"order_index\": 1,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'whom does he think he may have killed'; this requires finding Hamlet's internal assumption or verbal statement regarding the identity of the person behind the curtain.\"\n    },\n    {\n      \"node_id\": \"n2\",\n      \"need\": \"Identify the actual person who dies as a result of Hamlet's action through the arras.\",\n      \"node_query\": \"Hamlet stabs arras who actually dies\",\n      \"order_index\": 2,\n      \"depends_on\": [],\n      \"reason\": \"The question asks 'who is actually killed'; this requires finding the factual outcome of the stabbing event, distinguishing the intended target from the actual victim.\"\n    }\n  ]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "ee9656ca35151fdb07bcac98529fbe806cb713f54794a247e99054488d15bf73": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the first reason Claudius gives Laertes for avoiding public punishment of Hamlet.",
+          "node_query": "Claudius Laertes reason not punish Hamlet publicly first motive",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The question asks for two specific reasons; the first reason must be extracted from the text."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the second reason Claudius gives Laertes for avoiding public punishment of Hamlet.",
+          "node_query": "Claudius Laertes reason not punish Hamlet publicly second motive",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The question asks for two specific reasons; the second reason must be extracted from the text."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\"nodes\": [{\"node_id\": \"n1\", \"need\": \"Identify the first reason Claudius gives Laertes for avoiding public punishment of Hamlet.\", \"node_query\": \"Claudius Laertes reason not punish Hamlet publicly first motive\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"The question asks for two specific reasons; the first reason must be extracted from the text.\"}, {\"node_id\": \"n2\", \"need\": \"Identify the second reason Claudius gives Laertes for avoiding public punishment of Hamlet.\", \"node_query\": \"Claudius Laertes reason not punish Hamlet publicly second motive\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"The question asks for two specific reasons; the second reason must be extracted from the text.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "5c04093432579a6ae6cf21908db925a316c5e78ed1b35dc1f5f6dfb72e013111": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify the specific character named 'Yorick' in the text to distinguish him from other characters with similar names or roles.",
+          "node_query": "Yorick character name Hamlet",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The text contains multiple characters (e.g., Ophelia, Gertrude, Polonius); confirming the identity of 'Yorick' is the prerequisite to finding his spouse."
+        },
+        {
+          "node_id": "n2",
+          "need": "Determine if the text explicitly states who Yorick's wife is.",
+          "node_query": "Yorick wife spouse",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "Once Yorick is identified, the direct fact regarding his marital status or the name of his wife must be retrieved."
+        }
+      ],
+      "strategy": "",
+      "raw_output": "{\"nodes\": [{\"node_id\": \"n1\", \"need\": \"Identify the specific character named 'Yorick' in the text to distinguish him from other characters with similar names or roles.\", \"node_query\": \"Yorick character name Hamlet\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"The text contains multiple characters (e.g., Ophelia, Gertrude, Polonius); confirming the identity of 'Yorick' is the prerequisite to finding his spouse.\"}, {\"node_id\": \"n2\", \"need\": \"Determine if the text explicitly states who Yorick's wife is.\", \"node_query\": \"Yorick wife spouse\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"Once Yorick is identified, the direct fact regarding his marital status or the name of his wife must be retrieved.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.info_requirements.v1"
+    },
+    "fd05c2f9b9b0b70a494a7075d37118074a0e060fb8afb5874595a9bd020c556b": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Locate the Ghost's account of pouring poison into the King's ear in Act 1, Scene 5.",
+          "node_query": "Ghost Act 1 Scene 5 pour poison ear King",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "This is the primary source required to find both the poison name and its effects."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the specific name of the poison used.",
+          "node_query": "juice of cursed hebenon vial",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The name of the poison is found within the specific account located in step 1."
+        },
+        {
+          "node_id": "n3",
+          "need": "Identify the effect of the poison on the blood.",
+          "node_query": "effect holds enmity with blood of man quicksilver",
+          "order_index": 3,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The description of the blood's reaction is found within the same account located in step 1."
+        }
+      ],
+      "strategy": "1. Identify the specific passage where the Ghost details the murder method in Act 1, Scene 5. 2. Extract the name of the poison mentioned in that passage. 3. Extract the description of the poison's effect on the victim's blood from the same passage.",
+      "raw_output": "{\"strategy\": \"1. Identify the specific passage where the Ghost details the murder method in Act 1, Scene 5. 2. Extract the name of the poison mentioned in that passage. 3. Extract the description of the poison's effect on the victim's blood from the same passage.\", \"nodes\": [{\"node_id\": \"n1\", \"need\": \"Locate the Ghost's account of pouring poison into the King's ear in Act 1, Scene 5.\", \"node_query\": \"Ghost Act 1 Scene 5 pour poison ear King\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"This is the primary source required to find both the poison name and its effects.\"}, {\"node_id\": \"n2\", \"need\": \"Identify the specific name of the poison used.\", \"node_query\": \"juice of cursed hebenon vial\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"The name of the poison is found within the specific account located in step 1.\"}, {\"node_id\": \"n3\", \"need\": \"Identify the effect of the poison on the blood.\", \"node_query\": \"effect holds enmity with blood of man quicksilver\", \"order_index\": 3, \"depends_on\": [\"n1\"], \"reason\": \"The description of the blood's reaction is found within the same account located in step 1.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "1ead378b516e69643284a3fe979c8d47ef5e595c75d356664b02d1b4ab826062": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Locate the specific dialogue line 'For this relief much thanks. Tis bitter cold, And I am sick at heart' within the text.",
+          "node_query": "\"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\"",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "The quote must be found in the text before the speaker can be identified."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the character name associated with the located quote.",
+          "node_query": "context around \"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\"",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "Once the quote is located, the surrounding text (stage directions or speaker labels) reveals who said it."
+        }
+      ],
+      "strategy": "1. Identify the exact quote text provided in the question. 2. Search the entire text for this specific string of dialogue. 3. Locate the speaker tag immediately preceding the quote to identify the character.",
+      "raw_output": "{\"strategy\": \"1. Identify the exact quote text provided in the question. 2. Search the entire text for this specific string of dialogue. 3. Locate the speaker tag immediately preceding the quote to identify the character.\", \"nodes\": [{\"node_id\": \"n1\", \"need\": \"Locate the specific dialogue line 'For this relief much thanks. Tis bitter cold, And I am sick at heart' within the text.\", \"node_query\": \"\\\"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\\\"\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"The quote must be found in the text before the speaker can be identified.\"}, {\"node_id\": \"n2\", \"need\": \"Identify the character name associated with the located quote.\", \"node_query\": \"context around \\\"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\\\"\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"Once the quote is located, the surrounding text (stage directions or speaker labels) reveals who said it.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "7d25e7e327403fbd5d0ead5878b01b596cb9a6f73f7cb27aa4729acb352a3068": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Why Claudius summons Rosencrantz and Guildenstern",
+          "node_query": "Claudius Rosencrantz Guildenstern reason summon visit Hamlet",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "This is the first piece of information required to answer the first part of the question."
+        },
+        {
+          "node_id": "n2",
+          "need": "The task involving England assigned to them",
+          "node_query": "Rosencrantz Guildenstern England letters commission task",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "This addresses the second part of the question and logically follows establishing who they are and why they were summoned."
+        },
+        {
+          "node_id": "n3",
+          "need": "What finally happens to Rosencrantz and Guildenstern",
+          "node_query": "Rosencrantz Guildenstern fate death England letter",
+          "order_index": 3,
+          "depends_on": [
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "This addresses the final part of the question, which depends on knowing the specific commission (the letter to England) that leads to their fate."
+        }
+      ],
+      "strategy": "1. Identify the initial reason Claudius summons Rosencrantz and Guildenstern in Act 2 Scene 2. 2. Locate the specific task involving England assigned to them in Act 4 Scene 1. 3. Find the description of their final fate in Act 5 Scene 2.",
+      "raw_output": "{\n\"strategy\": \"1. Identify the initial reason Claudius summons Rosencrantz and Guildenstern in Act 2 Scene 2. 2. Locate the specific task involving England assigned to them in Act 4 Scene 1. 3. Find the description of their final fate in Act 5 Scene 2.\",\n\"nodes\": [\n{\n\"node_id\": \"n1\",\n\"need\": \"Why Claudius summons Rosencrantz and Guildenstern\",\n\"node_query\": \"Claudius Rosencrantz Guildenstern reason summon visit Hamlet\",\n\"order_index\": 1,\n\"depends_on\": [],\n\"reason\": \"This is the first piece of information required to answer the first part of the question.\"\n},\n{\n\"node_id\": \"n2\",\n\"need\": \"The task involving England assigned to them\",\n\"node_query\": \"Rosencrantz Guildenstern England letters commission task\",\n\"order_index\": 2,\n\"depends_on\": [\n\"n1\"\n],\n\"reason\": \"This addresses the second part of the question and logically follows establishing who they are and why they were summoned.\"\n},\n{\n\"node_id\": \"n3\",\n\"need\": \"What finally happens to Rosencrantz and Guildenstern\",\n\"node_query\": \"Rosencrantz Guildenstern fate death England letter\",\n\"order_index\": 3,\n\"depends_on\": [\n\"n2\"\n],\n\"reason\": \"This addresses the final part of the question, which depends on knowing the specific commission (the letter to England) that leads to their fate.\"\n}\n]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "1f770d4cb750900261a5f8ff40b633ef9ac0129d09fd7f3bcfeae4fc4e3def85": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "What specific plan does Hamlet formulate to test the Ghost's story?",
+          "node_query": "Hamlet test Ghost accusation plan method",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "This is the foundational step to understand the mechanism of the test before identifying the specific play or the reaction."
+        },
+        {
+          "node_id": "n2",
+          "need": "What is the title of the play Hamlet uses for the test and what is its plot?",
+          "node_query": "Hamlet play title plot murder Gonzago",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The specific play ('The Mousetrap') and its plot details are the concrete execution of the plan identified in step 1."
+        },
+        {
+          "node_id": "n3",
+          "need": "How does Hamlet instruct the actors to start the play to ensure Claudius watches?",
+          "node_query": "Hamlet instruct actors begin play Claudius",
+          "order_index": 3,
+          "depends_on": [
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "This confirms the final action taken to execute the test using the specific play identified in step 2."
+        }
+      ],
+      "strategy": "1. Identify the specific method Hamlet proposes to verify the Ghost's claims. 2. Locate the name of the play Hamlet commissions and its plot summary. 3. Find the moment Hamlet instructs the actors to begin the performance to observe Claudius's reaction.",
+      "raw_output": "{\"strategy\": \"1. Identify the specific method Hamlet proposes to verify the Ghost's claims. 2. Locate the name of the play Hamlet commissions and its plot summary. 3. Find the moment Hamlet instructs the actors to begin the performance to observe Claudius's reaction.\", \"nodes\": [{\"node_id\": \"n1\", \"need\": \"What specific plan does Hamlet formulate to test the Ghost's story?\", \"node_query\": \"Hamlet test Ghost accusation plan method\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"This is the foundational step to understand the mechanism of the test before identifying the specific play or the reaction.\"}, {\"node_id\": \"n2\", \"need\": \"What is the title of the play Hamlet uses for the test and what is its plot?\", \"node_query\": \"Hamlet play title plot murder Gonzago\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"The specific play ('The Mousetrap') and its plot details are the concrete execution of the plan identified in step 1.\"}, {\"node_id\": \"n3\", \"need\": \"How does Hamlet instruct the actors to start the play to ensure Claudius watches?\", \"node_query\": \"Hamlet instruct actors begin play Claudius\", \"order_index\": 3, \"depends_on\": [\"n2\"], \"reason\": \"This confirms the final action taken to execute the test using the specific play identified in step 2.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "77e44900bc5583cf219df8b84259feeaee9a7ed1a080dc4ff6f7628de764b477": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "What was Fortinbras's original aim before redirection?",
+          "node_query": "Fortinbras original aim attack Denmark Norway territory",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "This is the foundational fact required to understand the subsequent redirection."
+        },
+        {
+          "node_id": "n2",
+          "need": "How did Old Norway redirect Fortinbras's campaign?",
+          "node_query": "Old Norway redirect Fortinbras commission Poland",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "This explains the change from the original aim identified in n1."
+        },
+        {
+          "node_id": "n3",
+          "need": "What is Fortinbras's army doing when it crosses Denmark?",
+          "node_query": "Fortinbras army crosses Denmark destination target",
+          "order_index": 3,
+          "depends_on": [
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "This reveals the final state of the campaign after the redirection described in n2."
+        }
+      ],
+      "strategy": "1. Identify Fortinbras's original military aim by finding the text describing his initial intent to attack Denmark or the specific territory he claimed as his target before any redirection. 2. Locate the interaction between Old Norway and Fortinbras where the original aim is altered, specifically finding the agreement or commission that redirects his forces. 3. Find the scene where Fortinbras's army crosses into Denmark to determine their current destination or target at that specific moment in the timeline.",
+      "raw_output": "{\n\"strategy\": \"1. Identify Fortinbras's original military aim by finding the text describing his initial intent to attack Denmark or the specific territory he claimed as his target before any redirection. 2. Locate the interaction between Old Norway and Fortinbras where the original aim is altered, specifically finding the agreement or commission that redirects his forces. 3. Find the scene where Fortinbras's army crosses into Denmark to determine their current destination or target at that specific moment in the timeline.\",\n\"nodes\": [\n{\n\"node_id\": \"n1\",\n\"need\": \"What was Fortinbras's original aim before redirection?\",\n\"node_query\": \"Fortinbras original aim attack Denmark Norway territory\",\n\"order_index\": 1,\n\"depends_on\": [],\n\"reason\": \"This is the foundational fact required to understand the subsequent redirection.\"\n},\n{\n\"node_id\": \"n2\",\n\"need\": \"How did Old Norway redirect Fortinbras's campaign?\",\n\"node_query\": \"Old Norway redirect Fortinbras commission Poland\",\n\"order_index\": 2,\n\"depends_on\": [\n\"n1\"\n],\n\"reason\": \"This explains the change from the original aim identified in n1.\"\n},\n{\n\"node_id\": \"n3\",\n\"need\": \"What is Fortinbras's army doing when it crosses Denmark?\",\n\"node_query\": \"Fortinbras army crosses Denmark destination target\",\n\"order_index\": 3,\n\"depends_on\": [\n\"n2\"\n],\n\"reason\": \"This reveals the final state of the campaign after the redirection described in n2.\"\n}\n]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "b71ad839f2eb4cbe0a6e0e111a25723ed0306a3ea1d1da47ab1537d3ff7081df": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Identify who is offered the poisoned cup and who accepts it.",
+          "node_query": "poisoned cup offered drink accept",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "Must first establish the event of the cup being offered and the specific character who takes it to answer the 'who' part of the question."
+        },
+        {
+          "node_id": "n2",
+          "need": "Confirm the identity of the person who drinks and the immediate result (death/poisoning).",
+          "node_query": "drink poison dies",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "Depends on n1 to confirm the specific individual; this node verifies the 'what happens' part of the question regarding that specific person."
+        }
+      ],
+      "strategy": "1. Identify the specific moment in the duel where the poisoned cup is introduced and who is offered it. 2. Determine who accepts the cup and drinks from it. 3. Identify the immediate consequence or fate of that person after drinking.",
+      "raw_output": "{\n\"strategy\": \"1. Identify the specific moment in the duel where the poisoned cup is introduced and who is offered it. 2. Determine who accepts the cup and drinks from it. 3. Identify the immediate consequence or fate of that person after drinking.\",\n\"nodes\": [\n{\n\"node_id\": \"n1\",\n\"need\": \"Identify who is offered the poisoned cup and who accepts it.\",\n\"node_query\": \"poisoned cup offered drink accept\",\n\"order_index\": 1,\n\"depends_on\": [],\n\"reason\": \"Must first establish the event of the cup being offered and the specific character who takes it to answer the 'who' part of the question.\"\n},\n{\n\"node_id\": \"n2\",\n\"need\": \"Confirm the identity of the person who drinks and the immediate result (death/poisoning).\",\n\"node_query\": \"drink poison dies\",\n\"order_index\": 2,\n\"depends_on\": [\n\"n1\"\n],\n\"reason\": \"Depends on n1 to confirm the specific individual; this node verifies the 'what happens' part of the question regarding that specific person.\"\n}\n]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "a2d09932cc07b9bfa1620ecd6d7d89eab2d332e217cc24ccd9e5cd66da87f62a": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Confirm the final scene is Act 5 Scene 2 and identify the Queen's death and cause.",
+          "node_query": "Act 5 Scene 2 Gertrude dies poison drink",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "Must first establish the scene and the first death (Queen) to anchor the sequence of events."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify Laertes' death and the cause (poisoned weapon).",
+          "node_query": "Act 5 Scene 2 Laertes dies poison rapier",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "Laertes dies shortly after the Queen; depends on confirming the scene context."
+        },
+        {
+          "node_id": "n3",
+          "need": "Identify Hamlet's death and the cause (poisoned weapon).",
+          "node_query": "Act 5 Scene 2 Hamlet dies poison rapier",
+          "order_index": 3,
+          "depends_on": [
+            "n2"
+          ],
+          "confidence": null,
+          "raw_reason": "Hamlet dies after the scuffle with Laertes; depends on the previous death sequence."
+        },
+        {
+          "node_id": "n4",
+          "need": "Identify the King's death and the cause (drinking the poisoned wine).",
+          "node_query": "Act 5 Scene 2 King Claudius dies poison drink",
+          "order_index": 4,
+          "depends_on": [
+            "n3"
+          ],
+          "confidence": null,
+          "raw_reason": "The King dies after Hamlet forces him to drink; depends on the progression of the fight."
+        },
+        {
+          "node_id": "n5",
+          "need": "Verify that these are the only four characters who die onstage in this scene.",
+          "node_query": "Act 5 Scene 2 characters die onstage list",
+          "order_index": 5,
+          "depends_on": [
+            "n1",
+            "n2",
+            "n3",
+            "n4"
+          ],
+          "confidence": null,
+          "raw_reason": "Final step to ensure the count of four is accurate and no other deaths occurred in the scene."
+        }
+      ],
+      "strategy": "1. Identify the specific scene described as the 'final scene' (Act 5, Scene 2) to establish the correct context for deaths occurring 'onstage'. 2. Locate the death of the Queen (Gertrude) and the specific cause (drinking the poisoned wine). 3. Locate the death of Laertes and the specific cause (the poisoned rapier wound). 4. Locate the death of Hamlet and the specific cause (the poisoned rapier wound). 5. Locate the death of the King (Claudius) and the specific cause (drinking the poisoned wine).",
+      "raw_output": "{\n\"strategy\": \"1. Identify the specific scene described as the 'final scene' (Act 5, Scene 2) to establish the correct context for deaths occurring 'onstage'. 2. Locate the death of the Queen (Gertrude) and the specific cause (drinking the poisoned wine). 3. Locate the death of Laertes and the specific cause (the poisoned rapier wound). 4. Locate the death of Hamlet and the specific cause (the poisoned rapier wound). 5. Locate the death of the King (Claudius) and the specific cause (drinking the poisoned wine).\",\n\"nodes\": [\n{\n\"node_id\": \"n1\",\n\"need\": \"Confirm the final scene is Act 5 Scene 2 and identify the Queen's death and cause.\",\n\"node_query\": \"Act 5 Scene 2 Gertrude dies poison drink\",\n\"order_index\": 1,\n\"depends_on\": [],\n\"reason\": \"Must first establish the scene and the first death (Queen) to anchor the sequence of events.\"\n},\n{\n\"node_id\": \"n2\",\n\"need\": \"Identify Laertes' death and the cause (poisoned weapon).\",\n\"node_query\": \"Act 5 Scene 2 Laertes dies poison rapier\",\n\"order_index\": 2,\n\"depends_on\": [\n\"n1\"\n],\n\"reason\": \"Laertes dies shortly after the Queen; depends on confirming the scene context.\"\n},\n{\n\"node_id\": \"n3\",\n\"need\": \"Identify Hamlet's death and the cause (poisoned weapon).\",\n\"node_query\": \"Act 5 Scene 2 Hamlet dies poison rapier\",\n\"order_index\": 3,\n\"depends_on\": [\n\"n2\"\n],\n\"reason\": \"Hamlet dies after the scuffle with Laertes; depends on the previous death sequence.\"\n},\n{\n\"node_id\": \"n4\",\n\"need\": \"Identify the King's death and the cause (drinking the poisoned wine).\",\n\"node_query\": \"Act 5 Scene 2 King Claudius dies poison drink\",\n\"order_index\": 4,\n\"depends_on\": [\n\"n3\"\n],\n\"reason\": \"The King dies after Hamlet forces him to drink; depends on the progression of the fight.\"\n},\n{\n\"node_id\": \"n5\",\n\"need\": \"Verify that these are the only four characters who die onstage in this scene.\",\n\"node_query\": \"Act 5 Scene 2 characters die onstage list\",\n\"order_index\": 5,\n\"depends_on\": [\n\"n1\",\n\"n2\",\n\"n3\",\n\"n4\"\n],\n\"reason\": \"Final step to ensure the count of four is accurate and no other deaths occurred in the scene.\"\n}\n]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "5810f77728cfd9d922690c35bf97bf1e5fdd91d8df98483f4e06277612ff0a40": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Find the scene where Hamlet stabs through the arras and his immediate thought about the occupant.",
+          "node_query": "Hamlet stab arras rat ducat",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "This is the primary event; we must locate the specific action and Hamlet's internal monologue or spoken line ('A rat?') to establish what he *thinks* he is killing."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the character who is actually killed by the stab.",
+          "node_query": "Polonius slain behind arras",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "Once the event is located, we need the specific line of dialogue or stage direction confirming the identity of the victim (Polonius) to answer the second part of the question."
+        }
+      ],
+      "strategy": "1. Identify the specific moment in Act 3, Scene 4 where Hamlet stabs through the curtain (arras). 2. Determine Hamlet's immediate assumption about who is behind the curtain based on his dialogue or actions right before the stab. 3. Identify the character who actually reacts to the stab and dies.",
+      "raw_output": "{\n\"strategy\": \"1. Identify the specific moment in Act 3, Scene 4 where Hamlet stabs through the curtain (arras). 2. Determine Hamlet's immediate assumption about who is behind the curtain based on his dialogue or actions right before the stab. 3. Identify the character who actually reacts to the stab and dies.\",\n\"nodes\": [\n{\n\"node_id\": \"n1\",\n\"need\": \"Find the scene where Hamlet stabs through the arras and his immediate thought about the occupant.\",\n\"node_query\": \"Hamlet stab arras rat ducat\",\n\"order_index\": 1,\n\"depends_on\": [],\n\"reason\": \"This is the primary event; we must locate the specific action and Hamlet's internal monologue or spoken line ('A rat?') to establish what he *thinks* he is killing.\"\n},\n{\n\"node_id\": \"n2\",\n\"need\": \"Identify the character who is actually killed by the stab.\",\n\"node_query\": \"Polonius slain behind arras\",\n\"order_index\": 2,\n\"depends_on\": [\n\"n1\"\n],\n\"reason\": \"Once the event is located, we need the specific line of dialogue or stage direction confirming the identity of the victim (Polonius) to answer the second part of the question.\"\n}\n]\n}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "9e9319c27487a097d09fe05d1448073b0a3cbbe1118bdabd0ca0b636984b0fc9": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Locate the conversation between Claudius and Laertes regarding Hamlet's return and the King's refusal to punish him publicly.",
+          "node_query": "Claudius Laertes public count punish Hamlet reasons",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "This is the primary context needed to find the specific dialogue containing the answer."
+        },
+        {
+          "node_id": "n2",
+          "need": "Identify the first reason Claudius gives for not punishing Hamlet publicly.",
+          "node_query": "Claudius motive public count great love general gend",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The text explicitly states 'The other motive' implying a first one was mentioned, or the sentence structure reveals the first reason immediately before or after the second."
+        },
+        {
+          "node_id": "n3",
+          "need": "Identify the second reason Claudius gives for not punishing Hamlet publicly.",
+          "node_query": "Claudius motive public count great love general gend",
+          "order_index": 3,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "The text explicitly mentions 'The other motive', indicating a second distinct reason exists alongside the first."
+        }
+      ],
+      "strategy": "1. Identify the specific scene where Claudius and Laertes discuss Hamlet's return and the King's hesitation to act publicly. 2. Locate the exact lines where Claudius explicitly lists the 'motive' or 'reasons' for not going to a public count. 3. Extract the two distinct reasons provided in the text.",
+      "raw_output": "{\"strategy\": \"1. Identify the specific scene where Claudius and Laertes discuss Hamlet's return and the King's hesitation to act publicly. 2. Locate the exact lines where Claudius explicitly lists the 'motive' or 'reasons' for not going to a public count. 3. Extract the two distinct reasons provided in the text.\", \"nodes\": [{\"node_id\": \"n1\", \"need\": \"Locate the conversation between Claudius and Laertes regarding Hamlet's return and the King's refusal to punish him publicly.\", \"node_query\": \"Claudius Laertes public count punish Hamlet reasons\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"This is the primary context needed to find the specific dialogue containing the answer.\"}, {\"node_id\": \"n2\", \"need\": \"Identify the first reason Claudius gives for not punishing Hamlet publicly.\", \"node_query\": \"Claudius motive public count great love general gend\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"The text explicitly states 'The other motive' implying a first one was mentioned, or the sentence structure reveals the first reason immediately before or after the second.\"}, {\"node_id\": \"n3\", \"need\": \"Identify the second reason Claudius gives for not punishing Hamlet publicly.\", \"node_query\": \"Claudius motive public count great love general gend\", \"order_index\": 3, \"depends_on\": [\"n1\"], \"reason\": \"The text explicitly mentions 'The other motive', indicating a second distinct reason exists alongside the first.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    },
+    "dcec9a123732f3aff0a456b8eb887732bd54f65a32120bbbb5515df5e7bf5780": {
+      "nodes": [
+        {
+          "node_id": "n1",
+          "need": "Confirm the identity and context of the character Yorick.",
+          "node_query": "Yorick character description spouse wife",
+          "order_index": 1,
+          "depends_on": [],
+          "confidence": null,
+          "raw_reason": "Must first establish who Yorick is to determine if a wife is mentioned."
+        },
+        {
+          "node_id": "n2",
+          "need": "Find the name of Yorick's wife.",
+          "node_query": "Yorick wife name husband",
+          "order_index": 2,
+          "depends_on": [
+            "n1"
+          ],
+          "confidence": null,
+          "raw_reason": "Depends on confirming Yorick's identity to search specifically for his marital partner."
+        }
+      ],
+      "strategy": "1. Identify the character 'Yorick' in the text to confirm his role and context. 2. Search for any mention of a spouse, wife, or marriage connected to Yorick. 3. If a name is found, extract it; otherwise, conclude the information is absent from the provided text.",
+      "raw_output": "{\"strategy\": \"1. Identify the character 'Yorick' in the text to confirm his role and context. 2. Search for any mention of a spouse, wife, or marriage connected to Yorick. 3. If a name is found, extract it; otherwise, conclude the information is absent from the provided text.\", \"nodes\": [{\"node_id\": \"n1\", \"need\": \"Confirm the identity and context of the character Yorick.\", \"node_query\": \"Yorick character description spouse wife\", \"order_index\": 1, \"depends_on\": [], \"reason\": \"Must first establish who Yorick is to determine if a wife is mentioned.\"}, {\"node_id\": \"n2\", \"need\": \"Find the name of Yorick's wife.\", \"node_query\": \"Yorick wife name husband\", \"order_index\": 2, \"depends_on\": [\"n1\"], \"reason\": \"Depends on confirming Yorick's identity to search specifically for his marital partner.\"}]}",
+      "parse_error": null,
+      "fallback": false,
+      "version": "decomp.strategy.v1"
+    }
+  }
+}
