@@ -363,6 +363,58 @@ HTML_TEMPLATE = """<!doctype html>
       background: #fff6df;
     }
 
+    .badge.judge {
+      font-size: 13px;
+      font-weight: 760;
+      border: 1px solid currentColor;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel-soft);
+      padding: 3px 8px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .chip b {
+      color: var(--muted);
+      font-weight: 680;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      overflow-wrap: anywhere;
+    }
+
+    .judge-rationale {
+      border-left: 3px solid var(--accent);
+      padding: 8px 10px;
+      background: var(--panel-soft);
+      border-radius: 0 6px 6px 0;
+    }
+
+    .slot-ok {
+      color: var(--good);
+      font-weight: 720;
+    }
+
+    .slot-miss {
+      color: var(--bad);
+      font-weight: 720;
+    }
+
     .metric-annotations li.ci-positive {
       color: var(--good);
     }
@@ -743,6 +795,7 @@ HTML_TEMPLATE = """<!doctype html>
         row.question,
         row.expected_answer,
         row.model_output,
+        row.judge_rationale,
         chunkIds,
         evidenceIds,
         quotes,
@@ -801,7 +854,7 @@ HTML_TEMPLATE = """<!doctype html>
       const table = el("table", "summary-table");
       const thead = document.createElement("thead");
       const headRow = document.createElement("tr");
-      ["Treatment", "Rows", "Mean quote recall", "Mean chunk recall", "Mean context tokens", "Suff. context rate", "Mean CI+ fraction"].forEach((label, index) => {
+      ["Treatment", "Rows", "Mean judge rating", "Mean quote recall", "Mean chunk recall", "Mean context tokens", "Suff. context rate", "Mean CI+ fraction"].forEach((label, index) => {
         headRow.append(el("th", index === 0 ? "" : "num", label));
       });
       thead.append(headRow);
@@ -813,6 +866,7 @@ HTML_TEMPLATE = """<!doctype html>
         const cells = [
           treatment,
           treatmentRows.length,
+          mean(treatmentRows.map((item) => item.judge_rating)),
           mean(treatmentRows.map((item) => item.evidence_quote_recall)),
           mean(treatmentRows.map((item) => item.evidence_chunk_recall)),
           mean(treatmentRows.map((item) => item.context_tokens)),
@@ -1032,15 +1086,324 @@ HTML_TEMPLATE = """<!doctype html>
       return section;
     }
 
+    // Decomposition prompts were renamed to describe the cognitive instruction;
+    // alias older recorded variant names so historical runs display the new ones.
+    const PROMPT_ALIASES = {
+      subquestions: "split_questions",
+      info_requirements: "list_requirements",
+      strategy: "reason_then_plan",
+    };
+
+    function friendlyPrompt(value) {
+      if (value === null || value === undefined) return value;
+      return PROMPT_ALIASES[value] || value;
+    }
+
+    function judgeKind(value) {
+      const numeric = numberValue(value);
+      if (numeric === null) return "";
+      if (numeric >= 4) return "good";
+      if (numeric >= 2.5) return "warn";
+      return "bad";
+    }
+
+    function renderJudge(row) {
+      const section = el("section", "");
+      if (row.judge_rating === undefined || row.judge_rating === null) return section;
+      section.append(el("h3", "", `LLM-Judge Rating: ${fmt(row.judge_rating)} / 5`));
+      if (row.judge_rationale) {
+        section.append(el("div", "judge-rationale", row.judge_rationale));
+      }
+      if (row.judge_rubric || row.judge_model) {
+        const details = el("details", "");
+        details.append(el("summary", "", `Judge: ${row.judge_model || "unknown"} (rubric)`));
+        const body = el("div", "details-body");
+        body.append(el("div", "chunk-meta", row.judge_rubric || "no rubric recorded"));
+        details.append(body);
+        section.append(details);
+      }
+      return section;
+    }
+
+    function chip(label, value) {
+      const node = el("span", "chip");
+      node.append(el("b", "", label));
+      node.append(el("span", "", fmt(value)));
+      return node;
+    }
+
+    function chipRow(pairs) {
+      const wrap = el("div", "chips");
+      pairs.forEach(([label, value]) => {
+        if (value !== undefined && value !== null && value !== "") wrap.append(chip(label, value));
+      });
+      return wrap;
+    }
+
+    function renderPlanNodes(nodes) {
+      const list = el("div", "list");
+      if (!nodes || !nodes.length) {
+        list.append(el("div", "empty", "No evidence nodes."));
+        return list;
+      }
+      for (const node of nodes) {
+        const item = el("div", "list-row");
+        const deps = (node.depends_on || []).join(", ");
+        item.append(el("div", "meta",
+          `${node.node_id || "?"} | order ${fmt(node.order_index)}` + (deps ? ` | depends_on: ${deps}` : "")));
+        item.append(el("div", "", node.need || ""));
+        item.append(el("div", "mono chunk-meta", `query: ${node.node_query || ""}`));
+        list.append(item);
+      }
+      return list;
+    }
+
+    function renderCollapsedPre(label, value, mono) {
+      const details = el("details", "");
+      details.append(el("summary", "", label));
+      const body = el("div", "details-body");
+      body.append(el("pre", "", text(value) || "n/a"));
+      details.append(body);
+      return details;
+    }
+
+    function renderPerNodeRetrieval(row, execution, nodes) {
+      const wrap = el("div", "list");
+      const perNode = execution.per_node_retrieval || [];
+      const supportPerNode = ((execution.support_scoring || {}).per_node) || {};
+      const needByNode = {};
+      (nodes || []).forEach((node) => { needByNode[node.node_id] = node.need || ""; });
+      if (!perNode.length) {
+        wrap.append(el("div", "empty", "No per-node retrieval recorded."));
+        return wrap;
+      }
+      for (const entry of perNode) {
+        const nodeId = entry.node_id || "?";
+        const hits = entry.retrieved || [];
+        const supports = {};
+        (supportPerNode[nodeId] || []).forEach((item) => { supports[item.chunk_id] = item.support; });
+        const details = el("details", "");
+        const reformTag = entry.reformulated ? " | query reformulated" : "";
+        details.append(el("summary", "", `${nodeId} | ${hits.length} candidates${reformTag}`));
+        const body = el("div", "details-body");
+        if (needByNode[nodeId]) body.append(el("div", "chunk-meta", `need: ${needByNode[nodeId]}`));
+        body.append(el("div", "mono chunk-meta", `query used: ${entry.query_used || ""}`));
+        if (entry.reformulated && entry.reformulated.query) {
+          body.append(el("div", "mono chunk-meta", `reformulated to: ${entry.reformulated.query}`));
+        }
+        const list = el("div", "list");
+        for (const hit of hits) {
+          const support = supports[hit.chunk_id];
+          const scoreBits = [];
+          if (hit.rank !== undefined && hit.rank !== null) scoreBits.push(`rank ${fmt(hit.rank)}`);
+          if (hit.dense_score !== undefined && hit.dense_score !== null) {
+            scoreBits.push(`dense ${fmt(hit.dense_score)}`);
+          }
+          const rerankVal = (hit.rerank_score !== undefined && hit.rerank_score !== null)
+            ? hit.rerank_score : hit.raw_score;
+          if (rerankVal !== undefined && rerankVal !== null) scoreBits.push(`rerank ${fmt(rerankVal)}`);
+          if (support !== undefined) scoreBits.push(`support ${fmt(support)}`);
+          const scoreLabel = scoreBits.join(" | ");
+          const chunkDetails = renderChunkDetails(row, hit.chunk_id);
+          const summaryNode = chunkDetails.querySelector("summary");
+          if (summaryNode) summaryNode.textContent = `${hit.chunk_id} (${scoreLabel})`;
+          list.append(chunkDetails);
+        }
+        body.append(list);
+        details.append(body);
+        wrap.append(details);
+      }
+      return wrap;
+    }
+
+    function renderSlotCheck(row) {
+      const section = el("section", "");
+      const detail = row.plan_slot_detail;
+      if (!Array.isArray(detail) || !detail.length) return section;
+      section.append(el("h3", "", "Gold Evidence Slots vs Retrieval (plan_eval)"));
+      const list = el("div", "list");
+      for (const slot of detail) {
+        const item = el("div", "list-row");
+        const mark = el("span", slot.retrieved ? "slot-ok" : "slot-miss", slot.retrieved ? "RETRIEVED" : "MISSED");
+        const meta = el("div", "meta");
+        meta.append(mark);
+        meta.append(document.createTextNode(
+          `  role: ${slot.role} | gold: ${(slot.gold_chunk_ids || []).join(", ") || "none"}` +
+          ` | surfaced by nodes: ${(slot.retrieved_by_nodes || []).join(", ") || "none"}`));
+        item.append(meta);
+        list.append(item);
+      }
+      section.append(list);
+      return section;
+    }
+
+    function renderSelection(execution) {
+      const wrap = el("div", "list");
+      const selection = execution.selection || {};
+      const header = chipRow([
+        ["selection", execution.selection_policy || "n/a"],
+        ["selectable candidates", selection.num_selectable],
+        ["per-node keep", selection.per_node_keep],
+        ["empty reason", execution.empty_reason],
+      ]);
+      wrap.append(header);
+      const steps = selection.selection_steps || [];
+      if (steps.length) {
+        const details = el("details", "");
+        details.append(el("summary", "", `Greedy selection steps (${steps.length})`));
+        const body = el("div", "details-body");
+        const list = el("div", "list");
+        steps.forEach((step, index) => {
+          const item = el("div", "list-row");
+          item.append(el("div", "meta",
+            `${index + 1}. ${step.unit_id} | gain ${fmt(step.marginal_gain)} ` +
+            `(coverage ${fmt(step.coverage_gain)}, redundancy -${fmt(step.redundancy_penalty)}) ` +
+            `| ${fmt(step.token_count)} tok | gain/tok ${fmt(step.gain_per_token)}`));
+          const supports = step.selected_support_scores || {};
+          item.append(el("div", "mono chunk-meta",
+            "node support: " + Object.entries(supports).map(([n, s]) => `${n}=${fmt(s)}`).join("  ")));
+          list.append(item);
+        });
+        body.append(list);
+        details.append(body);
+        wrap.append(details);
+      }
+      if (selection.final_coverage) {
+        wrap.append(el("div", "mono chunk-meta",
+          "final node coverage: " +
+          Object.entries(selection.final_coverage).map(([n, c]) => `${n}=${fmt(c)}`).join("  ")));
+      }
+      if (selection.selected_unit_ids) {
+        wrap.append(el("div", "mono chunk-meta",
+          `top-per-node kept: ${selection.selected_unit_ids.join(", ") || "none"}`));
+      }
+      return wrap;
+    }
+
+    function renderFinalContext(row, execution) {
+      const wrap = el("div", "list");
+      const ordered = execution.final_ordering || [];
+      if (!ordered.length) {
+        wrap.append(el("div", "empty",
+          `EMPTY CONTEXT — no candidate survived selection${execution.empty_reason ? ` (${execution.empty_reason})` : ""}.`));
+        return wrap;
+      }
+      wrap.append(el("div", "chunk-meta",
+        `${ordered.length} chunks | ${fmt(execution.final_token_count)} tokens of budget ${fmt(row.context_budget)}`));
+      for (const chunkId of ordered) {
+        wrap.append(renderChunkDetails(row, chunkId));
+      }
+      return wrap;
+    }
+
+    function renderAssembly(row) {
+      const section = el("section", "");
+      const trace = row.context_assembly_trace;
+      if (!trace || typeof trace !== "object") return section;
+      const method = trace.method || "";
+      const isPlan = method === "plan_fixed" || method === "plan_dynamic";
+
+      if (!isPlan) {
+        section.append(el("h3", "", "Context Assembly Trace"));
+        section.append(renderCollapsedPre(`method: ${method || "unknown"} (raw trace)`,
+          JSON.stringify(trace, null, 2)));
+        return section;
+      }
+
+      section.append(el("h3", "", "Plan & Evidence Assembly"));
+      const stack = el("div", "list");
+
+      // --- Stage 1: the plan --------------------------------------------------
+      let nodes = [];
+      if (method === "plan_fixed") {
+        const decomposition = trace.decomposition || {};
+        nodes = decomposition.nodes || [];
+        stack.append(chipRow([
+          ["pipeline", "fixed"],
+          ["decomposition prompt", friendlyPrompt(decomposition.prompt_variant)],
+          ["cache hit", decomposition.cache_hit],
+          ["parse error", decomposition.parse_error],
+          ["fallback node", decomposition.fallback],
+        ]));
+        if (decomposition.strategy) {
+          stack.append(renderCollapsedPre("Model strategy (before nodes)", decomposition.strategy));
+        }
+        stack.append(el("h3", "", `Evidence Nodes (${nodes.length})`));
+        stack.append(renderPlanNodes(nodes));
+        stack.append(renderCollapsedPre("Decomposition prompt & raw output",
+          `--- PROMPT ---\n${text(decomposition.prompt)}\n\n--- RAW OUTPUT ---\n${text(decomposition.raw_output)}`));
+      } else {
+        const contract = trace.contract || {};
+        nodes = contract.nodes || [];
+        stack.append(chipRow([
+          ["pipeline", "dynamic"],
+          ["planner prompt", trace.planner_prompt_variant],
+          ["question type", contract.question_type],
+          ["cache hit", trace.planner_cache_hit],
+          ["contract deviations", (contract.deviations || []).length || "0"],
+        ]));
+        if (contract.strategy) {
+          stack.append(renderCollapsedPre("Planner strategy", contract.strategy));
+        }
+        if ((contract.deviations || []).length) {
+          stack.append(el("div", "mono chunk-meta", `deviations: ${(contract.deviations || []).join(" | ")}`));
+        }
+        stack.append(el("h3", "", `Evidence Nodes (${nodes.length})`));
+        stack.append(renderPlanNodes(nodes));
+        stack.append(renderCollapsedPre("Planner prompt & raw output",
+          `--- PROMPT ---\n${text(trace.planner_prompt)}\n\n--- RAW OUTPUT ---\n${text(trace.planner_raw_output)}`));
+      }
+
+      // --- Executed policies ---------------------------------------------------
+      const policies = trace.policies || {};
+      stack.append(el("h3", "", "Executed Policies"));
+      stack.append(chipRow([
+        ["retrieval", policies.retrieval_mode],
+        ["support", policies.support_policy],
+        ["selection", policies.selection_policy],
+        ["ordering", policies.ordering_policy],
+      ]));
+
+      const execution = trace.execution || {};
+
+      // --- Stage 2: per-node retrieval -----------------------------------------
+      stack.append(el("h3", "", "Per-Node Retrieval (with support scores)"));
+      stack.append(renderPerNodeRetrieval(row, execution, nodes));
+
+      // --- Gold slot check (from plan_eval sidecar) -----------------------------
+      const slotSection = renderSlotCheck(row);
+      if (slotSection.childNodes.length) stack.append(slotSection);
+
+      // --- Stage 3: selection ---------------------------------------------------
+      stack.append(el("h3", "", "Selection"));
+      stack.append(renderSelection(execution));
+
+      // --- Final context ----------------------------------------------------------
+      stack.append(el("h3", "", "Final Context (after selection & ordering)"));
+      stack.append(renderFinalContext(row, execution));
+
+      section.append(stack);
+      return section;
+    }
+
     function renderResultCard(row) {
       const card = el("article", "result-card");
       const head = el("div", "result-head");
       head.append(el("div", "treatment-name", row.treatment || "unknown_treatment"));
       const metrics = el("div", "metrics");
+      if (row.judge_rating !== undefined && row.judge_rating !== null) {
+        metrics.append(badge("judge", `${fmt(row.judge_rating)}/5`, `judge ${judgeKind(row.judge_rating)}`));
+      }
       metrics.append(badge("quote", row.evidence_quote_recall, recallKind(row.evidence_quote_recall)));
       metrics.append(badge("chunk", row.evidence_chunk_recall, recallKind(row.evidence_chunk_recall)));
       metrics.append(badge("ctx", row.context_tokens));
       metrics.append(badge("prompt", row.prompt_tokens));
+      if (row.plan_slot_retrieval_recall !== undefined && row.plan_slot_retrieval_recall !== null) {
+        metrics.append(badge("slotR", row.plan_slot_retrieval_recall, recallKind(row.plan_slot_retrieval_recall)));
+      }
+      if (row.evidence_role_recall !== undefined && row.evidence_role_recall !== null) {
+        metrics.append(badge("roleR", row.evidence_role_recall, recallKind(row.evidence_role_recall)));
+      }
       if (row.sufficient_context !== undefined && row.sufficient_context !== null) {
         metrics.append(badge("suff", row.sufficient_context, row.sufficient_context === 1 ? "good" : "bad"));
       }
@@ -1052,6 +1415,8 @@ HTML_TEMPLATE = """<!doctype html>
 
       const body = el("div", "result-body");
       body.append(renderPre("Model Output", row.model_output));
+      body.append(renderJudge(row));
+      body.append(renderAssembly(row));
       body.append(renderQuotes(row));
       body.append(renderEvidenceChunks(row));
       body.append(renderMetricAnnotations(row));

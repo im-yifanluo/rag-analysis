@@ -25,7 +25,7 @@ from hamlet_qa.core.evidence.catalog import build_candidate_catalog
 from hamlet_qa.core.evidence.support_teacher import ReaderTeacherSupportScorer
 
 _DEFAULTS: dict[str, Any] = {
-    "plan_decomp_prompt": "info_requirements",
+    "plan_decomp_prompt": "list_requirements",
     "plan_planner_prompt": "contract_v1",
     "plan_followup_prompt": "rewrite_with_evidence",
     "plan_retrieval_mode": "parallel",

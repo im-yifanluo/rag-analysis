@@ -107,7 +107,7 @@ DEFAULT_SUPPORT_SCORE_CACHE_PATH = "data/cache/reader_support_cache.json"
 # evidence-planning experiment (plan_fixed / plan_dynamic). Opt-in treatments
 # that isolate "how the LLM breaks down + plans the retrieval procedure". Prompt
 # variants are selected by name (see hamlet_qa/features/evidence_plan/prompts.py).
-DEFAULT_PLAN_DECOMP_PROMPT = "info_requirements"
+DEFAULT_PLAN_DECOMP_PROMPT = "list_requirements"
 DEFAULT_PLAN_PLANNER_PROMPT = "contract_v1"
 DEFAULT_PLAN_FOLLOWUP_PROMPT = "rewrite_with_evidence"
 DEFAULT_PLAN_RETRIEVAL_MODE = "parallel"

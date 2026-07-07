@@ -91,7 +91,14 @@ def execute_plan(
                 "query_used": query,
                 "reformulated": reformulated,
                 "retrieved": [
-                    {"chunk_id": str(row["chunk_id"]), "raw_score": row.get("rerank_score", row.get("score"))}
+                    {
+                        "chunk_id": str(row["chunk_id"]),
+                        "rank": row.get("rank"),
+                        "dense_score": row.get("dense_score", row.get("score")),
+                        "rerank_score": row.get("rerank_score"),
+                        # raw_score kept for back-compat (older traces only had this).
+                        "raw_score": row.get("rerank_score", row.get("score")),
+                    }
                     for row in rows
                 ],
             }

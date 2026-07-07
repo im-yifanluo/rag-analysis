@@ -974,11 +974,11 @@ class PrepareOnlyRunTests(unittest.TestCase):
             # retrieval mode from its own param_overrides.
             strat = by_arm["plan_fixed_strategy_par"]["context_assembly_trace"]
             self.assertEqual(strat["method"], "plan_fixed")
-            self.assertEqual(strat["decomposition"]["prompt_variant"], "strategy")
+            self.assertEqual(strat["decomposition"]["prompt_variant"], "reason_then_plan")
             self.assertEqual(strat["policies"]["retrieval_mode"], "parallel")
 
             subq = by_arm["plan_fixed_subq_seq"]["context_assembly_trace"]
-            self.assertEqual(subq["decomposition"]["prompt_variant"], "subquestions")
+            self.assertEqual(subq["decomposition"]["prompt_variant"], "split_questions")
             self.assertEqual(subq["policies"]["retrieval_mode"], "sequential")
 
             # Dynamic arm used its planner-prompt override.
@@ -1034,12 +1034,12 @@ class PlanArmRegistryTests(unittest.TestCase):
         self.assertEqual(
             fixed_cells,
             {
-                ("subquestions", "parallel"),
-                ("subquestions", "sequential"),
-                ("info_requirements", "parallel"),
-                ("info_requirements", "sequential"),
-                ("strategy", "parallel"),
-                ("strategy", "sequential"),
+                ("split_questions", "parallel"),
+                ("split_questions", "sequential"),
+                ("list_requirements", "parallel"),
+                ("list_requirements", "sequential"),
+                ("reason_then_plan", "parallel"),
+                ("reason_then_plan", "sequential"),
             },
         )
         self.assertEqual(

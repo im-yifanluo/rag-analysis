@@ -58,9 +58,9 @@ _DECOMP_COMMON_TAIL = (
 )
 
 DECOMPOSITION_PROMPTS: dict[str, PromptVariant] = {
-    "subquestions": PromptVariant(
-        name="subquestions",
-        version="decomp.subquestions.v1",
+    "split_questions": PromptVariant(
+        name="split_questions",
+        version="decomp.split_questions.v1",
         system=_DECOMP_SYSTEM,
         template=(
             "Break the QUESTION into at most {max_nodes} answerable sub-questions. "
@@ -69,9 +69,9 @@ DECOMPOSITION_PROMPTS: dict[str, PromptVariant] = {
             + _DECOMP_COMMON_TAIL
         ),
     ),
-    "info_requirements": PromptVariant(
-        name="info_requirements",
-        version="decomp.info_requirements.v1",
+    "list_requirements": PromptVariant(
+        name="list_requirements",
+        version="decomp.list_requirements.v1",
         system=_DECOMP_SYSTEM,
         template=(
             "List at most {max_nodes} INFORMATION REQUIREMENTS for the QUESTION: "
@@ -81,9 +81,9 @@ DECOMPOSITION_PROMPTS: dict[str, PromptVariant] = {
             + _DECOMP_COMMON_TAIL
         ),
     ),
-    "strategy": PromptVariant(
-        name="strategy",
-        version="decomp.strategy.v1",
+    "reason_then_plan": PromptVariant(
+        name="reason_then_plan",
+        version="decomp.reason_then_plan.v1",
         system=_DECOMP_SYSTEM,
         template=(
             "First THINK step by step about how to solve the QUESTION: what kind "

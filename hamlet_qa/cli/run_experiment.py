@@ -331,7 +331,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--decomp-prompt", default=DEFAULT_PLAN_DECOMP_PROMPT,
         help="plan_fixed decomposition prompt variant "
-        "(subquestions | info_requirements | strategy).",
+        "(split_questions | list_requirements | reason_then_plan).",
     )
     parser.add_argument(
         "--planner-prompt", default=DEFAULT_PLAN_PLANNER_PROMPT,

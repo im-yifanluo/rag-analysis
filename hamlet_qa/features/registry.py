@@ -125,17 +125,17 @@ TREATMENT_REGISTRY: dict[str, TreatmentSpec] = {
 _PLAN_ARMS: list[tuple[str, str, dict[str, object]]] = [
     # Fixed pipeline: 3 decomposition prompts x 2 retrieval modes.
     ("plan_fixed_subq_par", "plan_fixed",
-     {"plan_decomp_prompt": "subquestions", "plan_retrieval_mode": "parallel"}),
+     {"plan_decomp_prompt": "split_questions", "plan_retrieval_mode": "parallel"}),
     ("plan_fixed_subq_seq", "plan_fixed",
-     {"plan_decomp_prompt": "subquestions", "plan_retrieval_mode": "sequential"}),
+     {"plan_decomp_prompt": "split_questions", "plan_retrieval_mode": "sequential"}),
     ("plan_fixed_inforeq_par", "plan_fixed",
-     {"plan_decomp_prompt": "info_requirements", "plan_retrieval_mode": "parallel"}),
+     {"plan_decomp_prompt": "list_requirements", "plan_retrieval_mode": "parallel"}),
     ("plan_fixed_inforeq_seq", "plan_fixed",
-     {"plan_decomp_prompt": "info_requirements", "plan_retrieval_mode": "sequential"}),
+     {"plan_decomp_prompt": "list_requirements", "plan_retrieval_mode": "sequential"}),
     ("plan_fixed_strategy_par", "plan_fixed",
-     {"plan_decomp_prompt": "strategy", "plan_retrieval_mode": "parallel"}),
+     {"plan_decomp_prompt": "reason_then_plan", "plan_retrieval_mode": "parallel"}),
     ("plan_fixed_strategy_seq", "plan_fixed",
-     {"plan_decomp_prompt": "strategy", "plan_retrieval_mode": "sequential"}),
+     {"plan_decomp_prompt": "reason_then_plan", "plan_retrieval_mode": "sequential"}),
     # Dynamic pipeline: 2 planner prompts (the planner picks the retrieval mode).
     ("plan_dynamic_contract", "plan_dynamic",
      {"plan_planner_prompt": "contract_v1"}),

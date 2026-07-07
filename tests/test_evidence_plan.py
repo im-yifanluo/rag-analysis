@@ -99,8 +99,8 @@ def node(node_id, query, order=1, depends=None):
 
 class PromptRegistryTests(unittest.TestCase):
     def test_variants_resolve_and_format(self):
-        v = get_decomposition_prompt("strategy")
-        self.assertIn("strategy", v.version)
+        v = get_decomposition_prompt("reason_then_plan")
+        self.assertIn("reason_then_plan", v.version)
         rendered = v.template.format(question="Q", catalog="C", max_nodes=5)
         self.assertIn("Q", rendered)
         self.assertIn('"nodes"', rendered)
@@ -156,7 +156,7 @@ class PlanningCallTests(unittest.TestCase):
             cache = JsonKVCache(Path(tmp) / "c.json", section="d")
             reader = ScriptedReader()
             out = decompose(
-                "Q", "catalog", reader, get_decomposition_prompt("subquestions"),
+                "Q", "catalog", reader, get_decomposition_prompt("split_questions"),
                 cache, max_nodes=5, max_tokens=256,
             )
             self.assertEqual([n.node_id for n in out["nodes"]], ["n1", "n2", "n3"])
@@ -164,7 +164,7 @@ class PlanningCallTests(unittest.TestCase):
             # second call hits cache (no new model call)
             reader2 = ScriptedReader()
             out2 = decompose(
-                "Q", "catalog", reader2, get_decomposition_prompt("subquestions"),
+                "Q", "catalog", reader2, get_decomposition_prompt("split_questions"),
                 cache, max_nodes=5, max_tokens=256,
             )
             self.assertTrue(out2["cache_hit"])
@@ -179,7 +179,7 @@ class PlanningCallTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             cache = JsonKVCache(Path(tmp) / "c.json", section="d")
-            out = decompose("Who?", "cat", Bad(), get_decomposition_prompt("subquestions"), cache, max_nodes=5, max_tokens=64)
+            out = decompose("Who?", "cat", Bad(), get_decomposition_prompt("split_questions"), cache, max_nodes=5, max_tokens=64)
             self.assertTrue(out["fallback"])
             self.assertEqual(len(out["nodes"]), 1)
 

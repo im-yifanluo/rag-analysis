@@ -31,6 +31,16 @@ class VLLMReader:
         # explicit env override still win.
         os.environ.setdefault("VLLM_WORKER_MULTIPROC_METHOD", "spawn")
 
+        # Greedy decoding (temperature=0 -> argmax) makes the sampler kernel
+        # irrelevant to the output. vLLM otherwise JIT-compiles a FlashInfer
+        # sampler on startup, which needs a full CUDA build toolchain (modern
+        # nvcc + cuRAND headers + the libcuda driver stub) — a frequent failure
+        # on managed/conda GPU envs. Skip it for greedy decoding so the reader
+        # starts anywhere; an explicit env override still wins, and sampling
+        # runs (temperature>0) keep vLLM's own default.
+        if temperature == 0.0:
+            os.environ.setdefault("VLLM_USE_FLASHINFER_SAMPLER", "0")
+
         from vllm import LLM, SamplingParams
 
         self.model_name = model_name
