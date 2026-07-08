@@ -19,6 +19,13 @@ from hamlet_qa.core.experiment import (
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+# Row counts below are (questions x treatments x budgets); derive the question
+# count from the live suite so adding questions never breaks these smoke tests.
+NUM_QUESTIONS = len(
+    json.loads(
+        (REPO_ROOT / "data" / "hamlet_questions.json").read_text(encoding="utf-8")
+    )
+)
 
 
 class StubReader:
@@ -624,7 +631,7 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 for line in Path(results_path).read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-            self.assertEqual(len(rows), 10)
+            self.assertEqual(len(rows), NUM_QUESTIONS)
             self.assertTrue(all(row["model_output"] is None for row in rows))
             self.assertTrue(all(row["selected_chunk_ids"] == [] for row in rows))
 
@@ -675,7 +682,7 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 for line in Path(results_path).read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-            self.assertEqual(len(rows), 10 * len(BASELINE_TREATMENTS))
+            self.assertEqual(len(rows), NUM_QUESTIONS * len(BASELINE_TREATMENTS))
             self.assertEqual({row["treatment"] for row in rows}, set(BASELINE_TREATMENTS))
             self.assertTrue(all(row["model_output"] is None for row in rows))
 
@@ -705,11 +712,11 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 for line in Path(results_path).read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-            self.assertEqual(len(rows), 20)
+            self.assertEqual(len(rows), NUM_QUESTIONS * 2)
             self.assertEqual({row["treatment"] for row in rows}, {"setr", "domain"})
             self.assertTrue(all(row["model_output"] is None for row in rows))
             self.assertTrue(all(row["context_assembly_trace"] for row in rows))
-            self.assertEqual(reader.generate_calls, 10)
+            self.assertEqual(reader.generate_calls, NUM_QUESTIONS)
             setr_rows = [row for row in rows if row["treatment"] == "setr"]
             self.assertTrue(
                 all(
@@ -806,7 +813,7 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 for line in Path(results_path).read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-            self.assertEqual(len(rows), 30)
+            self.assertEqual(len(rows), NUM_QUESTIONS * 3)
             by_treatment: dict[str, list[dict]] = {}
             for row in rows:
                 by_treatment.setdefault(row["treatment"], []).append(row)
@@ -876,7 +883,7 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 for line in Path(results_path).read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-            self.assertEqual(len(rows), 10)
+            self.assertEqual(len(rows), NUM_QUESTIONS)
             self.assertEqual({row["treatment"] for row in rows}, {"reader_support"})
             self.assertTrue(all(row["model_output"] is None for row in rows))
             self.assertGreater(reader.generate_calls, 0)
@@ -915,7 +922,7 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 for line in Path(results_path).read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-            self.assertEqual(len(rows), 20)
+            self.assertEqual(len(rows), NUM_QUESTIONS * 2)
             self.assertEqual({row["treatment"] for row in rows}, {"plan_fixed", "plan_dynamic"})
             self.assertTrue(all(row["model_output"] is None for row in rows))
             for row in rows:
@@ -961,8 +968,8 @@ class PrepareOnlyRunTests(unittest.TestCase):
                 for line in Path(results_path).read_text(encoding="utf-8").splitlines()
                 if line.strip()
             ]
-            # 3 arms x 10 questions, one file.
-            self.assertEqual(len(rows), 30)
+            # 3 arms x all questions, one file.
+            self.assertEqual(len(rows), NUM_QUESTIONS * 3)
             self.assertEqual({row["treatment"] for row in rows}, set(arms))
 
             by_arm: dict[str, dict] = {}

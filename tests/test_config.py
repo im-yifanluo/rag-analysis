@@ -60,6 +60,7 @@ class ConfigDefaultsTests(unittest.TestCase):
             BASELINE_TREATMENTS,
             [
                 "closed_book",
+                "full_document",
                 "gold_evidence",
                 "dense_reranked",
                 "sparse_bm25",

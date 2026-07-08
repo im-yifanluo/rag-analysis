@@ -7,6 +7,7 @@ from typing import Any
 from hamlet_qa.core.context import (
     ContextAssemblyRequest,
     ContextAssemblyResult,
+    make_pseudo_chunk,
     select_chunk_ids_for_budget,
     selected_chunks,
     sort_by_document_order,
@@ -19,6 +20,38 @@ def assemble_closed_book(request: ContextAssemblyRequest) -> ContextAssemblyResu
         selected_chunk_ids=[],
         selected_chunks=[],
         prompt_order="none",
+    )
+
+
+def assemble_full_document(request: ContextAssemblyRequest) -> ContextAssemblyResult:
+    """Long-context control: the entire play as ONE clean block.
+
+    The "reader has everything" upper bound — no retrieval, no selection, no
+    per-chunk headers, no overlap double-counting. Deliberately bypasses
+    `select_chunk_ids_for_budget`; the token budget does not apply. The raw play
+    text is threaded in as the ``full_document_text`` handle by ``run_experiment``.
+    Note: ``make_pseudo_chunk`` records a whitespace-word ``token_count``, so the
+    row's ``context_tokens`` under-reads the real prompt; ``prompt_tokens`` (real
+    tokenizer) is the meaningful size (~68-80K here).
+    """
+    text = str(request.feature_handles.get("full_document_text") or "")
+    if not text:
+        raise ValueError(
+            "full_document requires feature_handles['full_document_text'] "
+            "(the raw document text)"
+        )
+    chunk = make_pseudo_chunk(
+        "hamlet_full_text",
+        text,
+        scene_title="The Tragedy of Hamlet (full text)",
+        scene_id="full_document",
+    )
+    return ContextAssemblyResult(
+        selected_chunk_ids=[chunk["chunk_id"]],
+        selected_chunks=[chunk],
+        original_hit_chunk_ids=[chunk["chunk_id"]],
+        retrieval_method="full_document",
+        prompt_order="document_order",
     )
 
 

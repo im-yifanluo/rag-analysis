@@ -54,11 +54,12 @@ class QuoteEvidenceTests(unittest.TestCase):
             warnings.simplefilter("ignore")
             validate_questions(questions, chunks)
 
-        self.assertEqual(len(questions), 10)
-        self.assertTrue(
-            {question.reasoning_skill for question in questions}
-            <= set(REASONING_SKILLS)
-        )
+        self.assertEqual(len(questions), 20)
+        covered_skills = {question.reasoning_skill for question in questions}
+        self.assertTrue(covered_skills <= set(REASONING_SKILLS))
+        # Stage 0 added questions for the two previously-uncovered skills.
+        self.assertIn("scene_local_context", covered_skills)
+        self.assertIn("theme_or_symbolism", covered_skills)
         answerable = [
             question
             for question in questions
@@ -106,8 +107,9 @@ class QuoteEvidenceTests(unittest.TestCase):
             for question in questions
             if question.reasoning_skill == "unanswerable"
         ]
-        self.assertEqual(len(unanswerable), 1)
-        self.assertEqual(unanswerable[0].required_evidence_quotes, [])
+        self.assertGreaterEqual(len(unanswerable), 1)
+        for question in unanswerable:
+            self.assertEqual(question.required_evidence_quotes, [])
 
 
 if __name__ == "__main__":

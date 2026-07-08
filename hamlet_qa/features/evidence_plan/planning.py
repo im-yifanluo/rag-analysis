@@ -50,7 +50,6 @@ def _extract_json(raw_output: str) -> dict[str, Any] | None:
 
 def decompose(
     question_text: str,
-    catalog: str,
     model: Any,
     variant: PromptVariant,
     cache: JsonKVCache,
@@ -58,10 +57,12 @@ def decompose(
     max_nodes: int,
     max_tokens: int,
 ) -> dict[str, Any]:
-    """Run a decomposition prompt -> evidence nodes (+ optional strategy text)."""
-    prompt = variant.template.format(
-        question=question_text, catalog=catalog, max_nodes=max_nodes
-    )
+    """Run a decomposition prompt -> evidence nodes (+ optional strategy text).
+
+    The prompt sees only the question (no retrieved preview), so this measures the
+    reader's ability to decompose from the question text alone.
+    """
+    prompt = variant.template.format(question=question_text, max_nodes=max_nodes)
     model_name = str(getattr(model, "model_name", "reader_model"))
     cache_key = stable_hash(
         {"prompt": prompt, "model": model_name, "variant": variant.name, "version": variant.version}
@@ -122,7 +123,6 @@ def decompose(
 
 def plan(
     question_text: str,
-    catalog: str,
     model: Any,
     variant: PromptVariant,
     cache: JsonKVCache,
@@ -131,10 +131,11 @@ def plan(
     max_nodes: int,
     max_tokens: int,
 ) -> dict[str, Any]:
-    """Run a planner prompt -> a validated/normalized ProcedureContract."""
-    prompt = variant.template.format(
-        question=question_text, catalog=catalog, max_nodes=max_nodes
-    )
+    """Run a planner prompt -> a validated/normalized ProcedureContract.
+
+    The prompt sees only the question (no retrieved preview).
+    """
+    prompt = variant.template.format(question=question_text, max_nodes=max_nodes)
     model_name = str(getattr(model, "model_name", "reader_model"))
     cache_key = stable_hash(
         {

@@ -7,6 +7,7 @@ from hamlet_qa.features.crag.assembly import assemble_crag
 from hamlet_qa.features.baseline.assembly import (
     assemble_closed_book,
     assemble_dense_rank_order,
+    assemble_full_document,
     assemble_gold_evidence,
     assemble_sparse_bm25,
 )
@@ -30,6 +31,7 @@ from hamlet_qa.features.setr.assembly import assemble_setr
 
 TREATMENT_REGISTRY: dict[str, TreatmentSpec] = {
     "closed_book": TreatmentSpec("closed_book", assemble_closed_book),
+    "full_document": TreatmentSpec("full_document", assemble_full_document),
     "gold_evidence": TreatmentSpec("gold_evidence", assemble_gold_evidence),
     "dense_reranked": TreatmentSpec(
         "dense_reranked",

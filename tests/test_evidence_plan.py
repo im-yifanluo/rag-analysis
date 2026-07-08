@@ -156,7 +156,7 @@ class PlanningCallTests(unittest.TestCase):
             cache = JsonKVCache(Path(tmp) / "c.json", section="d")
             reader = ScriptedReader()
             out = decompose(
-                "Q", "catalog", reader, get_decomposition_prompt("split_questions"),
+                "Q", reader, get_decomposition_prompt("split_questions"),
                 cache, max_nodes=5, max_tokens=256,
             )
             self.assertEqual([n.node_id for n in out["nodes"]], ["n1", "n2", "n3"])
@@ -164,7 +164,7 @@ class PlanningCallTests(unittest.TestCase):
             # second call hits cache (no new model call)
             reader2 = ScriptedReader()
             out2 = decompose(
-                "Q", "catalog", reader2, get_decomposition_prompt("split_questions"),
+                "Q", reader2, get_decomposition_prompt("split_questions"),
                 cache, max_nodes=5, max_tokens=256,
             )
             self.assertTrue(out2["cache_hit"])
@@ -179,7 +179,7 @@ class PlanningCallTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             cache = JsonKVCache(Path(tmp) / "c.json", section="d")
-            out = decompose("Who?", "cat", Bad(), get_decomposition_prompt("split_questions"), cache, max_nodes=5, max_tokens=64)
+            out = decompose("Who?", Bad(), get_decomposition_prompt("split_questions"), cache, max_nodes=5, max_tokens=64)
             self.assertTrue(out["fallback"])
             self.assertEqual(len(out["nodes"]), 1)
 

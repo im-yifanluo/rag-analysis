@@ -18,6 +18,7 @@ class VLLMReader:
         tensor_parallel_size: int = 1,
         gpu_memory_utilization: float = 0.90,
         device: str = "cuda",
+        max_model_len: int | None = None,
     ):
         if device.startswith("cuda:"):
             os.environ["CUDA_VISIBLE_DEVICES"] = device.split(":", 1)[1]
@@ -47,12 +48,18 @@ class VLLMReader:
         self.device = device
         self.temperature = temperature
         self.max_new_tokens = max_new_tokens
-        self.llm = LLM(
+        # max_model_len=None lets vLLM derive the cap from the KV cache; pass an
+        # explicit value (e.g. 98304) for the long-context full_document baseline
+        # so the ~68-80K prompt is not truncated below the model's real window.
+        llm_kwargs: dict = dict(
             model=model_name,
             tensor_parallel_size=tensor_parallel_size,
             gpu_memory_utilization=gpu_memory_utilization,
             trust_remote_code=True,
         )
+        if max_model_len is not None:
+            llm_kwargs["max_model_len"] = max_model_len
+        self.llm = LLM(**llm_kwargs)
         self.tokenizer = self.llm.get_tokenizer()
         self.model_max_context = self._resolve_model_max_context()
         self.sampling_params = SamplingParams(

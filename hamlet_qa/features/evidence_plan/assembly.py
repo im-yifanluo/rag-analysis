@@ -21,7 +21,6 @@ from hamlet_qa.features.evidence_plan.prompts import (
     get_followup_prompt,
     get_planner_prompt,
 )
-from hamlet_qa.core.evidence.catalog import build_candidate_catalog
 from hamlet_qa.core.evidence.support_teacher import ReaderTeacherSupportScorer
 
 _DEFAULTS: dict[str, Any] = {
@@ -34,7 +33,6 @@ _DEFAULTS: dict[str, Any] = {
     "plan_ordering_policy": "document_order",
     "plan_node_top_k": 10,
     "plan_max_nodes": 5,
-    "plan_catalog_k": 20,
     "plan_min_support": 0.5,
     "plan_support_temp": 1.0,
     "plan_coverage_threshold": 0.85,
@@ -66,13 +64,9 @@ def _shared(request: ContextAssemblyRequest) -> dict[str, Any]:
         )
     params = request.feature_params
     cache_path = Path(str(_p(params, "plan_cache_path")))
-    catalog = build_candidate_catalog(
-        request.retrieval_trace, request.chunk_lookup, int(_p(params, "plan_catalog_k"))
-    )
     return {
         "params": params,
         "cache_path": cache_path,
-        "catalog": catalog,
         "node_retriever": node_retriever,
         "model": request.selector_model,
         "question_text": request.question.question,
@@ -156,7 +150,6 @@ def assemble_plan_fixed(request: ContextAssemblyRequest) -> ContextAssemblyResul
     variant = get_decomposition_prompt(str(_p(params, "plan_decomp_prompt")))
     decomposition = decompose(
         ctx["question_text"],
-        ctx["catalog"],
         ctx["model"],
         variant,
         JsonKVCache(ctx["cache_path"], section="plan_decomposition"),
@@ -199,7 +192,6 @@ def assemble_plan_dynamic(request: ContextAssemblyRequest) -> ContextAssemblyRes
     }
     planned = plan(
         ctx["question_text"],
-        ctx["catalog"],
         ctx["model"],
         variant,
         JsonKVCache(ctx["cache_path"], section="plan_planner"),

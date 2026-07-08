@@ -10,6 +10,13 @@ DEFAULT_READER_MODEL = "Qwen/Qwen3.5-9B"
 DEFAULT_EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-8B"
 DEFAULT_RERANKER_MODEL = "Qwen/Qwen3-Reranker-8B"
 DEFAULT_TEMPERATURE = 0.0
+# vLLM otherwise derives the context cap from the KV cache at the given
+# gpu_memory_utilization, which can fall below the ~68-80K tokens the
+# `full_document` long-context baseline needs. None = keep vLLM's auto behavior;
+# 98304 is the recommended value for the long-context run (fits the whole play +
+# the 512-token answer with headroom).
+DEFAULT_MAX_MODEL_LEN: int | None = None
+LONG_CONTEXT_MAX_MODEL_LEN = 98304
 
 DEFAULT_CHUNK_SIZE = 256
 DEFAULT_CHUNK_OVERLAP = 64
@@ -18,6 +25,7 @@ DEFAULT_TOKENIZER_MODEL = DEFAULT_READER_MODEL
 DEFAULT_CONTEXT_BUDGETS = [1000]
 BASELINE_TREATMENTS = [
     "closed_book",
+    "full_document",
     "gold_evidence",
     "dense_reranked",
     "sparse_bm25",
@@ -116,7 +124,6 @@ DEFAULT_PLAN_SELECTION_POLICY = "greedy_coverage"
 DEFAULT_PLAN_ORDERING_POLICY = "document_order"
 DEFAULT_PLAN_NODE_TOP_K = 10
 DEFAULT_PLAN_MAX_NODES = 5
-DEFAULT_PLAN_CATALOG_K = 20
 DEFAULT_PLAN_MIN_SUPPORT = 0.5
 DEFAULT_PLAN_SUPPORT_TEMP = 1.0
 DEFAULT_PLAN_COVERAGE_THRESHOLD = 0.85
@@ -177,6 +184,7 @@ class RunConfig:
     reranker_model: str | None = DEFAULT_RERANKER_MODEL
     temperature: float = DEFAULT_TEMPERATURE
     max_new_tokens: int = 512
+    max_model_len: int | None = DEFAULT_MAX_MODEL_LEN
 
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
@@ -242,7 +250,6 @@ class RunConfig:
     plan_ordering_policy: str = DEFAULT_PLAN_ORDERING_POLICY
     plan_node_top_k: int = DEFAULT_PLAN_NODE_TOP_K
     plan_max_nodes: int = DEFAULT_PLAN_MAX_NODES
-    plan_catalog_k: int = DEFAULT_PLAN_CATALOG_K
     plan_min_support: float = DEFAULT_PLAN_MIN_SUPPORT
     plan_support_temp: float = DEFAULT_PLAN_SUPPORT_TEMP
     plan_coverage_threshold: float = DEFAULT_PLAN_COVERAGE_THRESHOLD

@@ -330,6 +330,7 @@ def make_reader(config: RunConfig, force_generation_model: bool = False) -> Any:
         tensor_parallel_size=config.tensor_parallel_size,
         gpu_memory_utilization=config.gpu_memory_utilization,
         device=config.reader_device,
+        max_model_len=config.max_model_len,
     )
 
 
@@ -555,7 +556,6 @@ def feature_params_from_config(config: RunConfig) -> dict[str, Any]:
         "plan_ordering_policy": config.plan_ordering_policy,
         "plan_node_top_k": config.plan_node_top_k,
         "plan_max_nodes": config.plan_max_nodes,
-        "plan_catalog_k": config.plan_catalog_k,
         "plan_min_support": config.plan_min_support,
         "plan_support_temp": config.plan_support_temp,
         "plan_coverage_threshold": config.plan_coverage_threshold,
@@ -735,6 +735,14 @@ def run_experiment(
     results_path = run_dir / "results.jsonl"
 
     active_handles = dict(feature_handles or {})
+    # The full_document long-context baseline reads the entire play as one clean
+    # block; thread the raw text in once so the assembly fn stays pure.
+    if ("full_document" in config.treatments) and (
+        "full_document_text" not in active_handles
+    ):
+        active_handles["full_document_text"] = Path(config.document_path).read_text(
+            encoding="utf-8"
+        )
     # The evidence_plan treatments issue fresh per-sub-question retrieval at
     # assembly time, so the dense embedder+reranker must stay resident. Build it
     # once and reuse it for the up-front question trace too (multi-GPU layout

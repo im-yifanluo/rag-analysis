@@ -93,6 +93,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--temperature", type=float, default=DEFAULT_TEMPERATURE)
     parser.add_argument("--max-new-tokens", type=int, default=512)
     parser.add_argument(
+        "--max-model-len",
+        type=int,
+        default=None,
+        help=(
+            "Explicit vLLM context cap. Leave unset for auto; set to 98304 for "
+            "the full_document long-context baseline so the ~68-80K prompt fits."
+        ),
+    )
+    parser.add_argument(
         "--context-budgets",
         type=int,
         nargs="+",
@@ -394,6 +403,7 @@ def config_from_args(args: argparse.Namespace) -> RunConfig:
         else args.reranker_model,
         temperature=args.temperature,
         max_new_tokens=args.max_new_tokens,
+        max_model_len=args.max_model_len,
         context_budgets=args.context_budgets,
         treatments=args.treatments,
         top_k=args.top_k,

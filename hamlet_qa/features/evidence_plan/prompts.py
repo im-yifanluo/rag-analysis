@@ -28,7 +28,7 @@ class PromptVariant:
     name: str
     version: str
     system: str
-    template: str  # str.format fields: {question} {catalog} {max_nodes} (+ slot-specific)
+    template: str  # str.format fields: {question} {max_nodes} (+ slot-specific)
 
 
 # The required JSON node shape, shared by every decomposition/planner variant.
@@ -51,8 +51,6 @@ _DECOMP_SYSTEM = (
 
 _DECOMP_COMMON_TAIL = (
     "\n\nQUESTION:\n{question}\n\n"
-    "CANDIDATE CATALOG (retrieved passages, for topical context only — do not "
-    "assume it contains the answers):\n{catalog}\n\n"
     "Respond with JSON ONLY in exactly this shape:\n"
     '{{"nodes": [' + _NODE_SHAPE + "]}}"
 )
@@ -134,7 +132,6 @@ _PLANNER_COMMON_TAIL = (
     "- Use selection_policy \"greedy_coverage\" to cover every node compactly; "
     "\"top_per_node\" to just keep each node's best passages.\n\n"
     "QUESTION:\n{question}\n\n"
-    "CANDIDATE CATALOG (topical context only):\n{catalog}\n\n"
     "Respond with JSON ONLY in exactly this shape:\n" + _CONTRACT_SHAPE
 )
 
