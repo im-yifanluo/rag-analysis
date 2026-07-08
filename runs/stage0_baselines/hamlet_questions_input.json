@@ -1,0 +1,578 @@
+[
+ {
+  "id": "q_trap_ghost_poison",
+  "question": "According to the Ghost's own account of the murder in the orchard, what poison was poured into King Hamlet's ear, and what did it do to his blood?",
+  "expected_answer": "Claudius poured the juice of cursed hebenon into his ear; its leperous distilment coursed through his body and curdled his thin and wholesome blood like acid dropped into milk.",
+  "evidence_scope": "Act 1, Scene 5",
+  "reasoning_skill": "local_fact",
+  "required_evidence_quotes": [
+   {
+    "act": 1,
+    "scene": 5,
+    "speaker": "GHOST",
+    "quote": "With juice of cursed hebenon in a vial,\nAnd in the porches of my ears did pour\nThe leperous distilment",
+    "role": "poison_identity"
+   },
+   {
+    "act": 1,
+    "scene": 5,
+    "speaker": "GHOST",
+    "quote": "And curd, like eager droppings into milk,\nThe thin and wholesome blood.",
+    "role": "effect_on_blood"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Retrieval trap for corrective methods: poison/ear/orchard/murder wording lexically matches the Mousetrap dumb-show in Act 3 Scene 2 and Hamlet's plan in Act 2 Scene 2, but only Act 1 Scene 5 names hebenon. Targets CRAG-style evaluator flagging plus re-retrieval."
+ },
+ {
+  "id": "q_speaker_bitter_cold",
+  "question": "Who says, \"For this relief much thanks. 'Tis bitter cold, And I am sick at heart\"?",
+  "expected_answer": "Francisco says the line.",
+  "evidence_scope": "Act 1, Scene 1",
+  "reasoning_skill": "speaker_attribution",
+  "required_evidence_quotes": [
+   {
+    "act": 1,
+    "scene": 1,
+    "speaker": "FRANCISCO",
+    "quote": "FRANCISCO.\nFor this relief much thanks. ’Tis bitter cold,\nAnd I am sick at heart.",
+    "role": "speaker_attribution"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Less-famous speaker-attribution probe to reduce closed-book memorization."
+ },
+ {
+  "id": "q_arc_rosencrantz_guildenstern",
+  "question": "Why does Claudius summon Rosencrantz and Guildenstern to court, what task involving England are they later given, and what finally happens to them?",
+  "expected_answer": "Claudius summons them because of Hamlet's transformation, to spend time with Hamlet and uncover what afflicts him; later Claudius dispatches them with a commission to escort Hamlet to England; in the end they are executed, as the English ambassadors report that Rosencrantz and Guildenstern are dead.",
+  "evidence_scope": "Acts 2-5",
+  "reasoning_skill": "cross_scene_bridge",
+  "required_evidence_quotes": [
+   {
+    "act": 2,
+    "scene": 2,
+    "speaker": "KING",
+    "quote": "The need we have to use you did provoke\nOur hasty sending.",
+    "role": "summons_motive"
+   },
+   {
+    "act": 3,
+    "scene": 3,
+    "speaker": "KING",
+    "quote": "I your commission will forthwith dispatch,\nAnd he to England shall along with you.",
+    "role": "england_task"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "FIRST AMBASSADOR",
+    "quote": "That Rosencrantz and Guildenstern are dead.",
+    "role": "final_fate"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Three-scene character arc spanning Acts 2, 3, and 5 with weak lexical overlap between hops. Targets multi-scale (MacRAG) and set-coverage (SetR) assembly."
+ },
+ {
+  "id": "q_bridge_mousetrap_test",
+  "question": "How does Hamlet test whether the Ghost's accusation against Claudius is true?",
+  "expected_answer": "He arranges a play resembling his father's murder, watches Claudius's reaction, and treats Claudius's disturbed response as confirmation.",
+  "evidence_scope": "Acts 2-3",
+  "reasoning_skill": "cross_scene_bridge",
+  "required_evidence_quotes": [
+   {
+    "act": 2,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "I’ll have these players\nPlay something like the murder of my father\nBefore mine uncle. I’ll observe his looks;",
+    "role": "plan"
+   },
+   {
+    "act": 3,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "There is a play tonight before the King.\nOne scene of it comes near the circumstance\nWhich I have told thee, of my father’s death.",
+    "role": "bridge_to_execution"
+   },
+   {
+    "act": 3,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "He poisons him i’ th’garden for’s estate.",
+    "role": "staged_evidence"
+   },
+   {
+    "act": 3,
+    "scene": 2,
+    "speaker": "HORATIO",
+    "quote": "I did very well note him.",
+    "role": "reaction_confirmation"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Requires bridging Hamlet's plan, Horatio's observation role, the staged poisoning, and the reaction."
+ },
+ {
+  "id": "q_fortinbras_campaign",
+  "question": "Trace young Fortinbras's military campaign in order: what was his original aim, how did old Norway redirect it, and what is his army doing when it crosses Denmark?",
+  "expected_answer": "First Fortinbras gathered lawless resolutes to recover by force the lands his father lost to King Hamlet; then old Norway rebuked him, and gave him three thousand crowns and a commission to employ those soldiers against Poland instead; finally his army marches across Denmark under a promised safe-conduct on its way to Poland.",
+  "evidence_scope": "Acts 1-4",
+  "reasoning_skill": "temporal_order",
+  "required_evidence_quotes": [
+   {
+    "act": 1,
+    "scene": 1,
+    "speaker": "HORATIO",
+    "quote": "But to recover of us by strong hand\nAnd terms compulsatory, those foresaid lands\nSo by his father lost.",
+    "role": "original_aim"
+   },
+   {
+    "act": 2,
+    "scene": 2,
+    "speaker": "VOLTEMAND",
+    "quote": "And his commission to employ those soldiers\nSo levied as before, against the Polack:",
+    "role": "redirection"
+   },
+   {
+    "act": 4,
+    "scene": 4,
+    "speaker": "FORTINBRAS",
+    "quote": "Craves the conveyance of a promis’d march\nOver his kingdom.",
+    "role": "march_through_denmark"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Three distinct information requirements with little mutual lexical overlap, spread across Acts 1, 2, and 4. Targets explicit information-requirement identification (SetR selection_IRI) and cross-scene assembly."
+ },
+ {
+  "id": "q_state_poisoned_cup",
+  "question": "Who drinks from the poisoned cup intended during the duel, and what happens to that person?",
+  "expected_answer": "Gertrude drinks from the poisoned cup and dies from the poison.",
+  "evidence_scope": "Act 5, Scene 2",
+  "reasoning_skill": "entity_state_tracking",
+  "required_evidence_quotes": [
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "KING",
+    "quote": "The King shall drink to Hamlet’s better breath,\nAnd in the cup an union shall he throw",
+    "role": "cup_setup"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "KING",
+    "quote": "KING.\n[_Aside._] It is the poison’d cup; it is too late.",
+    "role": "cup_state"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "QUEEN",
+    "quote": "QUEEN.\nNo, no, the drink, the drink! O my dear Hamlet!\nThe drink, the drink! I am poison’d.",
+    "role": "outcome"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Tracks the cup from Claudius's plan through Gertrude's drink and death."
+ },
+ {
+  "id": "q_final_scene_deaths",
+  "question": "In the final scene, which four characters die onstage, and what kills each of them?",
+  "expected_answer": "Gertrude dies from drinking the poisoned cup; Laertes is wounded by his own unbated, envenomed sword and dies; Claudius is stabbed by Hamlet and forced to drink the poison; Hamlet dies of the poisoned wound from Laertes's blade.",
+  "evidence_scope": "Act 5, Scene 2",
+  "reasoning_skill": "entity_state_tracking",
+  "required_evidence_quotes": [
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "QUEEN",
+    "quote": "No, no, the drink, the drink! O my dear Hamlet!\nThe drink, the drink! I am poison’d.",
+    "role": "gertrude_death"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "LAERTES",
+    "quote": "The treacherous instrument is in thy hand,\nUnbated and envenom’d.",
+    "role": "laertes_death"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "Here, thou incestuous, murderous, damned Dane,\nDrink off this potion.",
+    "role": "claudius_death"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "LAERTES",
+    "quote": "He is justly serv’d.\nIt is a poison temper’d by himself.",
+    "role": "claudius_poison_confirmation"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "The potent poison quite o’er-crows my spirit:",
+    "role": "hamlet_death"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Budget-pressure question: the minimal covering set is 4 distinct 256-token chunks (1024 tokens), exceeding the default 1000-token budget, so raw-chunk treatments cap below 1.0 quote recall by design. Targets compression methods (RECOMP) that can fit all five death lines."
+ },
+ {
+  "id": "q_mistaken_arras_victim",
+  "question": "When Hamlet stabs through the arras, whom does he think he may have killed, and who is actually killed?",
+  "expected_answer": "Hamlet thinks it may be the King, but the person killed is Polonius.",
+  "evidence_scope": "Act 3, Scene 4",
+  "reasoning_skill": "deception_or_mistaken_belief",
+  "required_evidence_quotes": [
+   {
+    "act": 3,
+    "scene": 4,
+    "speaker": "HAMLET",
+    "quote": "HAMLET.\nHow now? A rat? [_Draws._]\nDead for a ducat, dead!",
+    "role": "mistaken_action"
+   },
+   {
+    "act": 3,
+    "scene": 4,
+    "speaker": "HAMLET",
+    "quote": "HAMLET.\nNay, I know not. Is it the King?",
+    "role": "mistaken_belief"
+   },
+   {
+    "act": 3,
+    "scene": 4,
+    "speaker": "HAMLET",
+    "quote": "[_To Polonius._] Thou wretched, rash, intruding fool, farewell!\nI took thee for thy better.",
+    "role": "actual_victim"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Captures mistaken belief and actual outcome in the closet scene."
+ },
+ {
+  "id": "q_distractor_claudius_not_punish",
+  "question": "What two reasons does Claudius give Laertes for not publicly punishing Hamlet?",
+  "expected_answer": "He says Gertrude is deeply attached to Hamlet, and the public loves Hamlet so much that punishment would turn against Claudius.",
+  "evidence_scope": "Act 4, Scene 7",
+  "reasoning_skill": "distractor_contrast",
+  "required_evidence_quotes": [
+   {
+    "act": 4,
+    "scene": 7,
+    "speaker": "KING",
+    "quote": "The Queen his mother\nLives almost by his looks;",
+    "role": "reason_one"
+   },
+   {
+    "act": 4,
+    "scene": 7,
+    "speaker": "KING",
+    "quote": "The other motive,\nWhy to a public count I might not go,\nIs the great love the general gender bear him",
+    "role": "reason_two"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Contrasts two explicit reasons rather than accepting one nearby distractor."
+ },
+ {
+  "id": "q_unanswerable_yorick_wife",
+  "question": "What is the name of Yorick's wife?",
+  "expected_answer": "The text does not give Yorick's wife's name.",
+  "evidence_scope": "Act 5, Scene 1",
+  "reasoning_skill": "unanswerable",
+  "required_evidence_quotes": [],
+  "derived_gold_chunk_ids": [],
+  "notes": "Unanswerable probe near the famous Yorick passage."
+ },
+ {
+  "id": "q_nunnery_remembrances",
+  "question": "During Hamlet and Ophelia's encounter in the nunnery scene, what does Ophelia try to return to Hamlet, and how does Hamlet respond to the offer?",
+  "expected_answer": "Ophelia tries to give back the remembrances (love-gifts) Hamlet had given her, saying she has longed to re-deliver them; Hamlet denies ever having given her anything: \"No, not I. I never gave you aught.\"",
+  "evidence_scope": "Act 3, Scene 1",
+  "reasoning_skill": "scene_local_context",
+  "required_evidence_quotes": [
+   {
+    "act": 3,
+    "scene": 1,
+    "speaker": "OPHELIA",
+    "quote": "My lord, I have remembrances of yours\nThat I have longed long to re-deliver.",
+    "role": "remembrances_returned"
+   },
+   {
+    "act": 3,
+    "scene": 1,
+    "speaker": "HAMLET",
+    "quote": "No, not I.\nI never gave you aught.",
+    "role": "hamlet_denial"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "scene_local_context probe: the answer lives in the local give-and-take of one exchange, not a famous set-piece line. Closed-book readers know the 'nunnery' scene by reputation but rarely its precise content (the returned gifts + Hamlet's flat denial)."
+ },
+ {
+  "id": "q_claudius_false_prayer",
+  "question": "In his prayer scene soliloquy, why does Claudius conclude that he cannot truly be forgiven, and what image does he use to show his prayer is empty?",
+  "expected_answer": "Claudius admits he still holds the very things he murdered for -- his crown, his ambition, and his queen -- so he cannot give up the offence and be pardoned; he ends by acknowledging his prayer is hollow: \"My words fly up, my thoughts remain below. Words without thoughts never to heaven go.\"",
+  "evidence_scope": "Act 3, Scene 3",
+  "reasoning_skill": "theme_or_symbolism",
+  "required_evidence_quotes": [
+   {
+    "act": 3,
+    "scene": 3,
+    "speaker": "KING",
+    "quote": "Of those effects for which I did the murder,—\nMy crown, mine own ambition, and my queen.\nMay one be pardon’d and retain th’offence?",
+    "role": "why_prayer_fails"
+   },
+   {
+    "act": 3,
+    "scene": 3,
+    "speaker": "KING",
+    "quote": "My words fly up, my thoughts remain below.\nWords without thoughts never to heaven go.",
+    "role": "empty_prayer_image"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "theme_or_symbolism probe: requires reading the soliloquy's argument (repentance is impossible while keeping the spoils) and its closing symbol of the prayer that will not rise. Anchored on the precise 'crown/ambition/queen' reasoning rather than the well-known couplet alone."
+ },
+ {
+  "id": "q_ghost_prison_secrets",
+  "question": "What does the Ghost say he is forbidden to reveal, and what does he claim the lightest word of that tale would do to Hamlet?",
+  "expected_answer": "The Ghost says he is forbidden to tell the secrets of his prison-house; he claims that if he could, the lightest word of his tale would harrow up Hamlet's soul and freeze his young blood.",
+  "evidence_scope": "Act 1, Scene 5",
+  "reasoning_skill": "local_fact",
+  "required_evidence_quotes": [
+   {
+    "act": 1,
+    "scene": 5,
+    "speaker": "GHOST",
+    "quote": "But that I am forbid\nTo tell the secrets of my prison-house",
+    "role": "forbidden_secret"
+   },
+   {
+    "act": 1,
+    "scene": 5,
+    "speaker": "GHOST",
+    "quote": "I could a tale unfold whose lightest word\nWould harrow up thy soul; freeze thy young blood",
+    "role": "torment_effect"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "local_fact probe on a specific, less-quoted passage of the Ghost's speech (prison-house secrets + the harrowing effect), distinct from the famous hebenon murder narration."
+ },
+ {
+  "id": "q_speaker_rich_gifts",
+  "question": "Who speaks the line \"Rich gifts wax poor when givers prove unkind\"?",
+  "expected_answer": "Ophelia speaks the line, as she returns Hamlet's gifts in the nunnery scene.",
+  "evidence_scope": "Act 3, Scene 1",
+  "reasoning_skill": "speaker_attribution",
+  "required_evidence_quotes": [
+   {
+    "act": 3,
+    "scene": 1,
+    "speaker": "OPHELIA",
+    "quote": "Rich gifts wax poor when givers prove unkind.",
+    "role": "speaker_attribution"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Verbatim speaker-attribution probe in the style of q_speaker_bitter_cold. The sententious line is easy to misattribute to Hamlet from memory; correct attribution requires retrieving the exact chunk and its speaker tag."
+ },
+ {
+  "id": "q_ophelia_arc",
+  "question": "Trace Ophelia's decline: what does Claudius say is the cause of her madness, how does she die, and how is her death treated at her burial?",
+  "expected_answer": "Claudius says her madness springs entirely from grief at her father's death; she later drowns in a brook by a willow (as Gertrude reports); and at her burial Gertrude mourns her, scattering flowers -- \"Sweets to the sweet\" -- and laments that she had hoped Ophelia would be Hamlet's wife.",
+  "evidence_scope": "Acts 4-5",
+  "reasoning_skill": "cross_scene_bridge",
+  "required_evidence_quotes": [
+   {
+    "act": 4,
+    "scene": 5,
+    "speaker": "KING",
+    "quote": "O, this is the poison of deep grief; it springs\nAll from her father’s death.",
+    "role": "cause_of_madness"
+   },
+   {
+    "act": 4,
+    "scene": 7,
+    "speaker": "QUEEN",
+    "quote": "There is a willow grows aslant a brook,\nThat shows his hoary leaves in the glassy stream.",
+    "role": "drowning"
+   },
+   {
+    "act": 5,
+    "scene": 1,
+    "speaker": "QUEEN",
+    "quote": "Sweets to the sweet. Farewell.\nI hop’d thou shouldst have been my Hamlet’s wife;",
+    "role": "burial_aftermath"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Three-scene coverage arc (4.5 -> 4.7 -> 5.1) with weak lexical overlap between hops. Stresses budget-fill and set-coverage selection: the minimal set must keep one chunk from each of three scenes."
+ },
+ {
+  "id": "q_laertes_unction",
+  "question": "How does Laertes plan to make his blade lethal for the duel, and what ultimately happens to him because of that plan?",
+  "expected_answer": "Laertes anoints his sword with a deadly unction he bought from a mountebank, so poisonous that even a scratch would kill; in the duel the envenomed blade wounds him too, and he dies, acknowledging \"I am justly kill'd with mine own treachery.\"",
+  "evidence_scope": "Acts 4-5",
+  "reasoning_skill": "entity_state_tracking",
+  "required_evidence_quotes": [
+   {
+    "act": 4,
+    "scene": 7,
+    "speaker": "LAERTES",
+    "quote": "And for that purpose I’ll anoint my sword.\nI bought an unction of a mountebank\nSo mortal that, but dip a knife in it,",
+    "role": "poison_plan"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "LAERTES",
+    "quote": "I am justly kill’d with mine own treachery.",
+    "role": "turned_on_him"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Setup-to-outcome state tracking across two acts: the poisoned weapon introduced in 4.7 becomes the instrument of Laertes's own death in 5.2. Tests whether selection keeps both the plan and its ironic payoff."
+ },
+ {
+  "id": "q_england_voyage",
+  "question": "Recount, in order, what happens with Hamlet's voyage to England: what did Claudius intend, what interrupted the voyage, and how did Hamlet turn the tables?",
+  "expected_answer": "Claudius first sent Hamlet to England with sealed letters ordering his immediate execution (\"The present death of Hamlet. Do it, England\"); then, two days out, a pirate ship attacked and Hamlet escaped onto it; finally he returned, having secretly devised a new commission that sent its bearers -- Rosencrantz and Guildenstern -- to death instead.",
+  "evidence_scope": "Acts 4-5",
+  "reasoning_skill": "temporal_order",
+  "required_evidence_quotes": [
+   {
+    "act": 4,
+    "scene": 3,
+    "speaker": "KING",
+    "quote": "By letters conjuring to that effect,\nThe present death of Hamlet. Do it, England;",
+    "role": "intended_death"
+   },
+   {
+    "act": 4,
+    "scene": 6,
+    "speaker": "HAMLET",
+    "quote": "Ere we were two days old at sea, a pirate of very warlike appointment gave us chase.",
+    "role": "pirate_interception"
+   },
+   {
+    "act": 5,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "I sat me down,\nDevis’d a new commission, wrote it fair",
+    "role": "commission_swap"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Temporal-order chain across 4.3 -> 4.6 -> 5.2, partly delivered through a reported letter. Little lexical overlap between hops; targets information-requirement identification and ordered assembly."
+ },
+ {
+  "id": "q_prayer_spared_contrast",
+  "question": "When Hamlet comes upon Claudius at prayer, why does he decide NOT to kill him then, and what does the scene reveal about whether Claudius was actually in a state of grace?",
+  "expected_answer": "Hamlet refrains because killing Claudius while praying would send his soul to heaven -- \"hire and salary, not revenge\" -- so he resolves to wait for a more damning moment; but the scene then reveals Claudius was not truly praying, as he admits \"My words fly up, my thoughts remain below.\"",
+  "evidence_scope": "Act 3, Scene 3",
+  "reasoning_skill": "distractor_contrast",
+  "required_evidence_quotes": [
+   {
+    "act": 3,
+    "scene": 3,
+    "speaker": "HAMLET",
+    "quote": "Now might I do it pat, now he is praying.\nAnd now I’ll do’t. And so he goes to heaven;",
+    "role": "tempting_moment"
+   },
+   {
+    "act": 3,
+    "scene": 3,
+    "speaker": "HAMLET",
+    "quote": "O, this is hire and salary, not revenge.",
+    "role": "reason_to_spare"
+   },
+   {
+    "act": 3,
+    "scene": 3,
+    "speaker": "HAMLET",
+    "quote": "And am I then reveng’d,\nTo take him in the purging of his soul,\nWhen he is fit and season’d for his passage? No.\nUp, sword, and know thou a more horrid hent:",
+    "role": "defer_to_worse_moment"
+   },
+   {
+    "act": 3,
+    "scene": 3,
+    "speaker": "KING",
+    "quote": "My words fly up, my thoughts remain below.\nWords without thoughts never to heaven go.",
+    "role": "ironic_payoff"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "distractor_contrast probe: the tempting surface reason (he is praying) must be distinguished from Hamlet's actual articulated reason (killing at prayer is a reward, not revenge), and contrasted against the dramatic irony that the prayer never rose. Overlaps the prayer scene with q_claudius_false_prayer but anchors different chunks (Hamlet's soliloquy vs Claudius's)."
+ },
+ {
+  "id": "q_ophelia_loosed",
+  "question": "How do Polonius and Claudius use Ophelia to discover the cause of Hamlet's behavior, and what does Claudius conclude after watching the staged encounter?",
+  "expected_answer": "Polonius proposes to \"loose\" Ophelia to Hamlet while he and Claudius hide behind an arras to observe the encounter; after watching, Claudius concludes Hamlet is not truly lovesick or mad -- \"Love? His affections do not that way tend\" -- and senses a deeper, dangerous cause.",
+  "evidence_scope": "Acts 2-3",
+  "reasoning_skill": "deception_or_mistaken_belief",
+  "required_evidence_quotes": [
+   {
+    "act": 2,
+    "scene": 2,
+    "speaker": "POLONIUS",
+    "quote": "At such a time I’ll loose my daughter to him.\nBe you and I behind an arras then,\nMark the encounter.",
+    "role": "bait_plan"
+   },
+   {
+    "act": 3,
+    "scene": 1,
+    "speaker": "KING",
+    "quote": "Love? His affections do not that way tend,\nNor what he spake, though it lack’d form a little,\nWas not like madness.",
+    "role": "claudius_conclusion"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "deception_or_mistaken_belief probe bridging 2.2 -> 3.1: the eavesdropping setup and Claudius seeing through the supposed love-madness. Requires linking the plan to the conclusion the staged test yields."
+ },
+ {
+  "id": "q_advice_to_players",
+  "question": "What specific instructions does Hamlet give the players about how to perform?",
+  "expected_answer": "Hamlet tells them to speak the speech \"trippingly on the tongue,\" not to \"saw the air too much\" with their hands, to \"suit the action to the word, the word to the action,\" and to hold \"the mirror up to nature.\"",
+  "evidence_scope": "Act 3, Scene 2",
+  "reasoning_skill": "local_fact",
+  "required_evidence_quotes": [
+   {
+    "act": 3,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "Speak the speech, I pray you, as I pronounced it to you, trippingly on the tongue.",
+    "role": "delivery"
+   },
+   {
+    "act": 3,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "Nor do not saw the air too much with your hand",
+    "role": "gesture"
+   },
+   {
+    "act": 3,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "Suit the action to the word, the word to the action",
+    "role": "action_word_match"
+   },
+   {
+    "act": 3,
+    "scene": 2,
+    "speaker": "HAMLET",
+    "quote": "to hold as ’twere the mirror up to nature",
+    "role": "mirror_to_nature"
+   }
+  ],
+  "derived_gold_chunk_ids": [],
+  "notes": "Within-scene coverage probe: four distinct staging instructions spread across two adjacent chunks of one scene. Tests whether selection keeps several separate points from a single scene instead of saturating on one."
+ }
+]

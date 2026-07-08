@@ -1,0 +1,202 @@
+{
+  "summary": "Prince Hamlet seeks to verify and avenge the murder of his father after the Ghost accuses Claudius. His delay, feigned madness, court surveillance, and several revenge plots lead to the deaths of Polonius, Ophelia, Gertrude, Laertes, Claudius, and Hamlet.",
+  "characters": {
+    "hamlet": {
+      "name": "Hamlet",
+      "aliases": ["Prince Hamlet", "the Prince", "young Hamlet"],
+      "description": "Prince of Denmark, son of the dead King Hamlet and Gertrude."
+    },
+    "claudius": {
+      "name": "Claudius",
+      "aliases": ["King", "the King", "King Claudius", "Hamlet's uncle"],
+      "description": "King of Denmark; Hamlet's uncle and the Ghost's accused murderer."
+    },
+    "gertrude": {
+      "name": "Gertrude",
+      "aliases": ["Queen", "the Queen", "Queen Gertrude", "Hamlet's mother"],
+      "description": "Queen of Denmark, Hamlet's mother, and Claudius's wife."
+    },
+    "horatio": {
+      "name": "Horatio",
+      "aliases": ["Horatio", "Hamlet's friend"],
+      "description": "Hamlet's trusted friend and witness to several key events."
+    },
+    "ophelia": {
+      "name": "Ophelia",
+      "aliases": ["Ophelia"],
+      "description": "Polonius's daughter, Laertes's sister, and Hamlet's love interest."
+    },
+    "polonius": {
+      "name": "Polonius",
+      "aliases": ["Polonius", "Lord Chamberlain"],
+      "description": "Counselor to Claudius, father of Ophelia and Laertes."
+    },
+    "laertes": {
+      "name": "Laertes",
+      "aliases": ["Laertes"],
+      "description": "Polonius's son and Ophelia's brother; seeks revenge against Hamlet."
+    },
+    "ghost": {
+      "name": "Ghost",
+      "aliases": ["Ghost", "apparition", "spirit", "Hamlet's father", "old Hamlet", "dead King"],
+      "description": "The ghost of Hamlet's father, who accuses Claudius of murder."
+    }
+  },
+  "aliases": {
+    "King": "character:claudius",
+    "the King": "character:claudius",
+    "Queen": "character:gertrude",
+    "the Queen": "character:gertrude",
+    "Ghost": "character:ghost",
+    "Hamlet's father": "character:ghost"
+  },
+  "events": {
+    "ghost_revelation": {
+      "name": "ghost revelation",
+      "aliases": ["ghost revelation", "Ghost's accusation", "the Ghost tells Hamlet", "murder revelation"],
+      "keywords": ["revenge", "murder", "poison", "father", "accuse"],
+      "description": "The Ghost tells Hamlet that Claudius murdered Hamlet's father and demands revenge."
+    },
+    "antic_disposition": {
+      "name": "antic disposition",
+      "aliases": ["antic disposition", "feigned madness", "Hamlet's madness"],
+      "keywords": ["madness", "antic", "mad", "distracted"],
+      "description": "Hamlet says he may put on an antic disposition as part of his response."
+    },
+    "mousetrap": {
+      "name": "Mousetrap",
+      "aliases": ["Mousetrap", "the play", "play within the play", "Gonzago", "players' scene"],
+      "keywords": ["play", "players", "poisons", "garden", "observe"],
+      "description": "Hamlet stages a play resembling his father's murder to test Claudius."
+    },
+    "claudius_reaction": {
+      "name": "Claudius reaction",
+      "aliases": ["Claudius reaction", "King rises", "Claudius rises", "disturbed response"],
+      "keywords": ["rises", "lights", "disturbed", "reaction"],
+      "description": "Claudius reacts strongly during the staged poisoning scene."
+    },
+    "horatio_confirmation": {
+      "name": "Horatio confirmation",
+      "aliases": ["Horatio confirmation", "Horatio notes him", "I did very well note him"],
+      "keywords": ["horatio", "note", "noted", "confirmation"],
+      "description": "Horatio confirms that he observed Claudius during the play."
+    },
+    "closet_scene": {
+      "name": "closet scene",
+      "aliases": ["closet scene", "Gertrude's chamber", "arras scene"],
+      "keywords": ["arras", "chamber", "mother"],
+      "description": "Hamlet confronts Gertrude in her chamber and stabs through the arras."
+    },
+    "polonius_death": {
+      "name": "Polonius death",
+      "aliases": ["Polonius death", "Polonius killed", "arras killing"],
+      "keywords": ["polonius", "killed", "arras", "rat"],
+      "description": "Hamlet kills Polonius while mistaking the hidden listener for someone else."
+    },
+    "ophelia_madness": {
+      "name": "Ophelia madness",
+      "aliases": ["Ophelia madness", "flower scene", "Ophelia's songs"],
+      "keywords": ["ophelia", "flowers", "violets", "madness"],
+      "description": "Ophelia appears distracted, sings, and distributes flowers after Polonius's death."
+    },
+    "duel": {
+      "name": "duel",
+      "aliases": ["duel", "final duel", "Hamlet and Laertes duel"],
+      "keywords": ["duel", "rapier", "cup", "poison", "laertes"],
+      "description": "Claudius and Laertes plot a poisoned duel that kills Gertrude, Laertes, Claudius, and Hamlet."
+    }
+  },
+  "event_aliases": {
+    "Mousetrap": "event:mousetrap",
+    "the Mousetrap": "event:mousetrap",
+    "closet scene": "event:closet_scene",
+    "duel": "event:duel"
+  },
+  "relations": [
+    {
+      "source": "character:ghost",
+      "relation": "accuses",
+      "target": "character:claudius",
+      "description": "The Ghost names Claudius as his murderer."
+    },
+    {
+      "source": "event:ghost_revelation",
+      "relation": "motivates",
+      "target": "event:mousetrap",
+      "description": "Hamlet stages the play because he wants confirmation of the Ghost's charge."
+    },
+    {
+      "source": "event:mousetrap",
+      "relation": "tests",
+      "target": "character:claudius",
+      "description": "The play is designed to test Claudius's guilt."
+    },
+    {
+      "source": "event:mousetrap",
+      "relation": "causes",
+      "target": "event:claudius_reaction",
+      "description": "The staged murder prompts Claudius's visible reaction."
+    },
+    {
+      "source": "event:claudius_reaction",
+      "relation": "confirmed_by",
+      "target": "event:horatio_confirmation",
+      "description": "Horatio tells Hamlet that he noted Claudius's reaction."
+    },
+    {
+      "source": "character:horatio",
+      "relation": "witnesses",
+      "target": "event:horatio_confirmation",
+      "description": "Horatio serves as Hamlet's witness during the play."
+    },
+    {
+      "source": "event:closet_scene",
+      "relation": "contains",
+      "target": "event:polonius_death",
+      "description": "Polonius is killed behind the arras in Gertrude's chamber."
+    },
+    {
+      "source": "event:polonius_death",
+      "relation": "affects",
+      "target": "character:ophelia",
+      "description": "Polonius's death contributes to Ophelia's collapse."
+    },
+    {
+      "source": "event:ophelia_madness",
+      "relation": "intensifies",
+      "target": "character:laertes",
+      "description": "Ophelia's condition and death intensify Laertes's grievance."
+    },
+    {
+      "source": "character:laertes",
+      "relation": "conspires_with",
+      "target": "character:claudius",
+      "description": "Laertes and Claudius plan the poisoned duel."
+    },
+    {
+      "source": "event:duel",
+      "relation": "kills",
+      "target": "character:gertrude",
+      "description": "Gertrude drinks the poisoned cup during the duel."
+    },
+    {
+      "source": "event:duel",
+      "relation": "kills",
+      "target": "character:claudius",
+      "description": "Hamlet kills Claudius after the treachery is exposed."
+    }
+  ],
+  "evidence_role_templates": {
+    "plan": ["players", "play", "observe", "looks"],
+    "bridge_to_execution": ["play tonight", "King", "Horatio"],
+    "staged_evidence": ["poisons", "garden", "estate"],
+    "reaction_confirmation": ["Horatio", "note", "noted"],
+    "cup_setup": ["cup", "drink", "union"],
+    "cup_state": ["poison", "poisoned cup"],
+    "outcome": ["drink", "poisoned", "dies"],
+    "mistaken_action": ["arras", "rat", "draws"],
+    "mistaken_belief": ["King"],
+    "actual_victim": ["Polonius", "victim"],
+    "symbolic_image": ["vows", "brokers", "implorators"]
+  }
+}
